@@ -1,0 +1,43 @@
+const i32 a = 12;
+const i32 b = 34;
+
+i32 add(i32 x, i32 y)
+{
+    i32 result = x + y;
+    return result;
+}
+
+i32 main()
+{
+    i32 result;
+    
+    i32 choice; // new empty var
+    input choice; // initialise it to user input
+
+    if (choice > 5)
+    {
+        result = add(a, choice);
+    }
+    else
+    {
+        result = add(b, choice);
+    }
+
+    print result; // inbuilt keyword
+
+    return 0;
+}
+
+
+/*
+    - Rust style data types
+    - New inbuilt keywords instead of functions:
+        - input [variable name]
+            Initialises the variable by immediately asking the user to input its value.
+        - print [variable name]
+            Outputs the value of the variable
+        - alloc [pointer variable name] [n]
+            Stores a pointer to n bytes in memory
+        Different implementations are picked at compile time depending on the data type. i.e. string or integer and the target (jupiter/linux/freertos)
+        If a feature is not possible on the selected target such as embedded hardware, error out.
+*/
