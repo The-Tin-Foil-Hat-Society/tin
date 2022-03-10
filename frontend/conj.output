@@ -1,0 +1,88 @@
+Nonterminals useless in grammar
+
+    functions
+
+
+Terminals unused in grammar
+
+    "return"
+    "while"
+    "if"
+    "var"
+    IDENTIFIER
+    NUMCONST
+    STRINGCONST
+    "||"
+    "&&"
+    "=="
+    "!="
+    "++"
+    "--"
+    "+="
+    "-="
+
+
+Rules useless in grammar
+
+    2 functions: %empty
+
+
+Grammar
+
+    0 $accept: library END
+
+    1 library: %empty
+
+
+Terminals, with rules where they appear
+
+    END (0) 0
+    error (256)
+    "return" (258)
+    "while" (259)
+    "if" (260)
+    "var" (261)
+    IDENTIFIER (262)
+    NUMCONST (263)
+    STRINGCONST (264)
+    "||" (265)
+    "&&" (266)
+    "==" (267)
+    "!=" (268)
+    "++" (269)
+    "--" (270)
+    "+=" (271)
+    "-=" (272)
+
+
+Nonterminals, with rules where they appear
+
+    $accept (18)
+        on left: 0
+    library (19)
+        on left: 1
+        on right: 0
+
+
+State 0
+
+    0 $accept: . library END
+    1 library: . %empty
+
+    $default  reduce using rule 1 (library)
+
+    library  go to state 1
+
+
+State 1
+
+    0 $accept: library . END
+
+    END  shift, and go to state 2
+
+
+State 2
+
+    0 $accept: library END .
+
+    $default  accept
