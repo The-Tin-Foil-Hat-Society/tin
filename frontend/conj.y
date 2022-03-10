@@ -170,7 +170,7 @@ c_expr1:        expr
 |               c_expr1     ',' expr;
 expr:           NUMCONST                        { $$ = $1;      }
 |               STRINGCONST                     { $$ = M($1);   }
-|               IDENTIFIER                      { $$ = ctx.use($1);    };
+|               IDENTIFIER                      {} $$ = ctx.use($1);    };
 |               '{' expr '}'
 |               expr '[' expr ']'
 |               expr '(' ')'
