@@ -1,5 +1,5 @@
 %skeleton "lalr1.cc"
-%define parser_class_name {conj_parser}
+%define api.parser.class {conj_parser}
 %define api.token.constructor
 %define api.value.type variant
 %define parse.assert
