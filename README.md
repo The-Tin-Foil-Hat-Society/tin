@@ -8,7 +8,6 @@ This is a team project for University which involves us designing a simple progr
 - gcc
 
 ## TODO
-- make MAKE files
 - write unit tests
 - optimisation, i.e. precompute an expression of constants to a single constant and etc, check what optimisation techniques other compilers use
 - check for memory leaks in valgrind with `--leak-check=full`
