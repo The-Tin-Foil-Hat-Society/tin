@@ -33,7 +33,10 @@
 
 
 # Build files
-bin/
-obj/
-Release/
-Debug/
+build/
+generated/
+*.ast.json
+
+# vscode configs
+.vscode/settings.json
+.vscode/c_cpp_properties.json

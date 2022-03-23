@@ -1,16 +1,22 @@
-const i32 a = 12;
-const i32 b = 34;
+i32 a = 12;
+i32 b = 34;
+ptr u8 prompt = "Input a number: ";
 
-i32 add(i32 x, i32 y)
+fn i32 add(i32 x, i32 y)
 {
     i32 result = x + y;
     return result;
 }
 
-i32 main()
+fn i32 main
 {
+    ptr void example_ptr;
+    alloc example_ptr 32;
+
     i32 result;
     
+    print prompt;
+
     i32 choice; // new empty var
     input choice; // initialise it to user input
 
@@ -25,6 +31,8 @@ i32 main()
 
     print result; // inbuilt keyword
 
+    free example_ptr;
+
     return 0;
 }
 
@@ -32,12 +40,14 @@ i32 main()
 /*
     - Rust style data types
     - New inbuilt keywords instead of functions:
-        - input [variable name]
+        - input [variable name];
             Initialises the variable by immediately asking the user to input its value.
-        - print [variable name]
+        - print [variable name];
             Outputs the value of the variable
-        - alloc [pointer variable name] [n]
+        - alloc [pointer variable name] [n];
             Stores a pointer to n bytes in memory
+        - free  [pointer variable name];
+            Frees an alloc'd pointer
         Different implementations are picked at compile time depending on the data type. i.e. string or integer and the target (jupiter/linux/freertos)
         If a feature is not possible on the selected target such as embedded hardware, error out.
 */
