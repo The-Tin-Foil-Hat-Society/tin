@@ -185,5 +185,16 @@ function
 
 void yyerror(yyscan_t* scanner_, module* mod, const char* msg)
 {
-    fprintf(stderr, "line %d *** %s\n", yyget_lineno(scanner_), msg);
+    int linenno = yyget_lineno(scanner_);
+    char* src_line = module_get_src_line(mod, linenno);
+
+    if (src_line != 0)
+    {
+        fprintf(stderr, "%s\n%s\n", src_line, msg);
+        free(src_line);
+    }
+    else
+    {
+        fprintf(stderr, "line %d: %s\n", linenno, msg);
+    }
 }
