@@ -1,0 +1,16 @@
+/*
+#Testing variable redefinition
+#Testing printing functionality
+#Testing undefined variable
+*/
+
+fn i32 main
+{
+    ptr u8 word = "test";
+    word = "test 4";//variable redefinition
+    print word;//print test
+
+    i32 a = 10;
+    i32 c = a + b;// ERROR: undefined variable
+    
+}
