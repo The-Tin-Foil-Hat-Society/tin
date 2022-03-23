@@ -76,13 +76,12 @@ char* module_get_src_line(module* mod, int linneno)
 
     line[line_i] = '\0'; // -1 since that's the newline char and we don't want to keep it
 
+    char* ret = 0;
     if (line_i > 0)
     {
-        char* ret = strdup(line); // just to cut down the length
-        free(line);
-        return ret;
+        ret = strdup(line);
     }
 
     free(line);
-    return 0;
+    return ret;
 }
