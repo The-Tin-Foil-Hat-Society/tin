@@ -66,11 +66,10 @@ int main(int argc, char** argv)
 	// save ast
 	FILE* ast_file = fopen(ast_filename, "wb");
 	ast_print_to_file(mod->ast_root, ast_file, true);
-
-free:
-	// free everything
 	fclose(ast_file);
 	free(ast_filename);
+
+free:
 	module_free(mod);
 
     return 0; 

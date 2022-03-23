@@ -31,10 +31,17 @@ int build_symbols(module* mod, ast_node* node)
         }
         else
         {
-            sym = ast_find_symbol(node, node->value.string);;
+            sym = ast_find_symbol(node, node->value.string);
         }
 
-        if (sym == 0 && is_being_assigned_to)
+        if (sym != 0 && node->parent->type == AstDefinition)
+        {
+            // TODO: create a specific function for errors to print all the required information and to quit the compiler correctly?
+            printf("%s\n", ast_find_closest_src_line(node));
+            printf("error: %s is already defined\n", node->value.string); 
+            error_counter += 1;
+        }
+        else if (sym == 0 && is_being_assigned_to)
         {
             sym = symbol_new();
             sym->name = strdup(node->value.string);
@@ -52,16 +59,15 @@ int build_symbols(module* mod, ast_node* node)
         }
         else if (sym == 0)
         {
-            // TODO: create a specific function for errors to print all the required information and to quit the compiler correctly?
             printf("%s\n", ast_find_closest_src_line(node));
             printf("error: %s undefined\n", node->value.string); 
-            return 1;
+            error_counter += 1;
         }
         else if (sym->is_initialised == false && !is_being_assigned_to)
         {
             printf("%s\n", ast_find_closest_src_line(node));
             printf("error: %s is not initialized\n", node->value.string);
-            return 1;
+            error_counter += 1;
         }
         
         ast_node* symbol_node = ast_new(AstSymbol);
@@ -70,20 +76,13 @@ int build_symbols(module* mod, ast_node* node)
         // replace the indentifier node with a symbol node
 
         node->parent->children[index_in_parent] = symbol_node;
-        ast_free(node);      
+        ast_free(node);
     }
     else if (node->type == AstDefinition) 
     {
         ast_node* data_type = ast_get_child(node, 0);
         ast_node* symbol_node = ast_get_child(node, 1);
         symbol* sym = symbol_node->value.symbol;
-
-        if (sym->data_type != 0)
-        {
-            printf("%s\n", ast_find_closest_src_line(node));
-            printf("error: %s is already defined\n", sym->name);
-            return 1;
-        }
 
         sym->data_type = strdup(data_type->value.string);
         sym->pointer_level = data_type->pointer_level;
@@ -125,7 +124,7 @@ int build_symbols(module* mod, ast_node* node)
                 {
                     printf("%s\n", ast_find_closest_src_line(node));
                     printf("error: size must be an integer type\n");
-                    return 1;
+                    error_counter += 1;
                 }
             }
             else 
@@ -134,7 +133,7 @@ int build_symbols(module* mod, ast_node* node)
                 {
                     printf("%s\n", ast_find_closest_src_line(node));
                     printf("error: %s has type %s while %s has type %s\n", left_sym->name, left_sym->data_type, right_sym->name, right_sym->data_type);
-                    return 1;
+                    error_counter += 1;
                 }
                 else if (left_sym->pointer_level != right_sym->pointer_level)
                 {
@@ -151,7 +150,7 @@ int build_symbols(module* mod, ast_node* node)
                 {
                     printf("%s\n", ast_find_closest_src_line(node));
                     printf("error: cannot allocate less than 0 bytes\n");
-                    return 1;
+                    error_counter += 1;
                 }   
             }
             else
@@ -160,8 +159,8 @@ int build_symbols(module* mod, ast_node* node)
                 if (strcmp(left_sym->data_type, "i32") != 0 || left_sym->pointer_level != 0 || right_node->value.integer < INT32_MIN || right_node->value.integer > INT32_MAX)
                 {
                     printf("%s\n", ast_find_closest_src_line(node));
-                    printf("error: value does not fit the data type of variable %s", left_sym->name);
-                    return 1;
+                    printf("error: value does not fit the data type of variable %s\n", left_sym->name);
+                    error_counter += 1;
                 }
             }
             
@@ -172,7 +171,7 @@ int build_symbols(module* mod, ast_node* node)
             {
                 printf("%s\n", ast_find_closest_src_line(node));
                 printf("error: size must be an integer type\n");
-                return 1;
+                error_counter += 1;
             }
             else
             {
@@ -180,7 +179,7 @@ int build_symbols(module* mod, ast_node* node)
                 {
                     printf("%s\n", ast_find_closest_src_line(node));
                     printf("error: %s must be of type ptr u8\n", left_sym->name);
-                    return 1;
+                    error_counter += 1;
                 }
 
                 left_sym->value = strdup(right_node->value.string);
@@ -215,14 +214,14 @@ int build_symbols(module* mod, ast_node* node)
             {
                 printf("%s\n", ast_find_closest_src_line(node));
                 printf("error: %s, could not determine type of the right hand value (this should not happen!! parser bug)\n", left_sym->name);
-                return 1;
+                error_counter += 1;
             }
 
             if (strcmp(left_sym->data_type, found_type) != 0)
             {
                 printf("%s\n", ast_find_closest_src_line(node));
                 printf("error: %s has type %s while the right hand value has type %s\n", left_sym->name, left_sym->data_type, found_type);
-                return 1;
+                error_counter += 1;
             }
             if (left_sym->pointer_level != found_pointer_level)
             {
@@ -238,6 +237,7 @@ int build_symbols(module* mod, ast_node* node)
         node->children[0]->value.symbol->is_initialised = true;
     }
 
+    return error_counter;
 }
 
 void optimize(module* mod, ast_node* node)
