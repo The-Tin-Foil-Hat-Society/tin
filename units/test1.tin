@@ -1,0 +1,14 @@
+/*
+#Tests if catches missing semi-colon
+*/
+
+
+fn i32 main
+{
+    ptr void example_ptr;
+    alloc example_ptr 32;
+
+    i32 a //ERROR MISSING SEMI-COLON
+
+    return 0;
+}

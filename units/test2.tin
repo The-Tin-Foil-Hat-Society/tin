@@ -1,0 +1,35 @@
+/*
+#Tests while loop functionality
+#Tests if it catches missing arguement in if statement
+#Tests if variable in different scopes can have the same name
+*/ 
+fn i32 main
+{
+    ptr void example_ptr;
+    alloc example_ptr 32;
+
+    i32 result;
+    
+    print prompt;
+
+    i32 choice; // new empty var
+    input choice; // initialise it to user input
+    
+    i32 q;
+    
+    while (q <= 100)// while loops working
+    {
+        q = q+1;
+    }
+
+    if ()// SYNTAX ERROR: no argument given for if statement
+    {
+        result = q + choice;
+    }
+
+    print result; // inbuilt keyword
+
+    free example_ptr;
+
+    return 0;
+}

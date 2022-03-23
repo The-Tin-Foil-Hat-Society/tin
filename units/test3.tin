@@ -1,0 +1,34 @@
+/*
+#Tests math operator functionality
+#Tests if it catches an attempt to re-declare variable
+#Tests if variable in different scopes can have the same name
+*/ 
+
+i32 a = 12;
+i32 b = 34;
+ptr u8 prompt = "Input a number: ";
+
+fn i32 add(i32 x, i32 y)
+{
+    i32 result = x + y;
+    return result;
+}
+
+fn i32 main
+{
+    ptr void example_ptr;
+    alloc example_ptr 32;
+
+    i32 result;
+
+    i32 c = a + b;//math operation test
+    i32 d = a - b;
+    i32 e = a * b;
+    i32 f = a / b;
+
+    ptr u8 x = "test";//variable with an already defined name but in a different function/scope
+
+    i32 b = 10;// ERROR: predefined variable name
+
+    return 0;
+}
