@@ -5,6 +5,10 @@
 #include "parser.tab.h" // always include parser before lexer to avoid circular dependency
 #include "lex.yy.h"
 
+#ifdef TIN_COMPILER
+#include "backend/codegen.h"
+#endif
+
 int main(int argc, char** argv)
 { 
 	if (argc < 2)
@@ -42,6 +46,7 @@ int main(int argc, char** argv)
 	optimize(mod, mod->ast_root);
 
 #ifdef TIN_INTERPRETER
+	printf( "Running in interpreter mode" );
 
 	// interpret(mod, mod->ast_root, 0); // not implemented yet . . .
 
@@ -58,9 +63,9 @@ int main(int argc, char** argv)
 	fclose(ast_file);
 	free(ast_filename);
 #elif  TIN_COMPILER
+	printf( "Running in compiler mode" );
 
 	// call the code generator and stuff here
-
 #endif
 
 end:
