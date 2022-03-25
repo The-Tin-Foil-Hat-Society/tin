@@ -5,9 +5,7 @@
 #include <stddef.h>
 #include <stdio.h>
 
-#ifndef SYMTABLE_DEFAULT_CAPACITY
-#define SYMTABLE_DEFAULT_CAPACITY 8
-#endif
+#include "vector.h"
 
 typedef struct
 {
@@ -28,20 +26,11 @@ void symbol_print(symbol* sym);
 // prints a json representation of the symbol to the given file
 void symbol_print_to_file(symbol* sym, FILE* file);
 
-typedef struct symtable symtable;
-struct symtable {
-    size_t symbols_size;
-    size_t symbols_capacity;
-    symbol** symbols;   // TODO: reimplement as a hashtable instead of a linear list
-};
 
-symtable* symtable_new(void);
-void symtable_free(symtable* table);
-void symtable_resize(symtable* table);
-void symtable_add_symbol(symtable* table, symbol* sym);
-symbol* symtable_find_symbol(symtable* table, char* name);
+// TODO: reimplement as a hashtable instead of a vector
+symbol* symtable_find_symbol(vector* table, char* name);
 
 // prints a json representation of the symbol table to the console
-void symtable_print(symtable* table);
+void symtable_print(vector* table);
 // prints a json representation of the symbol table to the given file
-void symtable_print_to_file(symtable* table, FILE* file);
+void symtable_print_to_file(vector* table, FILE* file);

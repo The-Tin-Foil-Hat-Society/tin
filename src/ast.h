@@ -7,10 +7,8 @@
 #include <string.h>
 
 #include "symbol.h"
+#include "vector.h"
 
-#ifndef AST_DEFAULT_CAPACITY
-#define AST_DEFAULT_CAPACITY 4
-#endif
 
 enum ast_node_type
 { 
@@ -68,16 +66,14 @@ struct ast_node
     enum ast_node_type type;
     ast_node* parent;
 
-    size_t children_size;
-    size_t children_capacity;
-    ast_node** children;    // TODO: reimplement as a hashtable instead of a linear list
+    vector* children;
 
     union 
     {
         int64_t integer;        // AstInteger
         char* string;           // AstDataType, AstIdentifier, AstString
         symbol* symbol;         // AstSymbol
-        symtable* symbol_table; // AstRoot, AstScope
+        vector* symbol_table;   // AstRoot, AstScope
     } value; 
 
     size_t pointer_level;       // AstDataType
@@ -90,11 +86,12 @@ ast_node* ast_copy(ast_node* node);
 
 void ast_resize(ast_node* node);
 void ast_add_child(ast_node* node, ast_node* child);
-ast_node* ast_get_child(ast_node* node, int index);
-int ast_get_child_index(ast_node* node, ast_node* child);
+void ast_set_child(ast_node* node, size_t index, ast_node* new_child);
+ast_node* ast_get_child(ast_node* node, size_t index);
+size_t ast_get_child_index(ast_node* node, ast_node* child);
 void ast_delete_child(ast_node* node, ast_node* child);
 
-symtable* ast_get_closest_symtable(ast_node* node);
+vector* ast_get_closest_symtable(ast_node* node);
 symbol* ast_find_symbol(ast_node* node, char* name);
 
 char* ast_find_closest_src_line(ast_node* node);

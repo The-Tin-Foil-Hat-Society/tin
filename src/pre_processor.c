@@ -4,9 +4,9 @@ int build_symbols(module* mod, ast_node* node)
 {
     int error_counter = 0;
 
-    for (int i = 0; i < node->children_size; i++)
+    for (int i = 0; i < node->children->size; i++)
     {
-        error_counter += build_symbols(mod, node->children[i]);
+        error_counter += build_symbols(mod, ast_get_child(node, i));
     }
 
     int index_in_parent = 0;
@@ -20,12 +20,12 @@ int build_symbols(module* mod, ast_node* node)
         bool is_function_argument_identifier = node->parent->type == AstDefinition && node->parent->parent != 0 && node->parent->parent->type == AstDefinitionList && node->parent->parent->parent->type == AstFunction;
         bool is_being_assigned_to = (node->parent->type == AstAlloc || node->parent->type == AstDefinition || node->parent->type == AstInput || (node->parent->type == AstAssignment && index_in_parent == 0));
 
-        symtable* table;
+        vector* table;
         symbol* sym;
 
         if (is_function_argument_identifier)
         {
-            table = node->parent->parent->parent->children[2]->value.symbol_table; // scope should always be the 3rd child as per the grammar if there's also a definition list
+            table = ast_get_child(node->parent->parent->parent, 2)->value.symbol_table; // scope should always be the 3rd child as per the grammar if there's also a definition list
             // for definitions for function args, make sure they're in the function's scope and not outside it
             sym = symtable_find_symbol(table, node->value.string);
         }
@@ -55,7 +55,7 @@ int build_symbols(module* mod, ast_node* node)
                 sym->is_initialised = true; // if its a function argument, assume it's already initialized. actually check for that during function calls not in function definitions
             }
             
-            symtable_add_symbol(table, sym);
+            vector_add_item(table, sym);
         }
         else if (sym == 0)
         {
@@ -74,8 +74,7 @@ int build_symbols(module* mod, ast_node* node)
         symbol_node->value.symbol = sym;
 
         // replace the indentifier node with a symbol node
-
-        node->parent->children[index_in_parent] = symbol_node;
+        ast_set_child(node->parent, index_in_parent, symbol_node);
         ast_free(node);
     }
     else if (node->type == AstDefinition) 
@@ -99,15 +98,15 @@ int build_symbols(module* mod, ast_node* node)
             // definition node no longer needed, move up the symbol in its place
             // interpreter and codegen should make definitions from the symbol tables at the start of the program/scope
             symbol_node = ast_copy(symbol_node);
-            symbol_node->parent = node->parent;
-            node->parent->children[index_in_parent] = symbol_node;
+            
+            ast_set_child(node->parent, index_in_parent, symbol_node);
             ast_free(node);
         }
     }
     else if (node->type == AstAssignment || node->type == AstDeclaration || node->type == AstAlloc)
     {
-        symbol* left_sym = node->children[0]->value.symbol; // 1st child should always be an identifier/symbol
-        ast_node* right_node = node->children[1];
+        symbol* left_sym = ast_get_child(node, 0)->value.symbol; // 1st child should always be an identifier/symbol
+        ast_node* right_node = ast_get_child(node, 1);
 
         if (node->type == AstAlloc && left_sym->pointer_level < 1)
         {
@@ -194,7 +193,7 @@ int build_symbols(module* mod, ast_node* node)
             ast_node* current_node = right_node;
             while (current_node != 0)
             {
-                current_node = current_node->children[0];
+                current_node = ast_get_child(current_node, 0);
 
                 if (current_node->type == AstDataType)
                 {
@@ -234,7 +233,7 @@ int build_symbols(module* mod, ast_node* node)
     }
     else if (node->type == AstInput)
     {
-        node->children[0]->value.symbol->is_initialised = true;
+        ast_get_child(node, 0)->value.symbol->is_initialised = true;
     }
 
     return error_counter;

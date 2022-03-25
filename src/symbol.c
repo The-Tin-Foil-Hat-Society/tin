@@ -61,79 +61,33 @@ void symbol_print_to_file(symbol* sym, FILE* file)
 }
 
 
-symtable* symtable_new(void)
-{
-    symtable* table = malloc(sizeof(symtable));
-
-    table->symbols_size = 0;
-    table->symbols_capacity = SYMTABLE_DEFAULT_CAPACITY;
-    table->symbols = malloc(sizeof(symbol*) * table->symbols_capacity);
-
-    return table;
-}
-
-void symtable_free(symtable* table)
-{
-    for (int i = 0; i < table->symbols_size; i++)
-    {
-        symbol_free(table->symbols[i]);
-    }
-    free(table->symbols);
-
-    free(table);
-}
-
-void symtable_resize(symtable* table)
-{
-    size_t new_capacity = table->symbols_capacity * 2; 
-
-    symbol** new_symbols = malloc(sizeof(symbol*) * new_capacity);
-    memcpy(new_symbols, table->symbols, sizeof(symbol*) * table->symbols_capacity); // copy old array to the new location
-    free(table->symbols); // free the old array
-
-    table->symbols_capacity = new_capacity;
-    table->symbols = new_symbols;
-}
-
-void symtable_add_symbol(symtable* table, symbol* symbol)
-{
-    if (table->symbols_size == table->symbols_capacity)
-    {
-        // need more space to add another child
-        symtable_resize(table);
-    }
-
-    table->symbols[table->symbols_size] = symbol;
-    table->symbols_size += 1;
-}
-
-symbol* symtable_find_symbol(symtable* table, char* name)
+symbol* symtable_find_symbol(vector* table, char* name)
 {
     symbol* found = 0;
-    for (int i = 0; i < table->symbols_size; i++)
+    for (size_t i = 0; i < table->size; i++)
     {
-        if (strcmp(name, table->symbols[i]->name) == 0)
+        if (strcmp(name, ((symbol*)vector_get_item(table, i))->name) == 0)
         {
-            found = table->symbols[i];
+            found = vector_get_item(table, i);
             break;
         }
     }
     return found;
 }
 
-void symtable_print(symtable* table)
+void symtable_print(vector* table)
 {
     symtable_print_to_file(table, stdout);
 }
 
-void symtable_print_to_file(symtable* table, FILE* file)
+void symtable_print_to_file(vector* table, FILE* file)
 {
     fprintf(file, "[");
 
-    for (int i = 0; i < table->symbols_size; i++)
+    for (int i = 0; i < table->size; i++)
     {
-        symbol_print_to_file(table->symbols[i], file);
-        if (i < table->symbols_size - 1) // don't print a comma after the last symbol
+        symbol_print_to_file(vector_get_item(table, i), file);
+        if (i < table->size - 1) // don't print a comma after the last symbol
         {
             fprintf(file, ",");
         }

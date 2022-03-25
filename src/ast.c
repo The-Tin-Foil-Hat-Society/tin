@@ -12,16 +12,11 @@ ast_node* ast_new(enum ast_node_type type)
     node->pointer_level = 0;
     node->src_line = 0;
 
-    node->children_size = 0;
-    node->children_capacity = AST_DEFAULT_CAPACITY;
-
-    // allocate space for child pointers
-    node->children = malloc(sizeof(ast_node*) * node->children_capacity);
+    node->children = vector_new();
     
     if (node->type == AstRoot || node->type == AstScope)
     {
-        symtable* symbol_table = symtable_new();
-        node->value.symbol_table = symbol_table;
+        node->value.symbol_table = vector_new();
     }
 
     return node;
@@ -29,11 +24,11 @@ ast_node* ast_new(enum ast_node_type type)
 
 void ast_free(ast_node* node)
 {
-    for (int i = 0; i < node->children_size; i++)
+    for (size_t i = 0; i < node->children->size; i++)
     {
-        ast_free(node->children[i]);
+        ast_free(vector_get_item(node->children, i));
     }
-    free(node->children);
+    vector_free(node->children);
     
     if (node->type == AstIdentifier || node->type == AstStringLit || node->type == AstDataType)
     {
@@ -41,7 +36,12 @@ void ast_free(ast_node* node)
     }
     if (node->type == AstRoot || node->type == AstScope)
     {
-        symtable_free(node->value.symbol_table);
+        for (size_t i = 0; i < node->value.symbol_table->size; i++)
+        {
+            symbol_free(vector_get_item(node->value.symbol_table, i));
+        }
+
+        vector_free(node->value.symbol_table);
     }
 
     // don't free symbols in symbol nodes since they're just references to the symbol table !!
@@ -77,87 +77,53 @@ ast_node* ast_copy(ast_node* node)
         copy->src_line = 0;
     }
 
-    copy->children_size = node->children_size;
-    copy->children_capacity = node->children_capacity;
-    copy->children = malloc(sizeof(ast_node*) * node->children_capacity);
+    copy->children = vector_copy(node->children);
 
-    for (int i = 0; i < node->children_size; i++)
+    for (size_t i = 0; i < node->children->size; i++)
     {
-        ast_node* child_copy = ast_copy(node->children[i]);
+        ast_node* child_copy = vector_get_item(node->children, i);
         child_copy->parent = copy;
-        copy->children[i] = child_copy;
+        vector_set_item(copy->children, i, child_copy);
     }
 
     return copy;
 }
 
-
-void ast_resize(ast_node* node)
-{
-    size_t new_capacity = node->children_capacity * 2; // increase capacity exponentially
-
-    ast_node** new_children = malloc(sizeof(ast_node*) * new_capacity);
-    memcpy(new_children, node->children, sizeof(ast_node*) * node->children_capacity); // copy old array to the new location
-    free(node->children); // free the old array
-
-    node->children_capacity = new_capacity;
-    node->children = new_children;
-}
-
 void ast_add_child(ast_node* node, ast_node* child)
 {
-    if (node->children_size == node->children_capacity)
-    {
-        // need more space to add another child
-        ast_resize(node);
-    }
-
-    child->parent = node;
-    node->children[node->children_size] = child;
-    node->children_size += 1;
+    vector_add_item(node->children, child);
+    child->parent = node;    
 }
 
-ast_node* ast_get_child(ast_node* node, int index)
+void ast_set_child(ast_node* node, size_t index, ast_node* new_child)
 {
-    if (index > node->children_size)
+    if (index >= node->children->size)
     {
-        return 0;
+        return;
     }
-    
-    return node->children[index];
+    new_child->parent = node;
+    vector_set_item(node->children, index, new_child);
 }
 
-int ast_get_child_index(ast_node* node, ast_node* child)
+ast_node* ast_get_child(ast_node* node, size_t index)
 {
-    int child_i = 0;
+    return vector_get_item(node->children, index);
+}
 
-    for (int i = 0; i < node->children_size; i++)
-    {
-        if (node->children[i] == child)
-        {
-            child_i = i;
-            break;
-        }
-    }
-
-    return child_i;
+size_t ast_get_child_index(ast_node* node, ast_node* child)
+{
+    return vector_get_item_index(node->children, child);
 }
 
 void ast_delete_child(ast_node* node, ast_node* child)
 {
-    int child_i = ast_get_child_index(node, child);
-
-    if (child_i != 0)
-    {
-        free(child);
-        node->children[child_i] = 0;
-        node->children_size -= 1;
-    }
+    vector_delete_item(node->children, child);
+    ast_free(child);
 }
 
-symtable* ast_get_closest_symtable(ast_node* node)
+vector* ast_get_closest_symtable(ast_node* node)
 {
-    symtable* table = 0;
+    vector* table = 0;
 
     // traverse up the tree and check each symbol table for the given identifier
     while (table == 0 && node != 0)
@@ -246,14 +212,14 @@ void ast_print_to_file(ast_node* node, FILE* file, bool recursive)
         fprintf(file, ",\"pointer\": %ld", node->pointer_level);
     }
 
-    if (recursive && node->children_size > 0)
+    if (recursive && node->children->size > 0)
     {
         fprintf(file, ",\"children\": [");
 
-        for (int i = 0; i < node->children_size; i++)
+        for (size_t i = 0; i < node->children->size; i++)
         {
-            ast_print_to_file(node->children[i], file, true);
-            if (i < node->children_size - 1) // don't print a comma after the last child
+            ast_print_to_file(vector_get_item(node->children, i), file, true);
+            if (i <  node->children->size - 1) // don't print a comma after the last child
             {
                 fprintf(file, ",");
             }
