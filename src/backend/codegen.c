@@ -40,7 +40,7 @@ void write_string_table( FILE* file )
     for (int i = 0; i < string_table_index; i++)
     {
         write_to_file( "str_%d:\n", i );
-        write_to_file( "\t.string \"%s\\n\"\n", string_table[i] );
+        write_to_file( "\t.string \"%s\"\n", string_table[i] );
     }
 }
 

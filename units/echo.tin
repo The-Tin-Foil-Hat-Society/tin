@@ -6,7 +6,7 @@ fn i32 main
     print "> ";
     input echo;
 
-    print "Echo:";
+    print "Echo: ";
     print echo;
 
     return 0;
