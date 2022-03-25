@@ -14,5 +14,5 @@ void write_input( ast_node* node )
 
     trace( "Read input from data_%d", data_table_index - 1 );
 
-    end_instruction();
+    add_newline();
 }

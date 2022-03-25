@@ -33,5 +33,5 @@ void write_print( ast_node* node )
             break;
     }
     
-    end_instruction();
+    add_newline();
 }
