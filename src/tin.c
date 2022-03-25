@@ -56,7 +56,7 @@ int main(int argc, char** argv)
 	// call the code generator
 	{
 		int orig_len = strlen(argv[1]);
-		char* compiled_filename = malloc(orig_len + 2);
+		char* compiled_filename = malloc(orig_len + 3);
 		strcpy(compiled_filename, argv[1]);
 		strcat(compiled_filename, ".s");
 		
