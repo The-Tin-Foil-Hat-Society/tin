@@ -1,3 +1,5 @@
+#include <time.h>
+
 #include "codegen.h"
 #include "ast.h"
 
@@ -13,7 +15,7 @@ void walk_through_nodes( FILE* file, ast_node* node )
     {
         ast_node* child = vector_get_item( node->children, i );
 
-        trace( "== Node %s ==", ast_type_names[child->type] );
+        trace( "\n==== Node %s ====", ast_type_names[child->type] );
 
         switch (child->type)
         {
@@ -25,6 +27,9 @@ void walk_through_nodes( FILE* file, ast_node* node )
                 break;
             case AstAlloc:
                 write_alloc( child );
+                break;
+            default:
+                trace( "Node wasn't handled" );
                 break;
         }
 
@@ -76,6 +81,11 @@ bool codegen_generate( module* mod, ast_node* node, FILE* file )
 
     write_to_file( "# \n" );
     write_to_file( "# Auto-generated file \n" );
+
+    // Add date/time
+    time_t t = time( NULL );
+    struct tm* time = localtime( &t );
+    write_to_file( "# Generated on %s", asctime( time ) );
     write_to_file( "# \n" );
 
     //
