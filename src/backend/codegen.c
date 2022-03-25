@@ -5,10 +5,11 @@
 
 #include "backend/common.h"
 
-#include "backend/builtin/print.h"
-#include "backend/builtin/input.h"
-#include "backend/builtin/alloc.h"
-#include "backend/builtin/str.h"
+#include "backend/handlers/keywords/print.h"
+#include "backend/handlers/keywords/input.h"
+#include "backend/handlers/keywords/alloc.h"
+
+#include "backend/handlers/literals/str.h"
 
 void walk_through_nodes( FILE* file, ast_node* node ) 
 {
