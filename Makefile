@@ -24,3 +24,6 @@ lex.o: src/tin.l
 clean:
 	@rm generated/* build/*
 	@rmdir generated build
+
+check_leaks: tin
+	@valgrind ./build/tin ./units/hello_world.tin --leak-check=full
