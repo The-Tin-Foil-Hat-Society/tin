@@ -9,7 +9,7 @@ int main(int argc, char** argv)
 { 
 	if (argc < 2)
 	{
-		printf("Usage: tin TIN_FILE [AST_FILE]\n");
+		printf("Usage: tin TIN_FILE\n");
 		return 0;
 	}
 
@@ -36,40 +36,34 @@ int main(int argc, char** argv)
 	if (error_count > 0)
 	{
 		printf("total %d errors\n", error_count);
-		goto free;
+		goto end;
 	}
 
 	optimize(mod, mod->ast_root);
 
 #ifdef TIN_INTERPRETER
-	interpret(mod, mod->ast_root);
-#elif  TIN_COMPILER
-	// call the code generator and stuff here
-#endif
 
-	// output
+	// interpret(mod, mod->ast_root, 0); // not implemented yet . . .
 
-	char* ast_filename;
-	if (argc > 2)
-	{
-		ast_filename = strdup(argv[2]);
-	}
-	else
-	{
-		// if no filename is given for the ast, make our own
-		int orig_len = strlen(argv[1]);
-		ast_filename = malloc(orig_len + 10); // plus space for file extension
-		strcpy(ast_filename, argv[1]);
-		strcat(ast_filename, ".ast.json");
-	}
+	// output ast
 
-	// save ast
+	// make the filename for the ast by appending to the given code file
+	int orig_len = strlen(argv[1]);
+	char* ast_filename = malloc(orig_len + 10); // plus space for file extension
+	strcpy(ast_filename, argv[1]);
+	strcat(ast_filename, ".ast.json");
+	
 	FILE* ast_file = fopen(ast_filename, "wb");
 	ast_print_to_file(mod->ast_root, ast_file, true);
 	fclose(ast_file);
 	free(ast_filename);
+#elif  TIN_COMPILER
 
-free:
+	// call the code generator and stuff here
+
+#endif
+
+end:
 	module_free(mod);
 
     return 0; 

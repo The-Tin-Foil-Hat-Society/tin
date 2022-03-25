@@ -9,6 +9,12 @@ int build_symbols(module* mod, ast_node* node)
         error_counter += build_symbols(mod, ast_get_child(node, i));
     }
 
+    if (node->type == AstRoot && ast_find_symbol(node, "main") == 0)
+    {
+        printf("error: no main function defined\n"); 
+        error_counter += 1;
+    }
+
     int index_in_parent = 0;
     if (node->parent != 0)
     {
@@ -241,5 +247,5 @@ int build_symbols(module* mod, ast_node* node)
 
 void optimize(module* mod, ast_node* node)
 {
-
+    // TODO: optimise the AST, i.e. precompute an expression of constants to a single constant and etc, check what optimisation techniques other compilers use
 }

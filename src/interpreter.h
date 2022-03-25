@@ -2,5 +2,8 @@
 
 #include "ast.h"
 #include "module.h"
+#include "vector.h"
 
-void interpret(module* mod, ast_node* node);
+bool interpret(module* mod, ast_node* node, vector* stack);
+bool interpret_function(module* mod, ast_node* node, vector* stack);
+bool interpret(module* mod, ast_node* node, vector* stack);
