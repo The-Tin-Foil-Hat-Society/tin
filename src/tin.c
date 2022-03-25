@@ -69,6 +69,8 @@ int main(int argc, char** argv)
 #endif
 
 #ifdef TIN_DEBUG_OUTPUT_AST
+	printf( "Writing AST\n" );
+	
 	// output ast
 	{
 		// make the filename for the ast by appending to the given code file

@@ -4,7 +4,7 @@ tin: dir parser.o lex.o
 	generated/parser.tab.c -o build/tin
 
 run: tin
-	./build/tin ./example.tin
+	./build/tin ./units/compiler_test1.tin
 
 #Generates directories to store generated files and build
 dir:
