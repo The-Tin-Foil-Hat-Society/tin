@@ -1,7 +1,5 @@
 fn i32 main
 {
-    ptr u8 prompt = "Input a number: ";
-
     print "Hello, World!";
     print "Hello, World 2!";
     print "Hello, World 3!";
