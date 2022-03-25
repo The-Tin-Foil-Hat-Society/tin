@@ -5,6 +5,7 @@ tin: dir parser.o lex.o
 
 run: tin
 	./build/tin ./units/compiler_test1.tin
+	jupiter ./units/compiler_test1.tin.s
 
 #Generates directories to store generated files and build
 dir:
