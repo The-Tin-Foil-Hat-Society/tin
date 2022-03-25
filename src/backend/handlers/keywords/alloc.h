@@ -2,6 +2,8 @@
 
 #include "ast.h"
 #include "vector.h"
+
+#include "backend/syscalls.h"
 #include "backend/common.h"
 
 void write_alloc( ast_node* node ) 
@@ -25,6 +27,6 @@ void write_alloc( ast_node* node )
     }
 
     trace( "Alloc %s %zu", name, size );
-
+    
     add_data( size );
 }
