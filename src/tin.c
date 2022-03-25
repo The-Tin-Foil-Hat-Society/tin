@@ -53,23 +53,35 @@ int main(int argc, char** argv)
 #elif TIN_COMPILER
 	printf( "Running in compiler mode\n" );
 
-	// call the code generator and stuff here
-	codegen_generate(mod, mod->ast_root);
+	// call the code generator
+	{
+		int orig_len = strlen(argv[1]);
+		char* compiled_filename = malloc(orig_len + 2);
+		strcpy(compiled_filename, argv[1]);
+		strcat(compiled_filename, ".s");
+		
+		FILE* compiled_file = fopen(compiled_filename, "wb");
+		codegen_generate(mod, mod->ast_root, compiled_file);
+
+		fclose(compiled_file);
+		free(compiled_filename);
+	}
 #endif
 
 #ifdef TIN_DEBUG_OUTPUT_AST
 	// output ast
-
-	// make the filename for the ast by appending to the given code file
-	int orig_len = strlen(argv[1]);
-	char* ast_filename = malloc(orig_len + 10); // plus space for file extension
-	strcpy(ast_filename, argv[1]);
-	strcat(ast_filename, ".ast.json");
-	
-	FILE* ast_file = fopen(ast_filename, "wb");
-	ast_print_to_file(mod->ast_root, ast_file, true);
-	fclose(ast_file);
-	free(ast_filename);
+	{
+		// make the filename for the ast by appending to the given code file
+		int orig_len = strlen(argv[1]);
+		char* ast_filename = malloc(orig_len + 10); // plus space for file extension
+		strcpy(ast_filename, argv[1]);
+		strcat(ast_filename, ".ast.json");
+		
+		FILE* ast_file = fopen(ast_filename, "wb");
+		ast_print_to_file(mod->ast_root, ast_file, true);
+		fclose(ast_file);
+		free(ast_filename);
+	}
 #endif // TIN_DEBUG_OUTPUT_AST
 
 end:

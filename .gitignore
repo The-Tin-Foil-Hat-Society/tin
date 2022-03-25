@@ -36,6 +36,7 @@
 build/
 generated/
 *.ast.json
+*.s
 
 # vscode configs
 .vscode/settings.json
