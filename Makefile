@@ -1,6 +1,9 @@
 #This is the make file for the tin interpreter
 tin: dir parser.o lex.o
-	gcc -D TIN_INTERPRETER -Isrc -Igenerated -Werror -g -O0 src/*.c generated/lex.yy.c generated/parser.tab.c -o build/tin
+	gcc -D TIN_COMPILER -Isrc -Igenerated -Werror -g -O0 src/*.c generated/lex.yy.c generated/parser.tab.c -o build/tin
+
+run: tin
+	./build/tin ./example.tin
 
 #Generates directories to store generated files and build
 dir:
