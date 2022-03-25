@@ -6,19 +6,16 @@
 
 void write_print( ast_node* node ) 
 {
-    // String is a child of this node
-    ast_node* string_node = vector_get_item( node->children, 0 );
+    ast_node* child_node = vector_get_item( node->children, 0 );
 
-    switch( string_node->type ) {
+    switch( child_node->type ) {
         case AstStringLit:
-            add_string( string_node->value.string );
-
             add_comment( "Print" );
             add_instruction( "li a0, 4" );
-            add_instruction( "la a1, str_%d", string_table_index - 1 );
+            add_instruction( "la a1, str_%d", string_table_index );
             add_instruction( "ecall" );
 
-            trace( "Print: string literal '%s'", string_node->value.string );
+            trace( "Print: string literal '%s'", child_node->value.string );
             break;
         case AstSymbol:
             add_comment( "Print" );

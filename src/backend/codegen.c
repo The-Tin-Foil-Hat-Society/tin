@@ -8,6 +8,7 @@
 #include "backend/builtin/print.h"
 #include "backend/builtin/input.h"
 #include "backend/builtin/alloc.h"
+#include "backend/builtin/str.h"
 
 void walk_through_nodes( FILE* file, ast_node* node ) 
 {
@@ -19,6 +20,9 @@ void walk_through_nodes( FILE* file, ast_node* node )
 
         switch (child->type)
         {
+            //
+            // Keywords
+            //
             case AstPrint: 
                 write_print( child );
                 break;
@@ -27,6 +31,13 @@ void walk_through_nodes( FILE* file, ast_node* node )
                 break;
             case AstAlloc:
                 write_alloc( child );
+                break;
+            
+            //
+            // Literals
+            //
+            case AstStringLit:
+                write_string( child );
                 break;
             default:
                 trace( "Node wasn't handled" );
