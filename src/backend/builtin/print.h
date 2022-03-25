@@ -13,7 +13,7 @@ void write_print( ast_node* node )
         case AstStringLit:
             add_string( string_node->value.string );
 
-            add_instruction( "# Print" );
+            add_comment( "Print" );
             add_instruction( "li a0, 4" );
             add_instruction( "la a1, str_%d", string_table_index - 1 );
             add_instruction( "ecall" );
@@ -21,7 +21,7 @@ void write_print( ast_node* node )
             trace( "Print: string literal '%s'", string_node->value.string );
             break;
         case AstSymbol:
-            add_instruction( "# Print" );
+            add_comment( "Print" );
             add_instruction( "li a0, 4" );
             add_instruction( "la a1, data_0" );
             add_instruction( "ecall" );
