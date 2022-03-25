@@ -1,0 +1,11 @@
+fn i32 main
+{
+    ptr u8 echo = u8[ 256 ];
+
+    print "> ";
+    input echo;
+
+    print echo;
+
+    return 0;
+}
