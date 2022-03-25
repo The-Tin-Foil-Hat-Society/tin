@@ -1,11 +1,13 @@
 #This is the make file for the tin interpreter
 tin: dir parser.o lex.o
-	@ gcc -D TIN_COMPILER -D TIN_DEBUG_OUTPUT_AST -Isrc -Igenerated -Werror -g -O0 src/*.c src/backend/*.c generated/lex.yy.c \
-	generated/parser.tab.c -o build/tin
+	@ gcc -D TIN_COMPILER -D TIN_DEBUG_OUTPUT_AST -D TIN_DEBUG_VERBOSE -Isrc -Igenerated -Werror -g -O0 src/*.c \
+	src/backend/*.c generated/lex.yy.c generated/parser.tab.c -o build/tin
 
 run: tin
-	@./build/tin ./units/hello_world.tin
-	@jupiter ./units/hello_world.tin.s
+	@./build/tin ./units/echo.tin
+	@echo "Running in jupiter"
+	@echo "\n\n\n"
+	@jupiter ./units/echo.tin.s
 
 #Generates directories to store generated files and build
 dir:
@@ -26,4 +28,4 @@ clean:
 	@rmdir generated build
 
 check_leaks: tin
-	@valgrind ./build/tin ./units/hello_world.tin --leak-check=full
+	@valgrind ./build/tin ./units/echo.tin --leak-check=full

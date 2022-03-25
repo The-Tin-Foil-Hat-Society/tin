@@ -1,36 +1,11 @@
-#include <stdarg.h>
-
 #include "codegen.h"
 #include "ast.h"
 
-//
-// Define string table
-//
-#define MAX_STRING_COUNT 1024
-char *string_table[MAX_STRING_COUNT];
-int string_table_index = 0;
+#include "backend/common.h"
 
-//
-// Define instruction table
-//
-#define MAX_INSTRUCTION_COUNT 4096
-char *instruction_table[MAX_INSTRUCTION_COUNT];
-int instruction_table_index = 0;
-
-void add_instruction( const char* fmt, ... ) 
-{
-    va_list args;
-
-    va_start( args, fmt );
-    char* instruction = malloc( 1024 );
-    vsprintf( instruction, fmt, args );
-    va_end( args );
-
-    instruction_table[instruction_table_index++] = instruction;
-}
-
-#define add_string( str ) string_table[string_table_index++] = str
-#define write_to_file( ... ) fprintf( file, __VA_ARGS__ )
+#include "backend/builtin/print.h"
+#include "backend/builtin/input.h"
+#include "backend/builtin/alloc.h"
 
 void walk_through_nodes( FILE* file, ast_node* node ) 
 {
@@ -38,21 +13,19 @@ void walk_through_nodes( FILE* file, ast_node* node )
     {
         ast_node* child = vector_get_item( node->children, i );
 
+        trace( "== Node %s ==", ast_type_names[child->type] );
+
         switch (child->type)
         {
             case AstPrint: 
-            {
-                // String is a child of this node
-                ast_node* string_node = vector_get_item( child->children, 0 );
-                add_string( string_node->value.string );
-
-                add_instruction( "# Print node\n" );
-                add_instruction( "li a0, 4\n" );
-                add_instruction( "la a1, str_%d\n", string_table_index - 1 );
-                add_instruction( "ecall\n" );
-                add_instruction( "\n" );
+                write_print( child );
                 break;
-            }
+            case AstInput:
+                write_input( child );
+                break;
+            case AstAlloc:
+                write_alloc( child );
+                break;
         }
 
         walk_through_nodes( file, child );
@@ -61,6 +34,8 @@ void walk_through_nodes( FILE* file, ast_node* node )
 
 void write_string_table( FILE* file ) 
 {
+    trace( "Writing string table" );
+
     // Write strings
     for (int i = 0; i < string_table_index; i++)
     {
@@ -71,6 +46,8 @@ void write_string_table( FILE* file )
 
 void write_instructions( FILE* file ) 
 {
+    trace( "Writing instructions" );
+
     // Write instructions
     for (int i = 0; i < instruction_table_index; i++)
     {
@@ -78,8 +55,22 @@ void write_instructions( FILE* file )
     }
 }
 
+void write_data_table( FILE* file ) 
+{
+    trace( "Writing data table" );
+
+    // Write data
+    for (int i = 0; i < data_table_index; i++)
+    {
+        write_to_file( "data_%d:\n", i );
+        write_to_file( "\t.zero %d\n", data_table[i] );
+    }
+}
+
 bool codegen_generate( module* mod, ast_node* node, FILE* file ) 
 {
+    trace( "Running assembly codegen..." );
+
     // Walk through each node so that we know what we're writing
     walk_through_nodes( file, node );
 
@@ -94,10 +85,18 @@ bool codegen_generate( module* mod, ast_node* node, FILE* file )
     write_to_file( "\n" );
 
     //
+    // Data table
+    //
+    write_to_file( ".data\n" );
+    write_data_table( file );
+    write_to_file( "\n" );
+
+    //
     // String table
     //
     write_to_file( ".rodata\n" );
     write_string_table( file );
+    write_to_file( "\n" );
 
     //
     // Text section
