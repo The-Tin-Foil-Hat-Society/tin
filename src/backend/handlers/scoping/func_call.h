@@ -8,7 +8,7 @@
 
 void write_func_call( ast_node* node ) 
 {
-    char* name = get_node_name( node );
+    char* name = get_function_name( node );
     trace( "Function call %s", name );
     add_comment( "Call function %s", name );
 
@@ -18,6 +18,6 @@ void write_func_call( ast_node* node )
      * jalr x1, x6, offset[11:0]
      */
     // TODO: Tail calls where posible
-    add_instruction( "call %s", name ); 
+    call_function( name );
     add_newline();
 }

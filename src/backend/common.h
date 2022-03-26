@@ -64,22 +64,14 @@ void add_to_instruction_table( const char* fmt, ... )
 #define compiler_error( ... ) fprintf( stderr, "Error: " __VA_ARGS__ ); \
                             exit( 1 )
 
+#define call_function( name ) add_instruction( "call %s", name )
+
 bool function_is_main( ast_node* node ) 
 {
     return strcmp( node->value.symbol->name, "main" ) == 0;
 }
 
-#ifdef TIN_DEBUG_VERBOSE
-    #define add_comment( fmt, ... ) add_to_instruction_table( "# " fmt, ##__VA_ARGS__ )
-    #define add_newline() instruction_table[instruction_table_index++] = "\n"
-    #define trace( ... ) printf( __VA_ARGS__ ); printf( "\n" )
-#else
-    #define trace( ... )
-    #define add_comment( ... )
-    #define add_newline()
-#endif // TIN_DEBUG_VERBOSE
-
-char* get_node_name( ast_node* node ) 
+char* get_function_name( ast_node* node ) 
 {
     char* name = NULL;
 
@@ -95,6 +87,11 @@ char* get_node_name( ast_node* node )
                 {
                     name = "__start";
                 }
+                else 
+                {
+                    name = malloc( strlen( name ) + 4 );
+                    sprintf( name, "fn__%s", child->value.symbol->name );
+                }
                 break;
             default:
                 break;
@@ -103,3 +100,13 @@ char* get_node_name( ast_node* node )
 
     return name;
 }
+
+#ifdef TIN_DEBUG_VERBOSE
+    #define add_comment( fmt, ... ) add_to_instruction_table( "# " fmt, ##__VA_ARGS__ )
+    #define add_newline() instruction_table[instruction_table_index++] = "\n"
+    #define trace( ... ) printf( __VA_ARGS__ ); printf( "\n" )
+#else
+    #define trace( ... )
+    #define add_comment( ... )
+    #define add_newline()
+#endif // TIN_DEBUG_VERBOSE
