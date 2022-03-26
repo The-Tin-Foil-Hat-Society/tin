@@ -8,7 +8,7 @@
 
 void write_return( ast_node* node ) 
 {
-    add_instruction( "ret" );
+    add_instruction( "nop" );
     trace( "Return" );
     add_newline();
 }

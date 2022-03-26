@@ -37,6 +37,13 @@ void write_func_call( ast_node* node )
     }
 
     trace( "Function call %s", name );
-    add_instruction( "call %s", name );
+
+    /*
+     * 'call' pseudoinstruction is equivalent to:
+     * auipc x6, offset[31:12]
+     * jalr x1, x6, offset[11:0]
+     */
+    // TODO: Tail calls where posible
+    add_instruction( "call %s", name ); 
     add_newline();
 }

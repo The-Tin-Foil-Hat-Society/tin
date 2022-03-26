@@ -38,7 +38,19 @@ void add_to_instruction_table( const char* fmt, ... )
 }
 
 #define add_instruction( fmt, ... ) add_to_instruction_table( "\t" fmt, ##__VA_ARGS__ )
-#define add_function( name ) add_to_instruction_table( "%s:", name )
+
+#define start_function( name ) add_to_instruction_table( "%s:", name ); \
+                               add_instruction( "addi sp, sp, -16" ); \
+                               add_instruction( "sw ra, 12(sp)" ); \
+                               add_instruction( "sw s0, 8(sp)" ); \
+                               add_instruction( "addi s0, sp, 16" );
+
+#define end_function() add_instruction( "mv a0, a5" ); \
+                       add_instruction( "lw ra, 12(sp)" ); \
+                       add_instruction( "lw s0, 8(sp)" ); \
+                       add_instruction( "addi sp, sp, 16" ); \
+                       add_instruction( "jr ra" )
+
 #define add_string( str ) string_table[string_table_index++] = str
 #define add_data( size ) data_table[data_table_index++] = size
 #define write_to_file( ... ) fprintf( file, __VA_ARGS__ )
@@ -47,11 +59,11 @@ void add_to_instruction_table( const char* fmt, ... )
                             exit( 1 )
 
 #ifdef TIN_DEBUG_VERBOSE
-#define add_comment( fmt, ... ) add_to_instruction_table( "# " fmt, ##__VA_ARGS__ )
-#define add_newline() instruction_table[instruction_table_index++] = "\n"
-#define trace( ... ) printf( __VA_ARGS__ ); printf( "\n" )
+    #define add_comment( fmt, ... ) add_to_instruction_table( "# " fmt, ##__VA_ARGS__ )
+    #define add_newline() instruction_table[instruction_table_index++] = "\n"
+    #define trace( ... ) printf( __VA_ARGS__ ); printf( "\n" )
 #else
-#define trace( ... )
-#define add_comment( ... )
-#define add_newline()
-#endif // TIN_COMPILE_VERBOSE
+    #define trace( ... )
+    #define add_comment( ... )
+    #define add_newline()
+#endif // TIN_DEBUG_VERBOSE

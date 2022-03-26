@@ -39,5 +39,5 @@ void write_func( ast_node* node )
     }
 
     trace( "Writing function %s", name );
-    add_function( name );
+    start_function( name );
 }
