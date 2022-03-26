@@ -11,6 +11,8 @@
 
 #include "backend/handlers/literals/str.h"
 
+#include "backend/handlers/scoping/func.h"
+
 void walk_through_nodes( FILE* file, ast_node* node ) 
 {
     for (int i = 0; i < node->children->size; i++)
@@ -40,6 +42,13 @@ void walk_through_nodes( FILE* file, ast_node* node )
             case AstStringLit:
                 write_string( child );
                 break;
+
+            //
+            // Scoping
+            //
+            case AstFunction:
+                write_func( child );
+                break;
             default:
                 trace( "Node wasn't handled" );
                 break;
@@ -68,7 +77,7 @@ void write_instructions( FILE* file )
     // Write instructions
     for (int i = 0; i < instruction_table_index; i++)
     {
-        write_to_file( "\t%s", instruction_table[i] );
+        write_to_file( "%s", instruction_table[i] );
     }
 }
 
@@ -127,9 +136,8 @@ bool codegen_generate( module* mod, ast_node* node, FILE* file )
     write_to_file( "\n" );
 
     //
-    // Program entry point
+    // Instructions
     //
-    write_to_file( "__start:\n" );
     write_instructions( file );
 
     //

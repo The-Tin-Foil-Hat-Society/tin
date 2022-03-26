@@ -11,7 +11,7 @@ void write_print( ast_node* node )
     ast_node* child_node = vector_get_item( node->children, 0 );
 
     add_comment( "Print" );
-    
+
     add_instruction( "li a0, %d", PrintString );
     
     switch( child_node->type ) {
@@ -24,7 +24,7 @@ void write_print( ast_node* node )
             trace( "Print: symbol data_0" );
             break;
         default:
-            trace( "Print: unknown; should throw error here?" );
+            compiler_error( "Tried to print unrecognised type" );
             break;
     }
 

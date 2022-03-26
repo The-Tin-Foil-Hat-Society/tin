@@ -1,0 +1,4 @@
+fn boolean strcmp( ptr void a, ptr void b ) 
+{
+    return true;
+}

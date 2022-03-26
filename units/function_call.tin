@@ -1,0 +1,15 @@
+fn i32 bar
+{
+    print "bar\n";
+}
+
+fn i32 foo
+{
+    print "foo\n";
+    bar();
+}
+
+fn i32 main
+{
+    foo();
+}

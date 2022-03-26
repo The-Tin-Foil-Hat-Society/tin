@@ -22,6 +22,7 @@ void write_alloc( ast_node* node )
                 size = child->value.integer;
                 break;
             default:
+                compiler_error( "Tried to alloc unrecognised type" );
                 break;
         }
     }

@@ -23,7 +23,7 @@ int instruction_table_index = 0;
 int data_table[MAX_DATA_COUNT];
 int data_table_index = 0;
 
-void add_instruction( const char* fmt, ... ) 
+void add_to_instruction_table( const char* fmt, ... ) 
 {
     va_list args;
 
@@ -37,12 +37,17 @@ void add_instruction( const char* fmt, ... )
     instruction_table[instruction_table_index++] = instruction;
 }
 
+#define add_instruction( fmt, ... ) add_to_instruction_table( "\t" fmt, ##__VA_ARGS__ )
+#define add_function( name ) add_to_instruction_table( "%s:", name )
 #define add_string( str ) string_table[string_table_index++] = str
 #define add_data( size ) data_table[data_table_index++] = size
 #define write_to_file( ... ) fprintf( file, __VA_ARGS__ )
 
+#define compiler_error( ... ) fprintf( stderr, "Error: " __VA_ARGS__ ); \
+                            exit( 1 )
+
 #ifdef TIN_DEBUG_VERBOSE
-#define add_comment( fmt, ... ) add_instruction( "# " fmt, ##__VA_ARGS__ )
+#define add_comment( fmt, ... ) add_to_instruction_table( "# " fmt, ##__VA_ARGS__ )
 #define add_newline() instruction_table[instruction_table_index++] = "\n"
 #define trace( ... ) printf( __VA_ARGS__ ); printf( "\n" )
 #else
