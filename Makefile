@@ -1,7 +1,7 @@
 #This is the make file for the tin interpreter
 
 #File to compile:
-file = ./units/recursion.tin
+file = ./units/your_name.tin
 
 tin: dir parser.o lex.o
 	@ gcc -D TIN_COMPILER -D TIN_DEBUG_OUTPUT_AST -D TIN_DEBUG_VERBOSE -Isrc -Igenerated -Werror -g -O0 src/*.c \

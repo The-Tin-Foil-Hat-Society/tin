@@ -1,0 +1,31 @@
+/*
+ * Get the user's name from their input
+ */
+fn ptr void get_user_name
+{
+    ptr void user_name;
+    alloc user_name 64;
+
+    // Get the user's name
+    print "Enter your name: ";
+    input user_name;
+
+    return user_name;
+}
+
+/*
+ * Echo back the user's name!
+ */
+fn void display_user_name( ptr void user_name )
+{
+    print "Hello, ";
+    print user_name;
+    print "!\n";
+}
+
+fn i32 main
+{
+    ptr void user_name;
+    user_name = get_user_name();
+    display_user_name( user_name );
+}
