@@ -26,9 +26,13 @@ fn i32 main
     {
         result = add(a, choice);
     }
-    else
+    else if (choice < 3)
     {
         result = add(b, choice);
+    }
+    else
+    {
+        result = add(7, choice);
     }
 
     print result; // inbuilt keyword

@@ -38,6 +38,10 @@ void yyerror (yyscan_t* locp, module* mod, const char* msg);
 %left EXP
 %left BRACKET_L
 
+/* get rid of s/r conflict for dangling else's */
+%precedence FAKE_ELSE
+%precedence ELSE
+
 %start program
 
 %%
@@ -124,10 +128,9 @@ if
     : IF    { $$ = ast_new(AstIf); $$->src_line = module_get_src_line(mod, yyget_lineno(scanner)); }
     ; /* make the node here so we can get the first source line */
 
-/* TODO: else-if's, my attempts resulted in s/r conflicts for some reason */
 if_statement
-    : if BRACKET_L condition BRACKET_R scope    { $$ = $1; ast_add_child($$, $3); ast_add_child($$, $5); }
-	| if_statement ELSE scope                   { $$ = $1; ast_add_child($1, $3); }
+    : if BRACKET_L condition BRACKET_R statement ELSE statement  { $$ = $1; ast_add_child($$, $3); ast_add_child($$, $5); ast_add_child($$, $7); }
+	| if BRACKET_L condition BRACKET_R statement %prec FAKE_ELSE { $$ = $1; ast_add_child($1, $3); ast_add_child($$, $5); }
     ;
 
 while
@@ -154,6 +157,7 @@ statement
     | if_statement              { $$ = $1; }
     | while_statement           { $$ = $1; }
     | jump_statement            { $$ = $1; }
+    | scope                     { $$ = $1; }
     | ALLOC identifier expression SEMI_COLON    { $$ = ast_new(AstAlloc); ast_add_child($$, $2); ast_add_child($$, $3); }
     | ASM STRING SEMI_COLON         { $$ = ast_new(AstAsm);  $$->value.string = strdup($2->value.string); ast_free($2); }
     | FREE identifier SEMI_COLON    { $$ = ast_new(AstFree); ast_add_child($$, $2); }
