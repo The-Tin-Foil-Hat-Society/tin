@@ -125,7 +125,7 @@ int build_symbols(module* mod, ast_node* node)
             symbol* right_sym = right_node->value.symbol;
             if (node->type == AstAlloc)
             {
-                if (strcmp("u32", right_sym->data_type) != 0)
+                if (!is_valid("u32", right_node->value.integer))
                 {
                     printf("%s\n", ast_find_closest_src_line(node));
                     printf("error: size must be an integer type\n");
@@ -134,13 +134,13 @@ int build_symbols(module* mod, ast_node* node)
             }
             else 
             {
-                if (strcmp(left_sym->data_type, right_sym->data_type) != 0)
+                if (!is_valid("u16", right_node->value.integer))
                 {
                     printf("%s\n", ast_find_closest_src_line(node));
                     printf("error: %s has type %s while %s has type %s\n", left_sym->name, left_sym->data_type, right_sym->name, right_sym->data_type);
                     error_counter += 1;
                 }
-                else if (left_sym->pointer_level != right_sym->pointer_level)
+                else if (is_valid("u8", right_node->value.integer))
                 {
                     printf("%s\n", ast_find_closest_src_line(node));
                     printf("warning: %s is a level %ld pointer while %s is a level %ld pointer\n", left_sym->name, left_sym->pointer_level, right_sym->name, right_sym->pointer_level);
@@ -158,15 +158,23 @@ int build_symbols(module* mod, ast_node* node)
                     error_counter += 1;
                 }   
             }
-            else
+            else if (!is_valid("i32", right_node->value.integer))
             {
-                // TODO: other integer types
-                if (strcmp(left_sym->data_type, "i32") != 0 || left_sym->pointer_level != 0 || right_node->value.integer < INT32_MIN || right_node->value.integer > INT32_MAX)
-                {
-                    printf("%s\n", ast_find_closest_src_line(node));
-                    printf("error: value does not fit the data type of variable %s\n", left_sym->name);
-                    error_counter += 1;
-                }
+                printf("%s\n", ast_find_closest_src_line(node));
+                printf("error: value does not fit the data type of variable %s\n", left_sym->name);
+                error_counter += 1;
+            }
+            else if (!is_valid("i16", right_node->value.integer))
+            {
+                printf("%s\n", ast_find_closest_src_line(node));
+                 printf("error: value does not fit the data type of variable %s\n", left_sym->name);
+                error_counter += 1;
+            }
+            else if (!is_valid("i8", right_node->value.integer))
+            {
+                printf("%s\n", ast_find_closest_src_line(node));
+                printf("error: value does not fit the data type of variable %s\n", left_sym->name);
+                error_counter += 1;
             }
             
         }

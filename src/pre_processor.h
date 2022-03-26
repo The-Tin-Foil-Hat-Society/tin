@@ -2,6 +2,7 @@
 
 #include "module.h"
 #include "ast.h"
+#include "typechecking.h"
 #include <stdbool.h>
 
 int build_symbols(module* mod, ast_node* node);
