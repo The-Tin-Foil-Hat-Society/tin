@@ -54,6 +54,8 @@ comment		[/][*][^*]*[*]+([^*/][^*]*[*]+)*[/]
 ">="                    { return GE;    }
 "=="                    { return EQ;    }
 "!="                    { return NE;    }
+"&&"                    { return AND;   }
+"||"                    { return OR;    }
 "&"                    	{ return REF; 	}
 
 ";"                     { return SEMI_COLON;    }

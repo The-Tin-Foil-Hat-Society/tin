@@ -29,7 +29,7 @@ void yyerror (yyscan_t* locp, module* mod, const char* msg);
 %token IDENTIFIER INTEGER STRING
 %token ALLOC BREAK CONT FREE FUNC IF ELSE INPUT PRINT RETURN WHILE
 %token I8 U8 I16 U16 I32 U32 VOID PTR
-%token IS ADD SUB MUL DIV EXP MOD LT GT LE GE EQ NE REF
+%token IS ADD SUB MUL DIV EXP MOD LT GT LE GE EQ NE AND OR REF
 %token SEMI_COLON COLON COMMA BRACKET_L BRACKET_R BRACE_L BRACE_R SQUARE_BRACKET_L SQUARE_BRACKET_R 
 
 /* operator precedence */
@@ -92,18 +92,32 @@ declaration
     : definition IS expression { $$ = ast_new(AstDeclaration); ast_add_child($$, $1); ast_add_child($$, $3); }
     ;
 
-comparison_expression 
-    : expression LT expression  { $$ = ast_new(AstLessThan); ast_add_child($$, $1); ast_add_child($$, $3); }
-    | expression GT expression  { $$ = ast_new(AstGreaterThan); ast_add_child($$, $1); ast_add_child($$, $3); }
-    | expression LE expression  { $$ = ast_new(AstLessThanOrEqual); ast_add_child($$, $1); ast_add_child($$, $3); }
-    | expression GE expression  { $$ = ast_new(AstGreaterThanOrEqual); ast_add_child($$, $1); ast_add_child($$, $3); }
-    | expression EQ expression  { $$ = ast_new(AstEqual); ast_add_child($$, $1); ast_add_child($$, $3); }
-    | expression NE expression  { $$ = ast_new(AstNotEqual); ast_add_child($$, $1); ast_add_child($$, $3); }
+relational_expression
+    : expression  { $$ = $1; }
+    | relational_expression LT expression  { $$ = ast_new(AstLessThan); ast_add_child($$, $1); ast_add_child($$, $3); }
+    | relational_expression GT expression  { $$ = ast_new(AstGreaterThan); ast_add_child($$, $1); ast_add_child($$, $3); }
+    | relational_expression LE expression  { $$ = ast_new(AstLessThanOrEqual); ast_add_child($$, $1); ast_add_child($$, $3); }
+    | relational_expression GE expression  { $$ = ast_new(AstGreaterThanOrEqual); ast_add_child($$, $1); ast_add_child($$, $3); }
     ;
 
-/* TODO: multiple comparisons/conditions in one */
+equality_expression
+    : relational_expression  { $$ = $1; }
+    | equality_expression EQ relational_expression  { $$ = ast_new(AstEqual); ast_add_child($$, $1); ast_add_child($$, $3); }
+    | equality_expression NE relational_expression  { $$ = ast_new(AstNotEqual); ast_add_child($$, $1); ast_add_child($$, $3); }
+    ;
+
+logical_and_expression
+    : equality_expression  { $$ = $1; }
+    | logical_and_expression AND equality_expression  { $$ = ast_new(AstAnd); ast_add_child($$, $1); ast_add_child($$, $3); }
+    ;
+
+logical_or_expression 
+    : logical_and_expression  { $$ = $1; }
+    | logical_or_expression OR logical_and_expression  { $$ = ast_new(AstOr); ast_add_child($$, $1); ast_add_child($$, $3); }
+    ;
+
 condition
-    : comparison_expression { $$ = $1; }
+    : logical_or_expression  { $$ = $1; }
     ;
 
 if
