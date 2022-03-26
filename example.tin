@@ -10,6 +10,8 @@ fn i32 add(i32 x, i32 y)
 
 fn i32 main
 {
+    asm "ld t0,28(s0)";
+
     ptr void example_ptr;
     alloc example_ptr 32;
 

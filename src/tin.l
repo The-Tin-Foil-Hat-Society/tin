@@ -30,6 +30,7 @@ comment		[/][*][^*]*[*]+([^*/][^*]*[*]+)*[/]
 "ptr"                   { return PTR;   }
 
 "alloc"                 { return ALLOC; }   /* match keywords */
+"asm"                   { return ASM;   }
 "break"                 { return BREAK; }
 "continue"              { return CONT;  }
 "free"                  { return FREE;  }

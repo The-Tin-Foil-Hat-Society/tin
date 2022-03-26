@@ -23,6 +23,7 @@ enum ast_node_type
     AstAlloc,
     AstAnd,
     AstArgumentList,
+    AstAsm,
     AstAssignment,
     AstBlock,
     AstBreak,
@@ -61,7 +62,7 @@ enum ast_node_type
 };
 
 // for printing purposes
-static char ast_type_names[44][32] = { "AstRoot","AstIdentifier","AstIntegerLit","AstStringLit","AstAdd","AstAlloc","AstAnd","AstArgumentList","AstAssignment","AstBlock","AstBreak","AstContinue","AstDataType","AstDeclaration","AstDefinition","AstDefinitionList","AstDiv","AstEqual","AstExp","AstFree","AstFunction","AstFunctionCall","AstGoto","AstGreaterThan","AstGreaterThanOrEqual","AstIdentifierDereference","AstIdentifierIndex","AstIdentifierReference","AstIf","AstInput","AstLessThan","AstLessThanOrEqual","AstMod","AstMul","AstNodeList","AstNotEqual","AstOr","AstPrint","AstReturn","AstScope","AstSub","AstSymbol","AstWhile" };
+static char ast_type_names[45][32] = { "AstRoot","AstIdentifier","AstIntegerLit","AstStringLit","AstAdd","AstAlloc","AstAnd","AstArgumentList","AstAsm","AstAssignment","AstBlock","AstBreak","AstContinue","AstDataType","AstDeclaration","AstDefinition","AstDefinitionList","AstDiv","AstEqual","AstExp","AstFree","AstFunction","AstFunctionCall","AstGoto","AstGreaterThan","AstGreaterThanOrEqual","AstIdentifierDereference","AstIdentifierIndex","AstIdentifierReference","AstIf","AstInput","AstLessThan","AstLessThanOrEqual","AstMod","AstMul","AstNodeList","AstNotEqual","AstOr","AstPrint","AstReturn","AstScope","AstSub","AstSymbol","AstWhile" };
 
 typedef struct ast_node ast_node; 
 struct ast_node
@@ -73,10 +74,10 @@ struct ast_node
 
     union 
     {
-        int64_t integer;        // AstInteger
-        char* string;           // AstDataType, AstIdentifier, AstString
-        symbol* symbol;         // AstSymbol
-        hashtable* symbol_table;   // AstRoot, AstScope
+        int64_t integer;         // AstInteger
+        char* string;            // AstAsm, AstDataType, AstIdentifier, AstString
+        symbol* symbol;          // AstSymbol
+        hashtable* symbol_table; // AstRoot, AstScope
     } value; 
 
     size_t pointer_level;       // AstDataType

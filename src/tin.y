@@ -27,7 +27,7 @@ void yyerror (yyscan_t* locp, module* mod, const char* msg);
 %parse-param {void* scanner}{module* mod}
 
 %token IDENTIFIER INTEGER STRING
-%token ALLOC BREAK CONT FREE FUNC IF ELSE INPUT PRINT RETURN WHILE
+%token ALLOC ASM BREAK CONT FREE FUNC IF ELSE INPUT PRINT RETURN WHILE
 %token I8 U8 I16 U16 I32 U32 VOID PTR
 %token IS ADD SUB MUL DIV EXP MOD LT GT LE GE EQ NE AND OR REF
 %token SEMI_COLON COLON COMMA BRACKET_L BRACKET_R BRACE_L BRACE_R SQUARE_BRACKET_L SQUARE_BRACKET_R 
@@ -155,6 +155,7 @@ statement
     | while_statement           { $$ = $1; }
     | jump_statement            { $$ = $1; }
     | ALLOC identifier expression SEMI_COLON    { $$ = ast_new(AstAlloc); ast_add_child($$, $2); ast_add_child($$, $3); }
+    | ASM STRING SEMI_COLON         { $$ = ast_new(AstAsm);  $$->value.string = strdup($2->value.string); ast_free($2); }
     | FREE identifier SEMI_COLON    { $$ = ast_new(AstFree); ast_add_child($$, $2); }
     | INPUT identifier SEMI_COLON   { $$ = ast_new(AstInput); ast_add_child($$, $2); }
     | PRINT expression SEMI_COLON   { $$ = ast_new(AstPrint); ast_add_child($$, $2); }
