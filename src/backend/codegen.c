@@ -12,6 +12,8 @@
 #include "backend/handlers/literals/str.h"
 
 #include "backend/handlers/scoping/func.h"
+#include "backend/handlers/scoping/func_call.h"
+#include "backend/handlers/scoping/return.h"
 
 void walk_through_nodes( FILE* file, ast_node* node ) 
 {
@@ -48,6 +50,12 @@ void walk_through_nodes( FILE* file, ast_node* node )
             //
             case AstFunction:
                 write_func( child );
+                break;
+            case AstFunctionCall:
+                write_func_call( child );
+                break;
+            case AstReturn:
+                write_return( child );
                 break;
             default:
                 trace( "Node wasn't handled" );
