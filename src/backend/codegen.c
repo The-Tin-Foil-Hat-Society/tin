@@ -7,6 +7,7 @@
 
 #include "backend/handlers/keywords/print.h"
 #include "backend/handlers/keywords/input.h"
+#include "backend/handlers/keywords/asm.h"
 #include "backend/handlers/keywords/alloc.h"
 
 #include "backend/handlers/literals/str.h"
@@ -36,6 +37,9 @@ void walk_through_nodes( FILE* file, ast_node* node )
                 break;
             case AstAlloc:
                 write_alloc( child );
+                break;
+            case AstAsm:
+                write_asm( child );
                 break;
             
             //

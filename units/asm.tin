@@ -1,0 +1,18 @@
+fn i32 main
+{
+    print "Integer: ";
+
+	// Input integer into register t3
+	asm "li a0, 5";
+	asm "ecall";
+	asm "mv t3, a0";
+
+    print "Hex: ";
+
+	// Print hex
+	asm "li a0, 22";
+	asm "mv a1, t3";
+	asm "ecall";
+
+    return 0;
+}
