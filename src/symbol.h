@@ -5,6 +5,7 @@
 #include <stddef.h>
 #include <stdio.h>
 
+#include "hashtable.h"
 #include "vector.h"
 
 typedef struct
@@ -27,10 +28,7 @@ void symbol_print(symbol* sym);
 void symbol_print_to_file(symbol* sym, FILE* file);
 
 
-// TODO: reimplement as a hashtable instead of a vector
-symbol* symtable_find_symbol(vector* table, char* name);
-
 // prints a json representation of the symbol table to the console
-void symtable_print(vector* table);
+void symtable_print(hashtable* table);
 // prints a json representation of the symbol table to the given file
-void symtable_print_to_file(vector* table, FILE* file);
+void symtable_print_to_file(hashtable* table, FILE* file);

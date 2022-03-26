@@ -61,37 +61,23 @@ void symbol_print_to_file(symbol* sym, FILE* file)
 }
 
 
-symbol* symtable_find_symbol(vector* table, char* name)
-{
-    symbol* found = 0;
-    for (size_t i = 0; i < table->size; i++)
-    {
-        if (strcmp(name, ((symbol*)vector_get_item(table, i))->name) == 0)
-        {
-            found = vector_get_item(table, i);
-            break;
-        }
-    }
-    return found;
-}
-
-void symtable_print(vector* table)
+void symtable_print(hashtable* table)
 {
     symtable_print_to_file(table, stdout);
 }
 
-void symtable_print_to_file(vector* table, FILE* file)
+void symtable_print_to_file(hashtable* table, FILE* file)
 {
     fprintf(file, "[");
 
-    for (int i = 0; i < table->size; i++)
+    for (int i = 0; i < table->capacity; i++)
     {
-        symbol_print_to_file(vector_get_item(table, i), file);
-        if (i < table->size - 1) // don't print a comma after the last symbol
+        if (table->keys[i] != 0)
         {
+            symbol_print_to_file(table->items[i], file);
             fprintf(file, ",");
         }
     }
 
-    fprintf(file, "]");
+    fprintf(file, "{}]");
 }

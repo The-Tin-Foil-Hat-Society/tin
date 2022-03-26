@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "hashtable.h"
 #include "symbol.h"
 #include "vector.h"
 
@@ -73,7 +74,7 @@ struct ast_node
         int64_t integer;        // AstInteger
         char* string;           // AstDataType, AstIdentifier, AstString
         symbol* symbol;         // AstSymbol
-        vector* symbol_table;   // AstRoot, AstScope
+        hashtable* symbol_table;   // AstRoot, AstScope
     } value; 
 
     size_t pointer_level;       // AstDataType
@@ -91,7 +92,7 @@ ast_node* ast_get_child(ast_node* node, size_t index);
 size_t ast_get_child_index(ast_node* node, ast_node* child);
 void ast_delete_child(ast_node* node, ast_node* child);
 
-vector* ast_get_closest_symtable(ast_node* node);
+hashtable* ast_get_closest_symtable(ast_node* node);
 symbol* ast_find_symbol(ast_node* node, char* name);
 
 char* ast_find_closest_src_line(ast_node* node);
