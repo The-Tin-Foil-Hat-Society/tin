@@ -15,3 +15,4 @@ This is a team project for University which involves us designing a simple progr
 - allow for programs with multiple files/modules
 - write new example code and make sure it's parses
 - check for other TODO's in the code ( CTRL+SHIFT+F )
+- Extra `asm` instruction for easy inline assembly code, e.g. `asm "ld t0, 32(s0)"`
