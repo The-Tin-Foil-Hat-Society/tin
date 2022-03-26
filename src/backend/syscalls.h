@@ -1,5 +1,8 @@
 #pragma once
 
+//
+// https://jupitersim.gitbook.io/jupiter/assembler/ecalls
+//
 enum sys_calls
 {
     PrintInt        = 1,

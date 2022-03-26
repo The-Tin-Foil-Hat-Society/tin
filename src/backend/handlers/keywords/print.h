@@ -11,6 +11,7 @@ void write_print( ast_node* node )
     ast_node* child_node = vector_get_item( node->children, 0 );
 
     add_comment( "Print" );
+    
     add_instruction( "li a0, %d", PrintString );
     
     switch( child_node->type ) {

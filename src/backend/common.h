@@ -37,8 +37,6 @@ void add_instruction( const char* fmt, ... )
     instruction_table[instruction_table_index++] = instruction;
 }
 
-
-
 #define add_string( str ) string_table[string_table_index++] = str
 #define add_data( size ) data_table[data_table_index++] = size
 #define write_to_file( ... ) fprintf( file, __VA_ARGS__ )
