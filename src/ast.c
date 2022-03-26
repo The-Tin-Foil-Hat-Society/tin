@@ -30,7 +30,7 @@ void ast_free(ast_node* node)
     }
     vector_free(node->children);
     
-    if (node->type == AstIdentifier || node->type == AstStringLit || node->type == AstDataType)
+    if (node->type == AstAsm || node->type == AstDataType || node->type == AstIdentifier || node->type == AstStringLit)
     {
         free(node->value.string);
     }
@@ -66,7 +66,7 @@ ast_node* ast_copy(ast_node* node)
     copy->type = node->type;
     copy->value = node->value;
 
-    if (node->type == AstIdentifier || node->type == AstStringLit || node->type == AstDataType)
+    if (node->type == AstAsm || node->type == AstDataType || node->type == AstIdentifier || node->type == AstStringLit)
     {
         copy->value.string = strdup(node->value.string);
     }
@@ -192,7 +192,7 @@ void ast_print_to_file(ast_node* node, FILE* file, bool recursive)
         fprintf(file, ",\"src_line\": \"%s\"", node->src_line);
     }
 
-    if (node->type == AstIdentifier || node->type == AstStringLit || node->type == AstDataType)
+    if (node->type == AstAsm || node->type == AstDataType || node->type == AstIdentifier || node->type == AstStringLit)
     {
         fprintf(file, ",\"str_value\": \"%s\"", node->value.string);
     }
