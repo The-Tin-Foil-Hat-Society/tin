@@ -9,7 +9,7 @@ dir:
 
 #Generates parserfiles
 parser.o: src/tin.y
-	bison -d --report all -b generated/parser src/tin.y
+	bison -d -b generated/parser src/tin.y
 
 #Generates lexer files
 lex.o: src/tin.l
