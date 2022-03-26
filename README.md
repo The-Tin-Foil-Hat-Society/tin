@@ -8,10 +8,11 @@ This is a team project for University which involves us designing a simple progr
 - gcc
 
 ## TODO
-- write unit tests
-- optimisation, i.e. precompute an expression of constants to a single constant and etc, check what optimisation techniques other compilers use
-- check for memory leaks in valgrind with `--leak-check=full`
-- implement different sized data types, currently we are treating all integer types the same
-- allow for programs with multiple files/modules
-- write new example code and make sure it's parses
-- check for other TODO's in the code ( CTRL+SHIFT+F )
+- [ ] write unit tests
+- [ ] optimisation, i.e. precompute an expression of constants to a single constant and etc, check what optimisation techniques other compilers use
+- [ ] check for memory leaks in valgrind with `--leak-check=full`
+- [ ] implement different sized data types, currently we are treating all integer types the same
+- [ ] allow for programs with multiple files/modules
+- [ ] write new example code and make sure it's parses
+- [ ] check for other TODO's in the code ( CTRL+SHIFT+F )
+- [x] Extra `asm` instruction for easy inline assembly code, e.g. `asm "ld t0, 32(s0)"`

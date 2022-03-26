@@ -10,6 +10,8 @@ fn i32 add(i32 x, i32 y)
 
 fn i32 main
 {
+    asm "ld t0,28(s0)";
+
     ptr void example_ptr;
     alloc example_ptr 32;
 
@@ -24,9 +26,13 @@ fn i32 main
     {
         result = add(a, choice);
     }
-    else
+    else if (choice < 3)
     {
         result = add(b, choice);
+    }
+    else
+    {
+        result = add(7, choice);
     }
 
     print result; // inbuilt keyword
@@ -40,14 +46,17 @@ fn i32 main
 /*
     - Rust style data types
     - New inbuilt keywords instead of functions:
-        - input [variable name];
-            Initialises the variable by immediately asking the user to input its value.
-        - print [variable name];
-            Outputs the value of the variable
         - alloc [pointer variable name] [n];
             Stores a pointer to n bytes in memory
+        - asm   [string];
+            Passes the given string directly to the backend, treated as assembly code.
         - free  [pointer variable name];
             Frees an alloc'd pointer
+        - input [variable name];
+            Initialises the variable by immediately asking the user to input its value.
+        - print [string]
+        - print [variable name];
+            Outputs the value of the variable
         Different implementations are picked at compile time depending on the data type. i.e. string or integer and the target (jupiter/linux/freertos)
         If a feature is not possible on the selected target such as embedded hardware, error out.
 */
