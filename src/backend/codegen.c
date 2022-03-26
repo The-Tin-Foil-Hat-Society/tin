@@ -11,6 +11,7 @@
 #include "backend/handlers/keywords/alloc.h"
 
 #include "backend/handlers/literals/str.h"
+#include "backend/handlers/literals/i32.h"
 
 #include "backend/handlers/scoping/func.h"
 #include "backend/handlers/scoping/func_call.h"
@@ -47,6 +48,9 @@ void walk_through_nodes( FILE* file, ast_node* node )
             //
             case AstStringLit:
                 write_string( child );
+                break;
+            case AstIntegerLit:
+                write_i32( child );
                 break;
 
             //
@@ -106,8 +110,7 @@ void write_data_table( FILE* file )
     // Write data
     for (int i = 0; i < data_table_index; i++)
     {
-        write_to_file( "data_%d:\n", i );
-        write_to_file( "\t.zero %d\n", data_table[i] );
+        write_to_file( "%s", data_table[i] );
     }
 }
 

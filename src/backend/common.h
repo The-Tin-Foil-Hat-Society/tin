@@ -20,7 +20,7 @@ int instruction_table_index = 0;
 // Define data table
 //
 #define MAX_DATA_COUNT 4096
-int data_table[MAX_DATA_COUNT];
+char *data_table[MAX_INSTRUCTION_COUNT];
 int data_table_index = 0;
 
 void add_to_instruction_table( const char* fmt, ... ) 
@@ -58,7 +58,7 @@ void add_to_instruction_table( const char* fmt, ... )
                        add_instruction( "jr ra" )
 
 #define add_string( str ) string_table[string_table_index++] = str
-#define add_data( size ) data_table[data_table_index++] = size
+#define add_data( ... ) data_table[data_table_index++] = __VA_ARGS__
 #define write_to_file( ... ) fprintf( file, __VA_ARGS__ )
 
 #define compiler_error( ... ) fprintf( stderr, "Error: " __VA_ARGS__ ); \

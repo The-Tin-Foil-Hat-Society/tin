@@ -1,10 +1,11 @@
 #This is the make file for the tin interpreter
 
 #File to compile:
-file = ./units/asm.tin
+file = ./units/math.tin
+flags = -D TIN_COMPILER -D TIN_DEBUG_OUTPUT_AST -D TIN_DEBUG_VERBOSE
 
 tin: dir parser.o lex.o
-	@ gcc -D TIN_COMPILER -D TIN_DEBUG_OUTPUT_AST -D TIN_DEBUG_VERBOSE -Isrc -Igenerated -Werror -g -O0 src/*.c \
+	@ gcc $(flags) -Isrc -Igenerated -Werror -g -O0 src/*.c \
 	src/backend/*.c generated/lex.yy.c generated/parser.tab.c -o build/tin
 
 run: tin

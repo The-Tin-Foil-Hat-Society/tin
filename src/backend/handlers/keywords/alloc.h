@@ -29,5 +29,5 @@ void write_alloc( ast_node* node )
 
     trace( "Alloc %s %zu", name, size );
     
-    add_data( size );
+    add_data( "data_0: .zero 256" );
 }
