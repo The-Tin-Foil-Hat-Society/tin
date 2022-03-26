@@ -16,7 +16,7 @@ ast_node* ast_new(enum ast_node_type type)
     
     if (node->type == AstRoot || node->type == AstScope)
     {
-        node->value.symbol_table = vector_new();
+        node->value.symbol_table = hashtable_new();
     }
 
     return node;
@@ -36,12 +36,15 @@ void ast_free(ast_node* node)
     }
     if (node->type == AstRoot || node->type == AstScope)
     {
-        for (size_t i = 0; i < node->value.symbol_table->size; i++)
+        for (size_t i = 0; i < node->value.symbol_table->capacity; i++)
         {
-            symbol_free(vector_get_item(node->value.symbol_table, i));
+            if (node->value.symbol_table->keys[i] != 0)
+            {
+                symbol_free(node->value.symbol_table->items[i]);
+            }
         }
 
-        vector_free(node->value.symbol_table);
+        hashtable_free(node->value.symbol_table);
     }
 
     // don't free symbols in symbol nodes since they're just references to the symbol table !!
@@ -121,9 +124,9 @@ void ast_delete_child(ast_node* node, ast_node* child)
     ast_free(child);
 }
 
-vector* ast_get_closest_symtable(ast_node* node)
+hashtable* ast_get_closest_symtable(ast_node* node)
 {
-    vector* table = 0;
+    hashtable* table = 0;
 
     // traverse up the tree and check each symbol table for the given identifier
     while (table == 0 && node != 0)
@@ -154,7 +157,7 @@ symbol* ast_find_symbol(ast_node* node, char* name)
     {
         if (node->type == AstRoot || node->type == AstScope)
         {
-            sym = symtable_find_symbol(node->value.symbol_table, name);
+            sym = (symbol*)hashtable_get_item(node->value.symbol_table, name);
         }
 
         node = node->parent;

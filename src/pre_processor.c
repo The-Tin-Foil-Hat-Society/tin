@@ -26,14 +26,14 @@ int build_symbols(module* mod, ast_node* node)
         bool is_function_argument_identifier = node->parent->type == AstDefinition && node->parent->parent != 0 && node->parent->parent->type == AstDefinitionList && node->parent->parent->parent->type == AstFunction;
         bool is_being_assigned_to = (node->parent->type == AstAlloc || node->parent->type == AstDefinition || node->parent->type == AstInput || (node->parent->type == AstAssignment && index_in_parent == 0));
 
-        vector* table;
+        hashtable* table;
         symbol* sym;
 
         if (is_function_argument_identifier)
         {
             table = ast_get_child(node->parent->parent->parent, 2)->value.symbol_table; // scope should always be the 3rd child as per the grammar if there's also a definition list
             // for definitions for function args, make sure they're in the function's scope and not outside it
-            sym = symtable_find_symbol(table, node->value.string);
+            sym = hashtable_get_item(table, node->value.string);
         }
         else
         {
@@ -61,7 +61,7 @@ int build_symbols(module* mod, ast_node* node)
                 sym->is_initialised = true; // if its a function argument, assume it's already initialized. actually check for that during function calls not in function definitions
             }
             
-            vector_add_item(table, sym);
+            hashtable_set_item(table, node->value.string, sym);
         }
         else if (sym == 0)
         {

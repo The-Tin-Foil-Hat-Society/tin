@@ -87,7 +87,7 @@ size_t hashtable_find_slot(hashtable* table, char* key)
 
     while(table->keys[i] != 0 && strcmp(key, table->keys[i]) != 0)
     {
-        i = (i + 1) & table->capacity;
+        i = (i + 1) % table->capacity;
     }
 
     return i;
@@ -120,7 +120,7 @@ void* hashtable_get_item(hashtable* table, char* key)
     {
         return 0;
     }
-    return table->items[0];
+    return table->items[i];
 }
 void hashtable_delete_item(hashtable* table, char* key)
 {
@@ -133,4 +133,5 @@ void hashtable_delete_item(hashtable* table, char* key)
     free(table->keys[i]);
     table->keys[i] = 0;
     table->items[i] = 0;
+    table->size -= 1;
 }
