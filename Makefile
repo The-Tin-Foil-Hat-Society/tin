@@ -1,13 +1,17 @@
 #This is the make file for the tin interpreter
+
+#File to compile:
+file = ./units/hello_world.tin
+
 tin: dir parser.o lex.o
 	@ gcc -D TIN_COMPILER -D TIN_DEBUG_OUTPUT_AST -D TIN_DEBUG_VERBOSE -Isrc -Igenerated -Werror -g -O0 src/*.c \
 	src/backend/*.c generated/lex.yy.c generated/parser.tab.c -o build/tin
 
 run: tin
-	@./build/tin ./units/echo.tin
+	@./build/tin $(file)
 	@echo "Running in jupiter"
 	@echo "\n\n\n"
-	@jupiter ./units/echo.tin.s
+	@jupiter $(file).s
 
 #Generates directories to store generated files and build
 dir:
@@ -28,4 +32,4 @@ clean:
 	@rmdir generated build
 
 check_leaks: tin
-	@valgrind ./build/tin ./units/echo.tin --leak-check=full
+	@valgrind ./build/tin $(file) --leak-check=full
