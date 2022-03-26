@@ -39,14 +39,20 @@ void add_to_instruction_table( const char* fmt, ... )
 
 #define add_instruction( fmt, ... ) add_to_instruction_table( "\t" fmt, ##__VA_ARGS__ )
 
+/*
+ * Rather than using built-in "call" and "ret" instructions, we keep track of
+ * instruction offset manually by pushing it onto the stack pointer ourselves.
+ * This makes it a bit easier to keep track of where we are in the code.
+ *
+ * This is pretty much handled in the same way that GCC handles this.
+ */
 #define start_function( name ) add_to_instruction_table( "%s:", name ); \
                                add_instruction( "addi sp, sp, -16" ); \
                                add_instruction( "sw ra, 12(sp)" ); \
                                add_instruction( "sw s0, 8(sp)" ); \
                                add_instruction( "addi s0, sp, 16" );
 
-#define end_function() add_instruction( "mv a0, a5" ); \
-                       add_instruction( "lw ra, 12(sp)" ); \
+#define end_function() add_instruction( "lw ra, 12(sp)" ); \
                        add_instruction( "lw s0, 8(sp)" ); \
                        add_instruction( "addi sp, sp, 16" ); \
                        add_instruction( "jr ra" )
@@ -58,6 +64,11 @@ void add_to_instruction_table( const char* fmt, ... )
 #define compiler_error( ... ) fprintf( stderr, "Error: " __VA_ARGS__ ); \
                             exit( 1 )
 
+bool function_is_main( ast_node* node ) 
+{
+    return strcmp( node->value.symbol->name, "main" ) == 0;
+}
+
 #ifdef TIN_DEBUG_VERBOSE
     #define add_comment( fmt, ... ) add_to_instruction_table( "# " fmt, ##__VA_ARGS__ )
     #define add_newline() instruction_table[instruction_table_index++] = "\n"
@@ -67,3 +78,28 @@ void add_to_instruction_table( const char* fmt, ... )
     #define add_comment( ... )
     #define add_newline()
 #endif // TIN_DEBUG_VERBOSE
+
+char* get_node_name( ast_node* node ) 
+{
+    char* name = NULL;
+
+    for ( int i = 0; i < node->children->size; i++ )
+    {
+        ast_node* child = (ast_node*)vector_get_item( node->children, i );
+        switch( child->type )  
+        {
+            case AstSymbol:
+                name = child->value.symbol->name;
+
+                if ( function_is_main( child ) ) 
+                {
+                    name = "__start";
+                }
+                break;
+            default:
+                break;
+        }
+    }
+
+    return name;
+}

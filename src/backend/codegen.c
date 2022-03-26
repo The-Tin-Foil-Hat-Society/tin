@@ -49,7 +49,6 @@ void walk_through_nodes( FILE* file, ast_node* node )
             // Scoping
             //
             case AstFunction:
-                trace( "!!!!!!!!!!!!!!!ENTER FUNCTION!!!!!!!!!!!!!!!" );
                 write_func( child );
                 break;
             case AstFunctionCall:
@@ -67,7 +66,6 @@ void walk_through_nodes( FILE* file, ast_node* node )
 
         if ( child->type == AstFunction )
         {
-            trace( "!!!!!!!!!!!!!!!EXIT FUNCTION!!!!!!!!!!!!!!!" );
             end_function();
             add_comment( "End function" );
         }
