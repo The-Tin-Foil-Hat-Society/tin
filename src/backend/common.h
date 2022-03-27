@@ -1,5 +1,7 @@
 #pragma once
 
+#include "backend/syscalls.h"
+
 #include "backend/builtin/instructions.h"
 #include "backend/builtin/variable.h"
 #include "backend/builtin/rodata.h"
@@ -14,18 +16,9 @@
     #define trace( ... )
 #endif // TIN_DEBUG_VERBOSE
 
-void vector_printf( vector* table, const char* fmt, ... )
+bool function_is_main( ast_node* node ) 
 {
-    va_list args;
-
-    va_start( args, fmt );
-    char* instruction = malloc( 1024 );
-    vsprintf( instruction, fmt, args );
-    // Add newline to the end
-    strcat( instruction, "\n" );
-    va_end( args );
-    
-    vector_add_item( table, instruction );
+    return strcmp( node->value.symbol->name, "main" ) == 0;
 }
 
 /*
@@ -47,18 +40,30 @@ void vector_printf( vector* table, const char* fmt, ... )
 void write_function_prologue( char* name ) 
 {
     instructions_add_n( "%s:", name );
+    
+    add_comment( "Function prologue" );
     instructions_add( "addi sp, sp, -16" );
     instructions_add( "sw ra, 12(sp)" );
     instructions_add( "sw s0, 8(sp)" );
     instructions_add( "addi s0, sp, 16" );
 }
 
-void write_function_epilogue( void )
+void write_function_epilogue( char* name )
 {
-    instructions_add( "lw ra, 12(sp)" );
-    instructions_add( "lw s0, 8(sp)" );
-    instructions_add( "addi sp, sp, 16" );
-    instructions_add( "jr ra" );
+    add_comment( "Function epilogue" );
+
+    if ( strcmp( name, "__start" ) == 0 )
+    {
+        instructions_add( "li a0, %d", Exit );
+        instructions_add( "ecall" );
+    }
+    else
+    {
+        instructions_add( "lw ra, 12(sp)" );
+        instructions_add( "lw s0, 8(sp)" );
+        instructions_add( "addi sp, sp, 16" );
+        instructions_add( "jr ra" );
+    }
 }
 
 #define write_to_file( ... ) \
@@ -67,11 +72,6 @@ void write_function_epilogue( void )
 #define compiler_error( ... ) \
     fprintf( stderr, "Error: " __VA_ARGS__ ); \
     exit( 1 )
-
-bool function_is_main( ast_node* node ) 
-{
-    return strcmp( node->value.symbol->name, "main" ) == 0;
-}
 
 char* get_function_name( ast_node* node ) 
 {

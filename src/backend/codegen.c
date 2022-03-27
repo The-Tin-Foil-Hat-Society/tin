@@ -64,14 +64,12 @@ void walk_through_nodes( FILE* file, ast_node* node )
                 break;
         }
 
-        if ( node_was_handled )
-            add_newline();
-
         walk_through_nodes( file, child );
 
         if ( child->type == AstFunction )
         {
-            write_function_epilogue();
+            char* function_name = get_function_name( child );
+            write_function_epilogue( function_name );
             add_comment( "End function" );
         }
     }
@@ -118,10 +116,4 @@ bool codegen_generate( module* mod, ast_node* node, FILE* file )
     // Instructions
     //
     instructions_write( file );
-
-    //
-    // Program exit point
-    //
-    write_to_file( "\tli a0, 10\n" );
-    write_to_file( "\tecall\n" );
 }

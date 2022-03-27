@@ -19,13 +19,12 @@ void instructions_write( FILE* file );
 void instructions_add( char* text, ... );
 void instructions_add_n( char* text, ... );
 
+/*
+ * Debugging macros
+ */
 #ifdef TIN_DEBUG_VERBOSE
     #define add_comment( fmt, ... ) \
-        instructions_add( "# " fmt, ##__VA_ARGS__ )
-
-    #define add_newline() \
-        instructions_add( " " )
+        instructions_add_n( "# " fmt, ##__VA_ARGS__ )
 #else
     #define add_comment( ... )
-    #define add_newline()
 #endif // TIN_DEBUG_VERBOSE
