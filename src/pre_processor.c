@@ -1,4 +1,5 @@
 #include "pre_processor.h"
+#include "typechecking.h"
 
 int build_symbols(module* mod, ast_node* node)
 {
@@ -125,7 +126,7 @@ int build_symbols(module* mod, ast_node* node)
             symbol* right_sym = right_node->value.symbol;
             if (node->type == AstAlloc)
             {
-                if (strcmp("u32", right_sym->data_type) != 0)
+                if (!is_int(right_sym->data_type) || right_sym->pointer_level > 0)
                 {
                     printf("%s\n", ast_find_closest_src_line(node));
                     printf("error: size must be an integer type\n");
@@ -151,22 +152,24 @@ int build_symbols(module* mod, ast_node* node)
         {
             if (node->type == AstAlloc)
             {
-                if (right_node->value.integer < 0 || right_node->value.integer > UINT32_MAX)
+                if (right_node->value.integer < 0)
                 {
                     printf("%s\n", ast_find_closest_src_line(node));
                     printf("error: cannot allocate less than 0 bytes\n");
                     error_counter += 1;
-                }   
-            }
-            else
-            {
-                // TODO: other integer types
-                if (strcmp(left_sym->data_type, "i32") != 0 || left_sym->pointer_level != 0 || right_node->value.integer < INT32_MIN || right_node->value.integer > INT32_MAX)
+                }
+                else if (right_node->value.integer > UINT32_MAX)
                 {
                     printf("%s\n", ast_find_closest_src_line(node));
-                    printf("error: value does not fit the data type of variable %s\n", left_sym->name);
+                    printf("error: cannot allocate more than u32 max bytes\n");
                     error_counter += 1;
-                }
+                }   
+            }
+            else if(!is_valid_int(left_sym->data_type, right_node->value.integer))
+            {
+                printf("%s\n", ast_find_closest_src_line(node));
+                printf("error: value does not fit the data type of variable %s\n", left_sym->name);
+                error_counter += 1;
             }
             
         }
@@ -222,16 +225,28 @@ int build_symbols(module* mod, ast_node* node)
                 error_counter += 1;
             }
 
-            if (strcmp(left_sym->data_type, found_type) != 0)
+            if (node->type == AstAlloc)
             {
-                printf("%s\n", ast_find_closest_src_line(node));
-                printf("error: %s has type %s while the right hand value has type %s\n", left_sym->name, left_sym->data_type, found_type);
-                error_counter += 1;
+                if (!is_int(found_type) || found_pointer_level > 0)
+                {
+                    printf("%s\n", ast_find_closest_src_line(node));
+                    printf("error: size must be an integer type\n");
+                    error_counter += 1;
+                }
             }
-            if (left_sym->pointer_level != found_pointer_level)
+            else
             {
-                printf("%s\n", ast_find_closest_src_line(node));
-                printf("warning: %s is a level %ld pointer while the right hand value is a level %ld pointer\n", left_sym->name, left_sym->pointer_level, found_pointer_level);
+                if (strcmp(left_sym->data_type, found_type) != 0)
+                {
+                    printf("%s\n", ast_find_closest_src_line(node));
+                    printf("error: %s has type %s while the right hand value has type %s\n", left_sym->name, left_sym->data_type, found_type);
+                    error_counter += 1;
+                }
+                if (left_sym->pointer_level != found_pointer_level)
+                {
+                    printf("%s\n", ast_find_closest_src_line(node));
+                    printf("warning: %s is a level %ld pointer while the right hand value is a level %ld pointer\n", left_sym->name, left_sym->pointer_level, found_pointer_level);
+                }
             }
         }
         
