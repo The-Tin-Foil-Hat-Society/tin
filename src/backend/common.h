@@ -5,33 +5,26 @@
 // TODO: This file needs to be cleaned up
 
 //
-// Define string table
+// String table
 //
-#define MAX_STRING_COUNT 1024
-char *string_table[MAX_STRING_COUNT];
-int string_table_index = 0;
+vector* string_table;
 
 //
-// Define instruction table
+// Instruction table
 //
-#define MAX_INSTRUCTION_COUNT 4096
-char *instruction_table[MAX_INSTRUCTION_COUNT];
-int instruction_table_index = 0;
+vector* instruction_table;
 
 //
 // Define data table
 //
-#define MAX_DATA_COUNT 4096
-char *data_table[MAX_INSTRUCTION_COUNT];
-int data_table_index = 0;
+vector* data_table;
 
 //
 // Define variable hashtable
 //
-#define MAX_VARIABLE_COUNT 1024
 hashtable* variable_table;
 
-void add_to_instruction_table( const char* fmt, ... ) 
+void vector_printf( vector* table, const char* fmt, ... )
 {
     va_list args;
 
@@ -41,11 +34,11 @@ void add_to_instruction_table( const char* fmt, ... )
     // Add newline to the end
     strcat( instruction, "\n" );
     va_end( args );
-
-    instruction_table[instruction_table_index++] = instruction;
+    
+    vector_add_item( table, instruction );
 }
 
-#define add_instruction( fmt, ... ) add_to_instruction_table( "\t" fmt, ##__VA_ARGS__ )
+#define add_instruction( fmt, ... ) vector_printf( instruction_table, "\t" fmt, ##__VA_ARGS__ )
 
 /*
  * Prologue / epilogue
@@ -63,9 +56,9 @@ void add_to_instruction_table( const char* fmt, ... )
  * - https://inst.eecs.berkeley.edu/~cs61c/resources/RISCV_Calling_Convention.pdf
  */
 
-void write_function_prologue( name ) 
+void write_function_prologue( char* name ) 
 {
-    add_to_instruction_table( "%s:", name );
+    vector_printf( instruction_table, "%s:", name );
     add_instruction( "addi sp, sp, -16" );
     add_instruction( "sw ra, 12(sp)" );
     add_instruction( "sw s0, 8(sp)" );
@@ -80,8 +73,8 @@ void write_function_epilogue( void )
     add_instruction( "jr ra" );
 }
 
-#define add_string( str ) string_table[string_table_index++] = str
-#define add_data( ... ) data_table[data_table_index++] = __VA_ARGS__
+#define add_string( str ) vector_push( string_table, str )
+#define add_data( ... ) vector_printf( data_table, ##__VA_ARGS__ )
 #define write_to_file( ... ) fprintf( file, __VA_ARGS__ )
 
 #define compiler_error( ... ) fprintf( stderr, "Error: " __VA_ARGS__ ); \
@@ -125,8 +118,8 @@ char* get_function_name( ast_node* node )
 }
 
 #ifdef TIN_DEBUG_VERBOSE
-    #define add_comment( fmt, ... ) add_to_instruction_table( "# " fmt, ##__VA_ARGS__ )
-    #define add_newline() instruction_table[instruction_table_index++] = "\n"
+    #define add_comment( fmt, ... ) vector_printf( instruction_table, "# " fmt, ##__VA_ARGS__ )
+    #define add_newline() vector_printf( instruction_table, " " )
     #define trace( ... ) printf( __VA_ARGS__ ); printf( "\n" )
 #else
     #define trace( ... )

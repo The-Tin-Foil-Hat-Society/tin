@@ -16,7 +16,7 @@ void write_print( ast_node* node )
     
     switch( child_node->type ) {
         case AstStringLit:
-            add_instruction( "la a1, str_%d", string_table_index );
+            add_instruction( "la a1, str_%d", 0 ); // TODO
             trace( "Print: string literal '%s'", child_node->value.string );
             break;
         case AstSymbol:

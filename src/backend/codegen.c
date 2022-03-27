@@ -80,15 +80,24 @@ void walk_through_nodes( FILE* file, ast_node* node )
     }
 }
 
+void init_tables( )
+{
+    string_table = vector_new();
+    instruction_table = vector_new();
+    data_table = vector_new();
+}
+
 void write_string_table( FILE* file ) 
 {
     trace( "Writing string table" );
 
     // Write strings
-    for (int i = 0; i < string_table_index; i++)
+    for (int i = 0; i < string_table->size; i++)
     {
+        char* string = vector_get_item( string_table, i );
+
         write_to_file( "str_%d:\n", i );
-        write_to_file( "\t.string \"%s\"\n", string_table[i] );
+        write_to_file( "\t.string \"%s\"\n", string );
     }
 }
 
@@ -97,9 +106,11 @@ void write_instructions( FILE* file )
     trace( "Writing instructions" );
 
     // Write instructions
-    for (int i = 0; i < instruction_table_index; i++)
+    for (int i = 0; i < instruction_table->size; i++)
     {
-        write_to_file( "%s", instruction_table[i] );
+        char* instruction = vector_get_item( instruction_table, i );
+
+        write_to_file( "%s", instruction );
     }
 }
 
@@ -108,15 +119,20 @@ void write_data_table( FILE* file )
     trace( "Writing data table" );
 
     // Write data
-    for (int i = 0; i < data_table_index; i++)
+    for (int i = 0; i < data_table->size; i++)
     {
-        write_to_file( "%s", data_table[i] );
+        char* data = vector_get_item( data_table, i );
+
+        write_to_file( "%s", data );
     }
 }
 
 bool codegen_generate( module* mod, ast_node* node, FILE* file ) 
 {
     trace( "Running assembly codegen..." );
+
+    // Initialise all tables
+    init_tables( );
 
     // Walk through each node so that we know what we're writing
     walk_through_nodes( file, node );
