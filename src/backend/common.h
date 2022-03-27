@@ -2,6 +2,8 @@
 
 #include <stdarg.h>
 
+// TODO: This file needs to be cleaned up
+
 //
 // Define string table
 //
@@ -23,6 +25,12 @@ int instruction_table_index = 0;
 char *data_table[MAX_INSTRUCTION_COUNT];
 int data_table_index = 0;
 
+//
+// Define variable hashtable
+//
+#define MAX_VARIABLE_COUNT 1024
+hashtable* variable_table;
+
 void add_to_instruction_table( const char* fmt, ... ) 
 {
     va_list args;
@@ -40,12 +48,19 @@ void add_to_instruction_table( const char* fmt, ... )
 #define add_instruction( fmt, ... ) add_to_instruction_table( "\t" fmt, ##__VA_ARGS__ )
 
 /*
- * Rather than using built-in "call" and "ret" instructions, we keep track of
- * instruction offset manually by pushing it onto the stack pointer ourselves.
- * This makes it a bit easier to keep track of where we are in the code.
- *
- * This is pretty much handled in the same way that GCC handles this.
+ * Prologue / epilogue
+ * One main step to the calling convention is to add the prologue and epilogue.
+ * This is where guarantees are made about the stack and registers.
+ * These guarantees are:
+ * - The stack pointer (sp) will have the same value when exiting the function
+ *   as it did when entering the function.
+ * - The s registers will have the same values when exiting the function as
+ *   they did when entering the function.
+ * - The function will return to the value stored in the return address
+ *   register (ra).
  */
+
+// TODO: These should eventually become mature functions
 #define start_function( name ) add_to_instruction_table( "%s:", name ); \
                                add_instruction( "addi sp, sp, -16" ); \
                                add_instruction( "sw ra, 12(sp)" ); \
