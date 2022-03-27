@@ -1,7 +1,6 @@
 fn i32 bar
 {
     print "bar\n";
-    foo();
     return;
 }
 
