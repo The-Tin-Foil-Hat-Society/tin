@@ -74,7 +74,7 @@ void walk_through_nodes( FILE* file, ast_node* node )
 
         if ( child->type == AstFunction )
         {
-            end_function();
+            write_function_epilogue();
             add_comment( "End function" );
         }
     }

@@ -58,19 +58,27 @@ void add_to_instruction_table( const char* fmt, ... )
  *   they did when entering the function.
  * - The function will return to the value stored in the return address
  *   register (ra).
+ * 
+ * Resources:
+ * - https://inst.eecs.berkeley.edu/~cs61c/resources/RISCV_Calling_Convention.pdf
  */
 
-// TODO: These should eventually become mature functions
-#define start_function( name ) add_to_instruction_table( "%s:", name ); \
-                               add_instruction( "addi sp, sp, -16" ); \
-                               add_instruction( "sw ra, 12(sp)" ); \
-                               add_instruction( "sw s0, 8(sp)" ); \
-                               add_instruction( "addi s0, sp, 16" );
+void write_function_prologue( name ) 
+{
+    add_to_instruction_table( "%s:", name );
+    add_instruction( "addi sp, sp, -16" );
+    add_instruction( "sw ra, 12(sp)" );
+    add_instruction( "sw s0, 8(sp)" );
+    add_instruction( "addi s0, sp, 16" );
+}
 
-#define end_function() add_instruction( "lw ra, 12(sp)" ); \
-                       add_instruction( "lw s0, 8(sp)" ); \
-                       add_instruction( "addi sp, sp, 16" ); \
-                       add_instruction( "jr ra" )
+void write_function_epilogue( void )
+{
+    add_instruction( "lw ra, 12(sp)" );
+    add_instruction( "lw s0, 8(sp)" );
+    add_instruction( "addi sp, sp, 16" );
+    add_instruction( "jr ra" );
+}
 
 #define add_string( str ) string_table[string_table_index++] = str
 #define add_data( ... ) data_table[data_table_index++] = __VA_ARGS__
