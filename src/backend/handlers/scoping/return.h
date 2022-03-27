@@ -9,7 +9,6 @@
 void write_return( ast_node* node ) 
 {
     add_comment( "Return" );
-    add_instruction( "nop" );
+    instructions_add( "nop" );
     trace( "Return" );
-    add_newline();
 }

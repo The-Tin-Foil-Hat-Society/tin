@@ -10,12 +10,10 @@ void write_input( ast_node* node )
 {
     add_comment( "Read input" );
     
-    add_instruction( "li a0, %d", ReadString );
-    add_instruction( "la a1, data_%d", 0 ); // TODO
-    add_instruction( "li a2, %d", 256 );
-    add_instruction( "ecall" );
+    instructions_add( "li a0, %d", ReadString );
+    instructions_add( "la a1, data_%d", 0 ); // TODO
+    instructions_add( "li a2, %d", 256 );
+    instructions_add( "ecall" );
 
     trace( "Read input from data_%d", 0 );  // TODO
-
-    add_newline();
 }

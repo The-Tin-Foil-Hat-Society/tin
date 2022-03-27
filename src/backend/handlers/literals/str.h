@@ -6,6 +6,6 @@
 
 void write_string( ast_node* node ) 
 {
-    trace( "Added string '%s' to string table", node->value.string );
-    add_string( node->value.string );
+    trace( "TODO: Add string '%s' to string table", node->value.string );
+    rodata_add( "string", 0, 4, node->value.string );
 }

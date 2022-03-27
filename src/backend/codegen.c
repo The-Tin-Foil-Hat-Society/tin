@@ -4,18 +4,9 @@
 #include "ast.h"
 
 #include "backend/common.h"
+#include "backend/handlers/handlers.h"
 
-#include "backend/handlers/keywords/print.h"
-#include "backend/handlers/keywords/input.h"
-#include "backend/handlers/keywords/asm.h"
-#include "backend/handlers/keywords/alloc.h"
-
-#include "backend/handlers/literals/str.h"
-#include "backend/handlers/literals/i32.h"
-
-#include "backend/handlers/scoping/func.h"
-#include "backend/handlers/scoping/func_call.h"
-#include "backend/handlers/scoping/return.h"
+#include "backend/builtin/rodata.h"
 
 void walk_through_nodes( FILE* file, ast_node* node ) 
 {
@@ -24,6 +15,8 @@ void walk_through_nodes( FILE* file, ast_node* node )
         ast_node* child = vector_get_item( node->children, i );
 
         trace( "\n==== Node %s ====", ast_type_names[child->type] );
+
+        bool node_was_handled = true;
 
         switch (child->type)
         {
@@ -66,9 +59,13 @@ void walk_through_nodes( FILE* file, ast_node* node )
                 write_return( child );
                 break;
             default:
+                node_was_handled = false;
                 trace( "Node wasn't handled" );
                 break;
         }
+
+        if ( node_was_handled )
+            add_newline();
 
         walk_through_nodes( file, child );
 
@@ -80,51 +77,10 @@ void walk_through_nodes( FILE* file, ast_node* node )
     }
 }
 
-void init_tables( )
+void init( )
 {
-    string_table = vector_new();
-    instruction_table = vector_new();
-    data_table = vector_new();
-}
-
-void write_string_table( FILE* file ) 
-{
-    trace( "Writing string table" );
-
-    // Write strings
-    for (int i = 0; i < string_table->size; i++)
-    {
-        char* string = vector_get_item( string_table, i );
-
-        write_to_file( "str_%d:\n", i );
-        write_to_file( "\t.string \"%s\"\n", string );
-    }
-}
-
-void write_instructions( FILE* file ) 
-{
-    trace( "Writing instructions" );
-
-    // Write instructions
-    for (int i = 0; i < instruction_table->size; i++)
-    {
-        char* instruction = vector_get_item( instruction_table, i );
-
-        write_to_file( "%s", instruction );
-    }
-}
-
-void write_data_table( FILE* file ) 
-{
-    trace( "Writing data table" );
-
-    // Write data
-    for (int i = 0; i < data_table->size; i++)
-    {
-        char* data = vector_get_item( data_table, i );
-
-        write_to_file( "%s", data );
-    }
+    instructions_init();
+    rodata_init();
 }
 
 bool codegen_generate( module* mod, ast_node* node, FILE* file ) 
@@ -132,7 +88,7 @@ bool codegen_generate( module* mod, ast_node* node, FILE* file )
     trace( "Running assembly codegen..." );
 
     // Initialise all tables
-    init_tables( );
+    init( );
 
     // Walk through each node so that we know what we're writing
     walk_through_nodes( file, node );
@@ -153,18 +109,9 @@ bool codegen_generate( module* mod, ast_node* node, FILE* file )
     write_to_file( "\n" );
 
     //
-    // Data table
+    // Read-only data
     //
-    write_to_file( ".data\n" );
-    write_data_table( file );
-    write_to_file( "\n" );
-
-    //
-    // String table
-    //
-    write_to_file( ".rodata\n" );
-    write_string_table( file );
-    write_to_file( "\n" );
+    rodata_write( file );
 
     //
     // Text section
@@ -175,7 +122,7 @@ bool codegen_generate( module* mod, ast_node* node, FILE* file )
     //
     // Instructions
     //
-    write_instructions( file );
+    instructions_write( file );
 
     //
     // Program exit point

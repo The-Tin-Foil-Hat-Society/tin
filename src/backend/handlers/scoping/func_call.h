@@ -18,6 +18,5 @@ void write_func_call( ast_node* node )
      * jalr x1, x6, offset[11:0]
      */
     // TODO: Tail calls where posible
-    call_function( name );
-    add_newline();
+    instructions_add( "call %s", name );
 }

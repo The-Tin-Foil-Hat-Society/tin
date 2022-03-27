@@ -12,15 +12,15 @@ void write_print( ast_node* node )
 
     add_comment( "Print" );
 
-    add_instruction( "li a0, %d", PrintString );
+    instructions_add( "li a0, %d", PrintString );
     
     switch( child_node->type ) {
         case AstStringLit:
-            add_instruction( "la a1, str_%d", 0 ); // TODO
+            instructions_add( "la a1, str_%d", 0 ); // TODO
             trace( "Print: string literal '%s'", child_node->value.string );
             break;
         case AstSymbol:
-            add_instruction( "la a1, data_0" );
+            instructions_add( "la a1, data_0" );
             trace( "Print: symbol data_0" );
             break;
         default:
@@ -28,7 +28,5 @@ void write_print( ast_node* node )
             break;
     }
 
-    add_instruction( "ecall" );    
-    
-    add_newline();
+    instructions_add( "ecall" );
 }

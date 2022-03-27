@@ -1,28 +1,18 @@
 #pragma once
 
+#include "backend/builtin/instructions.h"
+#include "backend/builtin/variable.h"
+#include "backend/builtin/rodata.h"
+
 #include <stdarg.h>
 
-// TODO: This file needs to be cleaned up
-
-//
-// String table
-//
-vector* string_table;
-
-//
-// Instruction table
-//
-vector* instruction_table;
-
-//
-// Define data table
-//
-vector* data_table;
-
-//
-// Define variable hashtable
-//
-hashtable* variable_table;
+#ifdef TIN_DEBUG_VERBOSE
+    #define trace( ... ) \
+        printf( __VA_ARGS__ ); \
+        printf( "\n" )
+#else
+    #define trace( ... )
+#endif // TIN_DEBUG_VERBOSE
 
 void vector_printf( vector* table, const char* fmt, ... )
 {
@@ -37,8 +27,6 @@ void vector_printf( vector* table, const char* fmt, ... )
     
     vector_add_item( table, instruction );
 }
-
-#define add_instruction( fmt, ... ) vector_printf( instruction_table, "\t" fmt, ##__VA_ARGS__ )
 
 /*
  * Prologue / epilogue
@@ -58,29 +46,27 @@ void vector_printf( vector* table, const char* fmt, ... )
 
 void write_function_prologue( char* name ) 
 {
-    vector_printf( instruction_table, "%s:", name );
-    add_instruction( "addi sp, sp, -16" );
-    add_instruction( "sw ra, 12(sp)" );
-    add_instruction( "sw s0, 8(sp)" );
-    add_instruction( "addi s0, sp, 16" );
+    instructions_add_n( "%s:", name );
+    instructions_add( "addi sp, sp, -16" );
+    instructions_add( "sw ra, 12(sp)" );
+    instructions_add( "sw s0, 8(sp)" );
+    instructions_add( "addi s0, sp, 16" );
 }
 
 void write_function_epilogue( void )
 {
-    add_instruction( "lw ra, 12(sp)" );
-    add_instruction( "lw s0, 8(sp)" );
-    add_instruction( "addi sp, sp, 16" );
-    add_instruction( "jr ra" );
+    instructions_add( "lw ra, 12(sp)" );
+    instructions_add( "lw s0, 8(sp)" );
+    instructions_add( "addi sp, sp, 16" );
+    instructions_add( "jr ra" );
 }
 
-#define add_string( str ) vector_push( string_table, str )
-#define add_data( ... ) vector_printf( data_table, ##__VA_ARGS__ )
-#define write_to_file( ... ) fprintf( file, __VA_ARGS__ )
+#define write_to_file( ... ) \
+    fprintf( file, __VA_ARGS__ )
 
-#define compiler_error( ... ) fprintf( stderr, "Error: " __VA_ARGS__ ); \
-                            exit( 1 )
-
-#define call_function( name ) add_instruction( "call %s", name )
+#define compiler_error( ... ) \
+    fprintf( stderr, "Error: " __VA_ARGS__ ); \
+    exit( 1 )
 
 bool function_is_main( ast_node* node ) 
 {
@@ -116,13 +102,3 @@ char* get_function_name( ast_node* node )
 
     return name;
 }
-
-#ifdef TIN_DEBUG_VERBOSE
-    #define add_comment( fmt, ... ) vector_printf( instruction_table, "# " fmt, ##__VA_ARGS__ )
-    #define add_newline() vector_printf( instruction_table, " " )
-    #define trace( ... ) printf( __VA_ARGS__ ); printf( "\n" )
-#else
-    #define trace( ... )
-    #define add_comment( ... )
-    #define add_newline()
-#endif // TIN_DEBUG_VERBOSE

@@ -4,9 +4,11 @@
 file = ./examples/hello_world.tin
 flags = -D TIN_COMPILER -D TIN_DEBUG_OUTPUT_AST -D TIN_DEBUG_VERBOSE
 
+sources = src/*.c src/backend/*.c src/backend/builtin/*.c
+sources_generated =generated/lex.yy.c generated/parser.tab.c
+
 tin: dir parser.o lex.o
-	@ gcc $(flags) -Isrc -Igenerated -Werror -g -O0 src/*.c \
-	src/backend/*.c generated/lex.yy.c generated/parser.tab.c -o build/tin
+	@ gcc $(flags) -Isrc -Igenerated -Werror -g -O0 $(sources) $(sources_generated) -o build/tin
 
 run: tin
 	@./build/tin $(file)
