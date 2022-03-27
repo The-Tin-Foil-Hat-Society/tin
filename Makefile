@@ -8,7 +8,7 @@ sources = src/*.c src/backend/*.c src/backend/builtin/*.c
 sources_generated =generated/lex.yy.c generated/parser.tab.c
 
 tin: dir parser.o lex.o
-	@ gcc $(flags) -Isrc -Igenerated -Werror -g -O0 $(sources) $(sources_generated) -o build/tin
+	@ gcc $(flags) -Isrc -Igenerated -Werror -g -O0 $(sources) $(sources_generated) -o build/tin -lm
 
 run: tin
 	@./build/tin $(file)

@@ -95,11 +95,6 @@ bool codegen_generate( module* mod, ast_node* node, FILE* file )
 
     write_to_file( "# \n" );
     write_to_file( "# Auto-generated file \n" );
-
-    // Add date/time
-    time_t t = time( NULL );
-    struct tm* time = localtime( &t );
-    write_to_file( "# Generated on %s", asctime( time ) );
     write_to_file( "# \n" );
 
     //

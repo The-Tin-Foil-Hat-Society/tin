@@ -21,11 +21,11 @@ variable* rodata_get( char* name )
     return NULL;
 }
 
-void rodata_add( char* name, int offset, int size, char* value )
+void rodata_add( char* name, int size, char* value )
 {
-    variable* var = malloc(sizeof(variable));
-    var->name = name;
-    var->offset = offset;
+    variable* var = malloc( sizeof( variable ) );
+    
+    strcpy( var->name, name );
     var->size = size;
     var->value = value;
     

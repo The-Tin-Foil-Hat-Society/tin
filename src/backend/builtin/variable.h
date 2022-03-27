@@ -7,7 +7,6 @@ typedef struct variable variable;
 struct variable
 {
     char* name;
-    int offset;
     int size;
     char* value;
 };
