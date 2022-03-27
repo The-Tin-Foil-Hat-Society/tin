@@ -1,7 +1,7 @@
 #This is the make file for the tin interpreter
 
 #File to compile:
-file = ./units/math.tin
+file = ./examples/declarations.tin
 flags = -D TIN_COMPILER -D TIN_DEBUG_OUTPUT_AST -D TIN_DEBUG_VERBOSE
 
 tin: dir parser.o lex.o
