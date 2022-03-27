@@ -8,7 +8,7 @@ fn i32 main
     // invalid i32, i16, i8
     i32 d = 2147483648;
     i16 e = 32768;
-    i8 f = 128;
+    i8 f = 256;
 
     // valid u32, u16, u8
     u32 g = 10;
