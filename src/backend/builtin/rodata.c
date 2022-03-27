@@ -24,7 +24,8 @@ variable* rodata_get( char* name )
 void rodata_add( char* name, int size, char* value )
 {
     variable* var = malloc( sizeof( variable ) );
-    
+
+    var->name = malloc( strlen( name ) + 1 );
     strcpy( var->name, name );
     var->size = size;
     var->value = value;
