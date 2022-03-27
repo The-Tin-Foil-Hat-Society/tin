@@ -6,4 +6,3 @@ This is a team project for University which involves us designing a simple progr
 - bison >= 3.5.1
 - flex  >= 2.6.4
 - gcc
-- 
