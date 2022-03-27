@@ -4,4 +4,5 @@
 #include <stdbool.h>
 #include <string.h>
 
-bool is_valid(char* type, int64_t value);
+bool is_int(char* type);
+bool is_valid_int(char* type, int64_t value);
