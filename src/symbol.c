@@ -11,15 +11,11 @@ symbol* symbol_new(void)
     sym->pointer_level = 0;
     sym->is_initialised = false;
     sym->is_function = false;
-    sym->value = 0;
+    sym->function_node = 0;
 }
 
 void symbol_free(symbol* sym)
 {   
-    if (sym->value != 0 && !sym->is_function)
-    {
-        free(sym->value);
-    }
     free(sym->name);
     free(sym->data_type);
     free(sym);
