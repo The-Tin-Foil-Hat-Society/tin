@@ -29,7 +29,6 @@ enum ast_node_type
     AstBreak,
     AstContinue,
     AstDataType,
-    AstDeclaration,
     AstDefinition,
     AstDefinitionList,
     AstDiv,
@@ -62,7 +61,7 @@ enum ast_node_type
 };
 
 // for printing purposes
-static char ast_type_names[45][32] = { "AstRoot","AstIdentifier","AstIntegerLit","AstStringLit","AstAdd","AstAlloc","AstAnd","AstArgumentList","AstAsm","AstAssignment","AstBlock","AstBreak","AstContinue","AstDataType","AstDeclaration","AstDefinition","AstDefinitionList","AstDiv","AstEqual","AstExp","AstFree","AstFunction","AstFunctionCall","AstGoto","AstGreaterThan","AstGreaterThanOrEqual","AstIdentifierDereference","AstIdentifierIndex","AstIdentifierReference","AstIf","AstInput","AstLessThan","AstLessThanOrEqual","AstMod","AstMul","AstNodeList","AstNotEqual","AstOr","AstPrint","AstReturn","AstScope","AstSub","AstSymbol","AstWhile" };
+static char ast_type_names[44][32] = { "AstRoot","AstIdentifier","AstIntegerLit","AstStringLit","AstAdd","AstAlloc","AstAnd","AstArgumentList","AstAsm","AstAssignment","AstBlock","AstBreak","AstContinue","AstDataType","AstDefinition","AstDefinitionList","AstDiv","AstEqual","AstExp","AstFree","AstFunction","AstFunctionCall","AstGoto","AstGreaterThan","AstGreaterThanOrEqual","AstIdentifierDereference","AstIdentifierIndex","AstIdentifierReference","AstIf","AstInput","AstLessThan","AstLessThanOrEqual","AstMod","AstMul","AstNodeList","AstNotEqual","AstOr","AstPrint","AstReturn","AstScope","AstSub","AstSymbol","AstWhile" };
 
 typedef struct ast_node ast_node; 
 struct ast_node

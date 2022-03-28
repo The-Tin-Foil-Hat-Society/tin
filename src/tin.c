@@ -1,7 +1,9 @@
-#include "module.h"
 #include "ast.h"
 #include "interpreter.h"
-#include "pre_processor.h"
+#include "module.h"
+#include "optimisation.h"
+#include "preprocessor.h"
+
 #include "parser.tab.h" // always include parser before lexer to avoid circular dependency
 #include "lex.yy.h"
 
@@ -25,20 +27,22 @@ int main(int argc, char** argv)
 	yylex_init(&scanner);
 	yyset_in(src_file, scanner); /* parse file in from arg*/
 
-	yyparse(scanner, mod);
+	int parser_status = yyparse(scanner, mod);
 
 	yylex_destroy(scanner);
 	fclose(src_file);
 
-	// preprocessing
-
-	int error_count = build_symbols(mod, mod->ast_root);
-	if (error_count > 0)
+	if (parser_status != 0)
 	{
-		printf("total %d errors\n", error_count);
 		goto end;
 	}
 
+	// preprocessing
+
+	if (!preprocessor_process(mod, mod->ast_root))
+	{
+		goto end;
+	}
 	optimize(mod, mod->ast_root);
 
 #ifdef TIN_INTERPRETER
