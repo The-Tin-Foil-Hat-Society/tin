@@ -77,7 +77,7 @@ bool preprocessor_process(module* mod, ast_node* node)
 
 	if (state->error_counter > 0)
 	{
-		printf("preprocessor total %ld errors\n", state->error_counter);
+		printf("total %ld preprocessor errors\n", state->error_counter);
         preproc_state_free(state);
 		return false;
 	}

@@ -9,6 +9,11 @@ void preprocess_symbol(preproc_state* state, ast_node* node)
 {
     symbol* sym = node->value.symbol;
 
+    if (sym == 0)
+    {
+        return; // can only have an empty symbol node if we've encountered an error already so being quiet here doesn't matter
+    }
+
     int index_in_parent = ast_get_child_index(node->parent, node);
 
     bool is_function_call_assignment = node->parent->type == AstFunctionCall && node->parent->parent->type == AstAssignment;
