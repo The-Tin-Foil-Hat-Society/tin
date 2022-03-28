@@ -15,7 +15,7 @@ void preproc_state_free(preproc_state* state)
     free(state);
 }
 
-
+// replaces all identifiers with shared symbols
 void build_symbols(preproc_state* state, ast_node* node)
 {
     for (int i = 0; i < node->children->size; i++)
@@ -29,6 +29,7 @@ void build_symbols(preproc_state* state, ast_node* node)
     }
 }
 
+// process all nodes (after building symbols)
 void process_nodes(preproc_state* state, ast_node* node)
 {
     for (int i = 0; i < node->children->size; i++)
