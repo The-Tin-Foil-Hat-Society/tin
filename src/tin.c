@@ -1,7 +1,7 @@
 #include "module.h"
 #include "ast.h"
 #include "interpreter.h"
-#include "pre_processor.h"
+#include "preprocessor.h"
 #include "parser.tab.h" // always include parser before lexer to avoid circular dependency
 #include "lex.yy.h"
 
@@ -32,13 +32,10 @@ int main(int argc, char** argv)
 
 	// preprocessing
 
-	int error_count = build_symbols(mod, mod->ast_root);
-	if (error_count > 0)
+	if (!preprocessor_process(mod, mod->ast_root))
 	{
-		printf("total %d errors\n", error_count);
 		goto end;
 	}
-
 	optimize(mod, mod->ast_root);
 
 #ifdef TIN_INTERPRETER
