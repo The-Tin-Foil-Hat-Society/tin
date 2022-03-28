@@ -27,10 +27,15 @@ int main(int argc, char** argv)
 	yylex_init(&scanner);
 	yyset_in(src_file, scanner); /* parse file in from arg*/
 
-	yyparse(scanner, mod);
+	int parser_status = yyparse(scanner, mod);
 
 	yylex_destroy(scanner);
 	fclose(src_file);
+
+	if (parser_status != 0)
+	{
+		goto end;
+	}
 
 	// preprocessing
 
