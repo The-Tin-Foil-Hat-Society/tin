@@ -1,0 +1,13 @@
+fn i32 main
+{
+    i32 num = 5;
+
+    if (4 > 5) {
+        print "yep";
+    }
+    else {
+        print "nope";
+    }
+
+    return 0;
+}

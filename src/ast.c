@@ -222,7 +222,7 @@ void ast_print_to_file(ast_node* node, FILE* file, bool recursive)
         for (size_t i = 0; i < node->children->size; i++)
         {
             ast_print_to_file(vector_get_item(node->children, i), file, true);
-            if (i <  node->children->size - 1) // don't print a comma after the last child
+            if (i < node->children->size - 1) // don't print a comma after the last child
             {
                 fprintf(file, ",");
             }
