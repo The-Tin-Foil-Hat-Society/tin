@@ -9,7 +9,7 @@ void preprocess_assignment(preproc_state* state, ast_node* node)
     symbol* left_sym = ast_get_child(node, 0)->value.symbol; // 1st child should always be an identifier/symbol
     ast_node* right_node = ast_get_child(node, 1);
 
-    if (right_node->type == AstAdd || right_node->type == AstDiv || right_node->type == AstExp || right_node->type == AstMod || right_node->type == AstMul || right_node->type == AstSub)
+    if (right_node->type == AstAdd || right_node->type == AstDiv || right_node->type == AstMod || right_node->type == AstMul || right_node->type == AstPow || right_node->type == AstSub)
     {
         // just look for the closest data type node, expressions should already be validated to have the same data type for all values
         char* found_type = 0;

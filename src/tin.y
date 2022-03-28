@@ -29,13 +29,13 @@ void yyerror (yyscan_t* locp, module* mod, const char* msg);
 %token IDENTIFIER INTEGER STRING
 %token ALLOC ASM BREAK CONT FREE FUNC IF ELSE INPUT PRINT RETURN WHILE
 %token I8 U8 I16 U16 I32 U32 VOID PTR
-%token IS ADD SUB MUL DIV EXP MOD LT GT LE GE EQ NE AND OR REF
+%token IS ADD SUB MUL DIV POW MOD LT GT LE GE EQ NE AND OR REF
 %token SEMI_COLON COLON COMMA BRACKET_L BRACKET_R BRACE_L BRACE_R SQUARE_BRACKET_L SQUARE_BRACKET_R 
 
 /* operator precedence */
 %left ADD SUB
 %left DIV MUL MOD
-%left EXP
+%left POW
 %left BRACKET_L
 
 /* get rid of s/r conflict for dangling else's */
@@ -74,7 +74,7 @@ expression
     | STRING { $$ = yylval; } 
     | BRACKET_L expression BRACKET_R { $$ = $1; }
     | expression MOD expression { $$ = ast_new(AstMod); ast_add_child($$, $1); ast_add_child($$, $3); }
-    | expression EXP expression { $$ = ast_new(AstExp); ast_add_child($$, $1); ast_add_child($$, $3); }
+    | expression POW expression { $$ = ast_new(AstPow); ast_add_child($$, $1); ast_add_child($$, $3); }
     | expression DIV expression { $$ = ast_new(AstDiv); ast_add_child($$, $1); ast_add_child($$, $3); }
     | expression MUL expression { $$ = ast_new(AstMul); ast_add_child($$, $1); ast_add_child($$, $3); }
     | expression ADD expression { $$ = ast_new(AstAdd); ast_add_child($$, $1); ast_add_child($$, $3); }

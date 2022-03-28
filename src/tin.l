@@ -47,7 +47,7 @@ comment		[/][*][^*]*[*]+([^*/][^*]*[*]+)*[/]
 "-"                     { return SUB;   }
 "*"                     { return MUL;   }
 "/"                     { return DIV;   }
-"**"                    { return EXP;   }
+"**"                    { return POW;   }
 "%"                     { return MOD;   }
 "<"                     { return LT;    }
 ">"                     { return GT;    }

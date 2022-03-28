@@ -14,7 +14,7 @@ void preprocess_alloc(preproc_state* state, ast_node* node)
         preproc_error(state, node, "warning: %s must have a pointer type\n", left_sym->name);
     }
 
-    if (right_node->type == AstAdd || right_node->type == AstDiv || right_node->type == AstExp || right_node->type == AstMod || right_node->type == AstMul || right_node->type == AstSub)
+    if (right_node->type == AstAdd || right_node->type == AstDiv || right_node->type == AstMod || right_node->type == AstMul || right_node->type == AstPow || right_node->type == AstSub)
     {
         // in any other case, just look for the closest data type node, expressions should already be validated to have the same data type for all values
         char* found_type = 0;
