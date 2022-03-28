@@ -37,21 +37,16 @@ void preprocess_assignment(preproc_state* state, ast_node* node)
         if (found_type == 0)
         {
             // this should not happen
-            printf("%s\n", ast_find_closest_src_line(node));
-            printf("error: %s, could not determine the data type of the right hand value (pre processor bug)\n", left_sym->name);
-            state->error_counter += 1;
+            preproc_error(state, node, "%s, could not determine the data type of the right hand value (pre processor bug)\n", left_sym->name);
         }
 
         if (strcmp(left_sym->data_type, found_type) != 0)
         {
-            printf("%s\n", ast_find_closest_src_line(node));
-            printf("error: %s has type %s while the right hand value has type %s\n", left_sym->name, left_sym->data_type, found_type);
-            state->error_counter += 1;
+            preproc_error(state, node, "%s has type %s while the right hand value has type %s\n", left_sym->name, left_sym->data_type, found_type);
         }
         if (left_sym->pointer_level != found_pointer_level)
         {
-            printf("%s\n", ast_find_closest_src_line(node));
-            printf("warning: %s is a level %ld pointer while the right hand value is a level %ld pointer\n", left_sym->name, left_sym->pointer_level, found_pointer_level);
+            preproc_warn(state, node, "%s is a level %ld pointer while the right hand value is a level %ld pointer\n", left_sym->name, left_sym->pointer_level, found_pointer_level);
         }
     }
     

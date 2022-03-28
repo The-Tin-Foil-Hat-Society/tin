@@ -11,8 +11,7 @@ void preprocess_alloc(preproc_state* state, ast_node* node)
 
     if (left_sym->pointer_level < 1)
     {
-        printf("%s\n", ast_find_closest_src_line(node));
-        printf("warning: %s must have a pointer type \n", left_sym->name);
+        preproc_error(state, node, "warning: %s must have a pointer type\n", left_sym->name);
     }
 
     if (right_node->type == AstAdd || right_node->type == AstDiv || right_node->type == AstExp || right_node->type == AstMod || right_node->type == AstMul || right_node->type == AstSub)
@@ -42,16 +41,12 @@ void preprocess_alloc(preproc_state* state, ast_node* node)
 
         if (found_type == 0)
         {
-            printf("%s\n", ast_find_closest_src_line(node));
-            printf("error: %s, could not determine the data type of the right hand value (pre processor bug)\n", left_sym->name);
-            state->error_counter += 1;
+            preproc_error(state, node, "%s, could not determine the data type of the right hand value (preprocessor bug)\n", left_sym->name);
         }
 
         if (!is_int(found_type) || found_pointer_level > 0)
         {
-            printf("%s\n", ast_find_closest_src_line(node));
-            printf("error: size must be an integer type\n");
-            state->error_counter += 1;
+            preproc_error(state, node, "size must be an integer type\n");
         }
     }
     

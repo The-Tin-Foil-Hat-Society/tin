@@ -44,16 +44,11 @@ void preprocess_identifier(preproc_state* state, ast_node* node)
     }
     else if (sym != 0 && node->parent->type == AstDefinition)
     {
-        // TODO: create a specific function for errors to print all the required information and to quit the compiler correctly?
-        printf("%s\n", ast_find_closest_src_line(node));
-        printf("error: %s is already defined\n", node->value.string); 
-        state->error_counter += 1;
+        preproc_error(state, node, "%s is already defined\n", node->value.string); 
     }
     else if (sym == 0)
     {
-        printf("%s\n", ast_find_closest_src_line(node));
-        printf("error: %s undefined\n", node->value.string); 
-        state->error_counter += 1;
+        preproc_error(state, node, "%s undefined\n", node->value.string); 
     }
 
     ast_node* symbol_node = ast_new(AstSymbol);
