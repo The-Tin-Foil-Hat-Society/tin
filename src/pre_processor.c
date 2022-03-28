@@ -320,9 +320,7 @@ ast_node* find_conditions(ast_node* node)
             ast_node* scope = find_conditions(ast_get_child(node, i));
             if (scope != NULL)
             {
-                // fix error thx
-                //ast_set_child(node, i, scope);
-                //break;
+                ast_set_child(node, i, scope);
             }
         }
     }
