@@ -1,7 +1,9 @@
-#include "module.h"
 #include "ast.h"
 #include "interpreter.h"
+#include "module.h"
+#include "optimisation.h"
 #include "preprocessor.h"
+
 #include "parser.tab.h" // always include parser before lexer to avoid circular dependency
 #include "lex.yy.h"
 

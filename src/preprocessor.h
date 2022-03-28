@@ -21,4 +21,3 @@ void process_nodes(preproc_state* state, ast_node* node);
 
 bool preprocessor_process(module* mod, ast_node* node);
 
-void optimize(module* mod, ast_node* node);  // optional

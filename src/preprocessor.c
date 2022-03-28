@@ -81,12 +81,7 @@ bool preprocessor_process(module* mod, ast_node* node)
         preproc_state_free(state);
 		return false;
 	}
-    
+
     preproc_state_free(state);
     return true;
-}
-
-void optimize(module* mod, ast_node* node)
-{
-    // TODO: optimise the AST, i.e. precompute an expression of constants to a single constant and etc, check what optimisation techniques other compilers use
 }
