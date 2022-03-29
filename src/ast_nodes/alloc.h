@@ -15,19 +15,16 @@ void preprocess_alloc(preproc_state* state, ast_node* node)
         preproc_error(state, node, "error: %s must have a pointer type\n", left_sym->name);
     }
 
-    if (right_node->type == AstAdd || right_node->type == AstDiv || right_node->type == AstMod || right_node->type == AstMul || right_node->type == AstPow || right_node->type == AstSub)
+    data_type* found_dtype = ast_find_data_type(right_node);
+    if (found_dtype == 0)
     {
-        data_type* found_dtype = ast_find_data_type(right_node);
-        if (found_dtype == 0)
-        {
-            // this should not happen
-            preproc_error(state, node, "%s, could not determine the data type of the right hand value (preprocessor bug)\n", left_sym->name);
-        }
+        // this should not happen
+        preproc_error(state, node, "%s, could not determine the data type of the right hand value (preprocessor bug)\n", left_sym->name);
+    }
 
-        if (!is_int(found_dtype))
-        {
-            preproc_error(state, node, "size must be an integer type\n");
-        }
+    if (!is_int(found_dtype))
+    {
+        preproc_error(state, node, "alloc size must be an integer type\n");
     }
     
     left_sym->is_initialised = true;

@@ -96,7 +96,7 @@ size_t ast_get_child_index(ast_node* node, ast_node* child);
 void ast_delete_child(ast_node* node, ast_node* child);
 
 hashtable* ast_get_closest_symtable(ast_node* node);
-// searched for the closest data type in the children and their children (used for expression)
+// searched for the closest data type in the children and their children (used for expressions)
 data_type* ast_find_data_type(ast_node* node);
 symbol* ast_find_symbol(ast_node* node, char* name);
 

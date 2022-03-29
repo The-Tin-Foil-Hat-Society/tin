@@ -57,6 +57,9 @@ void process_nodes(preproc_state* state, ast_node* node)
         case AstDiv:
             preprocess_operation(state, node);
             break;
+        case AstFree:
+            preprocess_free(state, node);
+            break;
         case AstInput:
             preprocess_input(state, node);
             break;

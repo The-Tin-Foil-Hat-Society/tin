@@ -17,10 +17,14 @@ void preprocess_operation(preproc_state* state, ast_node* node)
 
     if (is_int(left_dtype) && is_int(right_dtype) && !data_type_compare(left_dtype, right_dtype))
     {
-        preproc_warn(state, node, "implicit integer conversion\n");
+        preproc_verb(state, node, "implicit integer conversion\n");
+    }
+    else if (!data_type_compare(left_dtype, right_dtype) && left_dtype->pointer_level > 0 && (right_dtype->pointer_level > 0 || is_int(right_dtype)))
+    {
+        preproc_verb(state, node, "implicit pointer conversion\n");
     }
     else if (!data_type_compare(left_dtype, right_dtype))
     {
-        preproc_error(state, node, "the data type of left hand does not match the data type of right hand\n");
+        preproc_error(state, node, "the left hand data type does not match the right hand data type\n");
     }
 }

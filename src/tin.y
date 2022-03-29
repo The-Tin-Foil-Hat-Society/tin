@@ -156,7 +156,7 @@ statement
     | scope                     { $$ = $1; }
     | ALLOC identifier expression SEMI_COLON    { $$ = ast_new(AstAlloc); ast_add_child($$, $2); ast_add_child($$, $3); }
     | ASM STRING SEMI_COLON         { $$ = ast_new(AstAsm);  $$->value.string = strdup($2->value.string); ast_free($2); }
-    | FREE identifier SEMI_COLON    { $$ = ast_new(AstFree); ast_add_child($$, $2); }
+    | FREE expression SEMI_COLON    { $$ = ast_new(AstFree); ast_add_child($$, $2); }
     | INPUT identifier SEMI_COLON   { $$ = ast_new(AstInput); ast_add_child($$, $2); }
     | PRINT expression SEMI_COLON   { $$ = ast_new(AstPrint); ast_add_child($$, $2); }
     ;

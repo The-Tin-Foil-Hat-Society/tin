@@ -22,6 +22,15 @@ bool preprocessor_process(module* mod, ast_node* node);
     printf(fmt, ##__VA_ARGS__ ); \
     state->error_counter += 1
 
+#ifdef TIN_DEBUG_VERBOSE
+    #define preproc_verb( state, node, fmt, ... ) \
+        printf("%s\n", ast_find_closest_src_line(node)); \
+        printf("preprocessor verb: "); \
+        printf(fmt, ##__VA_ARGS__ )
+#else
+    #define preproc_verb( state, node, fmt, ... )
+#endif
+
 #define preproc_warn( state, node, fmt, ... ) \
     printf("%s\n", ast_find_closest_src_line(node)); \
     printf("preprocessor warning: "); \

@@ -3,6 +3,7 @@
 #include "alloc.h"
 #include "assignment.h"
 #include "definition.h"
+#include "free.h"
 #include "identifier.h"
 #include "input.h"
 #include "integer_lit.h"
