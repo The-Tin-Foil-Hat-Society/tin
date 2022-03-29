@@ -27,7 +27,7 @@ ast_node* ast_new(enum ast_node_type type)
     else if (node->type == AstStringLit)
     {
         ast_node* data_type_node = ast_new(AstDataType);
-        data_type_node->value.dtype->name = strdup("u8");
+        data_type_node->value.dtype->name = strdup("i8");
         data_type_node->value.dtype->pointer_level = 1;
         ast_add_child(node, data_type_node);
     }

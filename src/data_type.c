@@ -79,7 +79,7 @@ bool is_valid_int(data_type* dtype, int64_t value)
 
 bool is_string(data_type* dtype)
 {
-    return strcmp(dtype->name, "u8") == 0 && dtype->pointer_level == 1;
+    return strcmp(dtype->name, "i8") == 0 && dtype->pointer_level == 1;
 }
 
 bool data_type_compare(data_type* dtype, data_type* other)

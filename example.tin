@@ -1,6 +1,6 @@
 i32 a = 12;
 i32 b = 34;
-ptr u8 prompt = "Input a number: ";
+ptr i8 prompt = "Input a number: ";
 
 fn i32 add(i32 x, i32 y)
 {
