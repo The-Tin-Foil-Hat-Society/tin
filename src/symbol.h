@@ -16,7 +16,7 @@ typedef struct
     bool is_initialised;
     bool is_function;
 
-    void* value;  // for the interpreter
+    void* function_node;  // for the interperter to follow function symbols
 } symbol;
 
 symbol* symbol_new(void);

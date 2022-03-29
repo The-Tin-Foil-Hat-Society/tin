@@ -86,14 +86,11 @@ expression
 
 assignment
     : identifier IS expression { $$ = ast_new(AstAssignment); ast_add_child($$, $1); ast_add_child($$, $3); }
+    | definition IS expression { $$ = ast_new(AstAssignment); ast_add_child($$, $1); ast_add_child($$, $3); }
     ;
 
 definition
     : data_type identifier { $$ = ast_new(AstDefinition); ast_add_child($$, $1); ast_add_child($$, $2); }
-    ;
-
-declaration
-    : definition IS expression { $$ = ast_new(AstDeclaration); ast_add_child($$, $1); ast_add_child($$, $3); }
     ;
 
 relational_expression
@@ -151,7 +148,6 @@ jump_statement
 
 statement
     : assignment SEMI_COLON     { $$ = $1; }
-    | declaration SEMI_COLON    { $$ = $1; }
     | definition SEMI_COLON     { $$ = $1; }
     | func_call SEMI_COLON      { $$ = $1; }
     | if_statement              { $$ = $1; }
