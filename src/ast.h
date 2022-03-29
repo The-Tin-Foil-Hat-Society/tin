@@ -75,7 +75,7 @@ struct ast_node
     union 
     {
         int64_t integer;         // AstInteger
-        data_type* dtype;        // AstDataType
+        data_type* dtype;        // AstDataType, AstAdd, AstDiv, AstMod, AstMul, AstPow, AstSub
         char* string;            // AstAsm, AstIdentifier, AstString
         symbol* symbol;          // AstSymbol
         hashtable* symbol_table; // AstRoot, AstScope

@@ -27,4 +27,6 @@ void preprocess_operation(preproc_state* state, ast_node* node)
     {
         preproc_error(state, node, "the left hand data type does not match the right hand data type\n");
     }
+
+    node->value.dtype = data_type_copy(left_dtype); // copy the data type to make validation easier for the upper nodes
 }

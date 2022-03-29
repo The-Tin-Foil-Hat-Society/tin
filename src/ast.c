@@ -35,6 +35,10 @@ ast_node* ast_new(enum ast_node_type type)
     {
         node->value.dtype = data_type_new();
     }
+    else if (node->type == AstAdd || node->type == AstDiv || node->type == AstMod || node->type == AstMul || node->type == AstPow || node->type == AstSub)
+    {
+        node->value.dtype = 0;
+    }
 
     return node;
 }
@@ -63,7 +67,7 @@ void ast_free(ast_node* node)
 
         hashtable_free(node->value.symbol_table);
     }
-    else if (node->type == AstDataType)
+    else if ((node->type == AstDataType || node->type == AstAdd || node->type == AstDiv || node->type == AstMod || node->type == AstMul || node->type == AstPow || node->type == AstSub) && node->value.dtype != 0)
     {
         data_type_free(node->value.dtype);
     }
@@ -174,6 +178,15 @@ hashtable* ast_get_closest_symtable(ast_node* node)
 
 data_type* ast_find_data_type(ast_node* node)
 {
+    if (node->type == AstDataType || node->type == AstAdd || node->type == AstDiv || node->type == AstMod || node->type == AstMul || node->type == AstPow || node->type == AstSub)
+    {
+        return node->value.dtype;
+    }
+    else if (node->type == AstSymbol)
+    {
+        return node->value.symbol->dtype;
+    }
+
     for (int i = 0; i < node->children->size; i++)
     {
         data_type* found_dtype = ast_find_data_type(ast_get_child(node, i));
@@ -181,15 +194,6 @@ data_type* ast_find_data_type(ast_node* node)
         {
             return found_dtype;
         }
-    }
-
-    if (node->type == AstDataType)
-    {
-        return node->value.dtype;
-    }
-    else if (node->type == AstSymbol)
-    {
-        return node->value.symbol->dtype;
     }
 
     return 0;
