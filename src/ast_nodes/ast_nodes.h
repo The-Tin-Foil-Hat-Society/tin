@@ -2,6 +2,7 @@
 
 #include "alloc.h"
 #include "assignment.h"
+#include "comparison.h"
 #include "definition.h"
 #include "free.h"
 #include "identifier.h"

@@ -42,9 +42,14 @@ void process_nodes(preproc_state* state, ast_node* node)
         case AstRoot:
             preprocess_root(state, node);
             break;
-        case AstAdd:
-            preprocess_operation(state, node);
+        
+        case AstIntegerLit:
+            preprocess_integer_lit(state, node);
             break;
+        case AstStringLit:
+            preprocess_string_lit(state, node);
+            break;
+
         case AstAlloc:
             preprocess_alloc(state, node);
             break;
@@ -54,17 +59,21 @@ void process_nodes(preproc_state* state, ast_node* node)
         case AstDefinition:
             preprocess_definition(state, node);
             break;
-        case AstDiv:
-            preprocess_operation(state, node);
-            break;
         case AstFree:
             preprocess_free(state, node);
             break;
         case AstInput:
             preprocess_input(state, node);
             break;
-        case AstIntegerLit:
-            preprocess_integer_lit(state, node);
+        case AstSymbol:
+            preprocess_symbol(state, node);
+            break;
+
+        case AstAdd:
+            preprocess_operation(state, node);
+            break;
+        case AstDiv:
+            preprocess_operation(state, node);
             break;
         case AstMod:
             preprocess_operation(state, node);
@@ -75,14 +84,27 @@ void process_nodes(preproc_state* state, ast_node* node)
         case AstPow:
             preprocess_operation(state, node);
             break;
-        case AstStringLit:
-            preprocess_string_lit(state, node);
-            break;
         case AstSub:
             preprocess_operation(state, node);
             break;
-        case AstSymbol:
-            preprocess_symbol(state, node);
+
+        case AstGreaterThan:
+            preprocess_comparison(state, node);
+            break;
+        case AstGreaterThanOrEqual:
+            preprocess_comparison(state, node);
+            break;
+        case AstLessThan:
+            preprocess_comparison(state, node);
+            break;
+        case AstLessThanOrEqual:
+            preprocess_comparison(state, node);
+            break;
+        case AstEqual:
+            preprocess_comparison(state, node);
+            break;
+        case AstNotEqual:
+            preprocess_comparison(state, node);
             break;
         default:
             break;
