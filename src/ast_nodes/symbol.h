@@ -3,7 +3,7 @@
 #include "preprocessor.h"
 #include "ast.h"
 #include "symbol.h"
-#include "typechecking.h"
+#include "data_type.h"
 
 void preprocess_symbol(preproc_state* state, ast_node* node)
 {
@@ -31,7 +31,7 @@ void preprocess_symbol(preproc_state* state, ast_node* node)
 
     if (!is_being_assigned_to && node->parent->type == AstAlloc)
     {
-        if (!is_int(sym->data_type) || sym->pointer_level > 0)
+        if (!is_int(sym->dtype))
         {
             preproc_error(state, node, "size must be an integer type\n");
         }
@@ -52,13 +52,13 @@ void preprocess_symbol(preproc_state* state, ast_node* node)
             left_sym = ast_get_child(node->parent, 0)->value.symbol;
         }
 
-        if (strcmp(left_sym->data_type, sym->data_type) != 0)
+        if (!data_type_compare(left_sym->dtype, sym->dtype))
         {
-            preproc_error(state, node, "%s has type %s while %s has type %s\n", left_sym->name, left_sym->data_type, sym->name, sym->data_type);
+            preproc_error(state, node, "%s has type %s while %s has type %s\n", left_sym->name, left_sym->dtype->name, sym->name, sym->dtype->name);
         }
-        else if (left_sym->pointer_level != sym->pointer_level)
+        else if (left_sym->dtype->pointer_level != sym->dtype->pointer_level)
         {
-            preproc_warn(state, node, "%s is a level %ld pointer while %s is a level %ld pointer\n", left_sym->name, left_sym->pointer_level, sym->name, sym->pointer_level);
+            preproc_warn(state, node, "%s is a level %ld pointer while %s is a level %ld pointer\n", left_sym->name, left_sym->dtype->pointer_level, sym->name, sym->dtype->pointer_level);
         }
     }
 }

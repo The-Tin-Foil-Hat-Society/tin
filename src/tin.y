@@ -53,14 +53,14 @@ program
     ;
 
 data_type
-    : I8    { $$ = ast_new(AstDataType); $$->value.string = strdup("i8"); }
-    | U8    { $$ = ast_new(AstDataType); $$->value.string = strdup("u8"); }
-    | I16   { $$ = ast_new(AstDataType); $$->value.string = strdup("i16"); }
-    | U16   { $$ = ast_new(AstDataType); $$->value.string = strdup("u16"); }
-    | I32   { $$ = ast_new(AstDataType); $$->value.string = strdup("i32"); }
-    | U32   { $$ = ast_new(AstDataType); $$->value.string = strdup("u32"); }
-    | VOID  { $$ = ast_new(AstDataType); $$->value.string = strdup("void"); }
-    | PTR data_type { $$ = $2; $$->pointer_level += 1; } 
+    : I8    { $$ = ast_new(AstDataType); $$->value.dtype->name = strdup("i8"); }
+    | U8    { $$ = ast_new(AstDataType); $$->value.dtype->name = strdup("u8"); }
+    | I16   { $$ = ast_new(AstDataType); $$->value.dtype->name = strdup("i16"); }
+    | U16   { $$ = ast_new(AstDataType); $$->value.dtype->name = strdup("u16"); }
+    | I32   { $$ = ast_new(AstDataType); $$->value.dtype->name = strdup("i32"); }
+    | U32   { $$ = ast_new(AstDataType); $$->value.dtype->name = strdup("u32"); }
+    | VOID  { $$ = ast_new(AstDataType); $$->value.dtype->name = strdup("void"); }
+    | PTR data_type { $$ = $2; $$->value.dtype->pointer_level += 1; } 
     ;
 
 identifier

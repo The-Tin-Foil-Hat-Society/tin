@@ -7,8 +7,9 @@ symbol* symbol_new(void)
     symbol* sym = malloc(sizeof(symbol));
 
     sym->name = 0;
-    sym->data_type = 0;
-    sym->pointer_level = 0;
+
+    sym->dtype;
+
     sym->is_initialised = false;
     sym->is_function = false;
     sym->function_node = 0;
@@ -17,7 +18,7 @@ symbol* symbol_new(void)
 void symbol_free(symbol* sym)
 {   
     free(sym->name);
-    free(sym->data_type);
+    data_type_free(sym->dtype);
     free(sym);
 }
 
@@ -28,12 +29,7 @@ void symbol_print(symbol* sym)
 
 void symbol_print_to_file(symbol* sym, FILE* file)
 {
-    fprintf(file, "{\"name\":\"%s\",\"data_type\":\"%s\"", sym->name, sym->data_type);
-
-    if (sym->pointer_level > 0)
-    {
-        fprintf(file, ",\"pointer_level\":%ld", sym->pointer_level);
-    }
+    fprintf(file, "{\"name\":\"%s\",\"data_type\":\"%s\",\"pointer_level\":%ld", sym->name, sym->dtype->name, sym->dtype->pointer_level);
 
     if (sym->is_initialised)
     {

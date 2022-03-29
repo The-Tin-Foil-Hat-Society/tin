@@ -1,6 +1,6 @@
 #include "preprocessor.h"
 #include "ast_nodes/ast_nodes.h"
-#include "typechecking.h"
+#include "data_type.h"
 
 preproc_state* preproc_state_new()
 {

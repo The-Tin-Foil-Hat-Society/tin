@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "data_type.h"
 #include "hashtable.h"
 #include "symbol.h"
 #include "vector.h"
@@ -74,12 +75,12 @@ struct ast_node
     union 
     {
         int64_t integer;         // AstInteger
-        char* string;            // AstAsm, AstDataType, AstIdentifier, AstString
+        data_type* dtype;        // AstDataType
+        char* string;            // AstAsm, AstIdentifier, AstString
         symbol* symbol;          // AstSymbol
         hashtable* symbol_table; // AstRoot, AstScope
     } value; 
 
-    size_t pointer_level;       // AstDataType
     char* src_line; // for debug
 };
 
@@ -95,6 +96,8 @@ size_t ast_get_child_index(ast_node* node, ast_node* child);
 void ast_delete_child(ast_node* node, ast_node* child);
 
 hashtable* ast_get_closest_symtable(ast_node* node);
+// searched for the closest data type in the children and their children (used for expression)
+data_type* ast_find_data_type(ast_node* node);
 symbol* ast_find_symbol(ast_node* node, char* name);
 
 char* ast_find_closest_src_line(ast_node* node);

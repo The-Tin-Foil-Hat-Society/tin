@@ -3,7 +3,7 @@
 #include "preprocessor.h"
 #include "ast.h"
 #include "symbol.h"
-#include "typechecking.h"
+#include "data_type.h"
 
 void preprocess_input(preproc_state* state, ast_node* node)
 {
