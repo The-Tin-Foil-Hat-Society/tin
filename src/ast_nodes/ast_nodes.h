@@ -6,6 +6,7 @@
 #include "identifier.h"
 #include "input.h"
 #include "integer_lit.h"
+#include "operation.h"
 #include "root.h"
 #include "string_lit.h"
 #include "symbol.h"
