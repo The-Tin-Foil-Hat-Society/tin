@@ -65,11 +65,23 @@ void process_nodes(preproc_state* state, ast_node* node)
         case AstFree:
             preprocess_free(state, node);
             break;
+        case AstFunctionCall:
+            preprocess_func_call(state, node);
+            break;
+        case AstIf:
+            preprocess_if(state, node);
+            break;
         case AstInput:
             preprocess_input(state, node);
             break;
+        case AstReturn:
+            preprocess_return(state, node);
+            break;
         case AstSymbol:
             preprocess_symbol(state, node);
+            break;
+        case AstWhile:
+            preprocess_while(state, node);
             break;
 
         case AstAdd:
