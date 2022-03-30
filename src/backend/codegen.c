@@ -58,6 +58,9 @@ void walk_through_nodes( FILE* file, ast_node* node )
             case AstReturn:
                 write_return( child );
                 break;
+            case AstDeclaration:
+                write_declaration( child );
+                break;
             default:
                 node_was_handled = false;
                 trace( "Node wasn't handled" );
