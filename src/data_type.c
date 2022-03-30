@@ -1,12 +1,13 @@
 #include "data_type.h"
 #include <stdlib.h>
 
-data_type* data_type_new()
+data_type* data_type_new(char* name)
 {
     data_type* dtype = malloc(sizeof(data_type));
 
-    dtype->name = 0;
+    dtype->name = strdup(name);
     dtype->pointer_level = 0;
+    dtype->size = get_size(dtype);
 
     return dtype;
 }
@@ -19,12 +20,35 @@ void data_type_free(data_type* dtype)
 
 data_type* data_type_copy(data_type* dtype)
 {
-    data_type* copy = data_type_new();
+    data_type* copy = data_type_new(dtype->name);
 
-    copy->name = strdup(dtype->name);
     copy->pointer_level = dtype->pointer_level;
 
     return copy;
+}
+
+size_t get_size(data_type* dtype)
+{
+    if (dtype->pointer_level > 0)
+    {
+        return 4;
+    }
+    else if (strcmp(dtype->name, "void") == 0)
+    {
+        return 0;
+    }
+    else if (strcmp(dtype->name, "i8") == 0 || strcmp(dtype->name, "u8") == 0 || strcmp(dtype->name, "bool") == 0)
+    {
+        return 1;
+    }
+    else if (strcmp(dtype->name, "i16") == 0 || strcmp(dtype->name, "u16") == 0)
+    {
+        return 2;
+    }
+    else if (strcmp(dtype->name, "i32") == 0 || strcmp(dtype->name, "u32") == 0)
+    {
+        return 4;
+    }
 }
 
 bool is_bool(data_type* dtype)
@@ -33,7 +57,7 @@ bool is_bool(data_type* dtype)
     {
         return false;
     }
-    
+
     return strcmp(dtype->name, "bool") == 0;
 }
 

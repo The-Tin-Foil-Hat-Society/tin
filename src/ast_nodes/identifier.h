@@ -34,8 +34,7 @@ void preprocess_identifier(preproc_state* state, ast_node* node)
         if (!is_being_assigned_to)
         {
             preproc_error(state, node, "%s undefined\n", node->value.string);
-            sym->dtype = data_type_new();
-            sym->dtype->name = strdup("undefined");
+            sym->dtype = data_type_new("undefined");
             // still continue to create a symbol so we don't want to propage the error, otherwise we'll get a segfault
         }
 

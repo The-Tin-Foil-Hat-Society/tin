@@ -29,7 +29,7 @@ void symbol_print(symbol* sym)
 
 void symbol_print_to_file(symbol* sym, FILE* file)
 {
-    fprintf(file, "{\"name\":\"%s\",\"data_type\":\"%s\",\"pointer_level\":%ld", sym->name, sym->dtype->name, sym->dtype->pointer_level);
+    fprintf(file, "{\"name\":\"%s\",\"data_type\":\"%s\",\"data_type_pointer_level\":%ld,\"data_type_size\":%ld", sym->name, sym->dtype->name, sym->dtype->pointer_level, sym->dtype->size);
 
     if (sym->is_initialised)
     {

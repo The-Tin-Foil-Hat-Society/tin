@@ -15,6 +15,5 @@ void preprocess_logical_expression(preproc_state* state, ast_node* node)
         preproc_error(state, node, "both sides of the logical expression must be bools\n");
     }
 
-    node->value.dtype = data_type_new();
-    node->value.dtype->name = strdup("bool");
+    node->value.dtype = data_type_new("bool");
 }

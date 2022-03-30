@@ -14,6 +14,5 @@ void preprocess_not(preproc_state* state, ast_node* node)
         preproc_error(state, node, "can only perform NOT (!) on bools\n");
     }
 
-    node->value.dtype = data_type_new();
-    node->value.dtype->name = strdup("bool");
+    node->value.dtype = data_type_new("bool");
 }

@@ -28,6 +28,5 @@ void preprocess_relational_expression(preproc_state* state, ast_node* node)
         preproc_error(state, node, "comparison: the left hand data type does not match the right hand data type\n");
     }
 
-    node->value.dtype = data_type_new();
-    node->value.dtype->name = strdup("bool");
+    node->value.dtype = data_type_new("bool");
 }
