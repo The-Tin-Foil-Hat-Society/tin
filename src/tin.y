@@ -29,7 +29,7 @@ void yyerror (yyscan_t* locp, module* mod, const char* msg);
 %token IDENTIFIER INTEGER STRING
 %token ALLOC ASM BREAK CONT FREE FUNC IF ELSE INPUT PRINT RETURN WHILE
 %token I8 U8 I16 U16 I32 U32 VOID PTR BOOL BOOL_LIT
-%token IS ADD SUB MUL DIV POW MOD LT GT LE GE EQ NE AND OR REF
+%token IS ADD SUB MUL DIV POW MOD LT GT LE GE EQ NE AND NOT OR REF
 %token SEMI_COLON COLON COMMA BRACKET_L BRACKET_R BRACE_L BRACE_R SQUARE_BRACKET_L SQUARE_BRACKET_R 
 
 /* operator precedence */
@@ -70,20 +70,25 @@ identifier
     | REF identifier { $$ = ast_new(AstIdentifierReference); ast_add_child($$, $2); } 
     ;
 
-expression
+simple_expression
     : INTEGER { $$ = yylval; }
     | STRING { $$ = yylval; } 
     | BOOL_LIT { $$ = yylval; }
-    | BRACKET_L expression BRACKET_R { $$ = $2; }
+    | func_call { $$ = $1; }
+    | identifier { $$ = $1; } 
+    | identifier SQUARE_BRACKET_L expression SQUARE_BRACKET_R { $$ = ast_new(AstIdentifierIndex); ast_add_child($$, $1); ast_add_child($$, $3); } /* a[x+1] */
+    | BRACKET_L conditional_expression BRACKET_R { $$ = $2; }
+    | NOT simple_expression { $$ = ast_new(AstNot); ast_add_child($$, $2); }
+    ;
+
+expression
+    : simple_expression { $$ = $1; }
     | expression MOD expression { $$ = ast_new(AstMod); ast_add_child($$, $1); ast_add_child($$, $3); }
     | expression POW expression { $$ = ast_new(AstPow); ast_add_child($$, $1); ast_add_child($$, $3); }
     | expression DIV expression { $$ = ast_new(AstDiv); ast_add_child($$, $1); ast_add_child($$, $3); }
     | expression MUL expression { $$ = ast_new(AstMul); ast_add_child($$, $1); ast_add_child($$, $3); }
     | expression ADD expression { $$ = ast_new(AstAdd); ast_add_child($$, $1); ast_add_child($$, $3); }
     | expression SUB expression { $$ = ast_new(AstSub); ast_add_child($$, $1); ast_add_child($$, $3); }
-    | func_call { $$ = $1; }
-    | identifier { $$ = $1; } 
-    | identifier SQUARE_BRACKET_L expression SQUARE_BRACKET_R { $$ = ast_new(AstIdentifierIndex); ast_add_child($$, $1); ast_add_child($$, $3); } /* a[x+1] */
     ;
 
 assignment
@@ -96,7 +101,7 @@ definition
     ;
 
 relational_expression
-    : expression  { $$ = $1; }
+    : expression
     | relational_expression LT expression  { $$ = ast_new(AstLessThan); ast_add_child($$, $1); ast_add_child($$, $3); }
     | relational_expression GT expression  { $$ = ast_new(AstGreaterThan); ast_add_child($$, $1); ast_add_child($$, $3); }
     | relational_expression LE expression  { $$ = ast_new(AstLessThanOrEqual); ast_add_child($$, $1); ast_add_child($$, $3); }
@@ -105,26 +110,22 @@ relational_expression
 
 equality_expression
     : relational_expression  { $$ = $1; }
-    | BRACKET_L relational_expression BRACKET_R  { $$ = $2; }
     | equality_expression EQ relational_expression  { $$ = ast_new(AstEqual); ast_add_child($$, $1); ast_add_child($$, $3); }
     | equality_expression NE relational_expression  { $$ = ast_new(AstNotEqual); ast_add_child($$, $1); ast_add_child($$, $3); }
     ;
 
 logical_and_expression
     : equality_expression  { $$ = $1; }
-    | BRACKET_L equality_expression BRACKET_R  { $$ = $2; }
     | logical_and_expression AND equality_expression  { $$ = ast_new(AstAnd); ast_add_child($$, $1); ast_add_child($$, $3); }
     ;
 
 logical_or_expression 
     : logical_and_expression  { $$ = $1; }
-    | BRACKET_L logical_and_expression BRACKET_R  { $$ = $2; }
     | logical_or_expression OR logical_and_expression  { $$ = ast_new(AstOr); ast_add_child($$, $1); ast_add_child($$, $3); }
     ;
 
-condition
+conditional_expression
     : logical_or_expression  { $$ = $1; }
-    | BRACKET_L logical_or_expression BRACKET_R  { $$ = $2; }
     ;
 
 if
@@ -132,8 +133,8 @@ if
     ; /* make the node here so we can get the first source line */
 
 if_statement
-    : if BRACKET_L condition BRACKET_R statement ELSE statement  { $$ = $1; ast_add_child($$, $3); ast_add_child($$, $5); ast_add_child($$, $7); }
-	| if BRACKET_L condition BRACKET_R statement %prec FAKE_ELSE { $$ = $1; ast_add_child($1, $3); ast_add_child($$, $5); }
+    : if BRACKET_L conditional_expression BRACKET_R statement ELSE statement  { $$ = $1; ast_add_child($$, $3); ast_add_child($$, $5); ast_add_child($$, $7); }
+	| if BRACKET_L conditional_expression BRACKET_R statement %prec FAKE_ELSE { $$ = $1; ast_add_child($1, $3); ast_add_child($$, $5); }
     ;
 
 while
@@ -142,7 +143,7 @@ while
 
 /* TODO: do while? not neccessary though */
 while_statement
-    : while BRACKET_L condition BRACKET_R scope { $$ = $1; ast_add_child($$, $3); ast_add_child($$, $5); }
+    : while BRACKET_L conditional_expression BRACKET_R scope { $$ = $1; ast_add_child($$, $3); ast_add_child($$, $5); }
     ;
 
 jump_statement

@@ -22,9 +22,9 @@ fn i32 main
     i32 choice; // new empty var
     input choice; // initialise it to user input
 
-    bool test_bool = true;
+    bool test_bool = false;
 
-    if (choice > 5 && test_bool)
+    if (choice > 5 && !test_bool)
     {
         result = add(a, choice);
     }

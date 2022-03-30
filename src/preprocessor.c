@@ -115,6 +115,9 @@ void process_nodes(preproc_state* state, ast_node* node)
         case AstOr:
             preprocess_logical_expression(state, node);
             break;
+        case AstNot:
+            preprocess_not(state, node);
+            break;
         default:
             break;
     }

@@ -70,6 +70,7 @@ comment		[/][*][^*]*[*]+([^*/][^*]*[*]+)*[/]
 "=="                    { return EQ;    }
 "!="                    { return NE;    }
 "&&"                    { return AND;   }
+"!"                     { return NOT;    }
 "||"                    { return OR;    }
 "&"                    	{ return REF; 	}
 
