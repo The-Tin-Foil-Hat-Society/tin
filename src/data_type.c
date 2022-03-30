@@ -27,6 +27,15 @@ data_type* data_type_copy(data_type* dtype)
     return copy;
 }
 
+bool is_bool(data_type* dtype)
+{
+    if (dtype->pointer_level > 0)
+    {
+        return false;
+    }
+    
+    return strcmp(dtype->name, "bool") == 0;
+}
 
 bool is_int(data_type* dtype)
 {

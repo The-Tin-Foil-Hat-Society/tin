@@ -13,7 +13,7 @@ void preprocess_free(preproc_state* state, ast_node* node)
     if (found_dtype == 0)
     {
         // this should not happen
-        preproc_error(state, node, "%scould not determine the data type of the right hand value (preprocessor bug)\n", "");
+        preproc_error(state, node, "%sfree, could not determine the data type of the right hand value (preprocessor bug)\n", "");
     }
 
     if (found_dtype->pointer_level == 0)

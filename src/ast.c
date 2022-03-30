@@ -17,6 +17,13 @@ ast_node* ast_new(enum ast_node_type type)
     {
         node->value.symbol_table = hashtable_new();
     }
+    else if (node->type == AstBoolLit)
+    {
+        ast_node* data_type_node = ast_new(AstDataType);
+        data_type_node->value.dtype->name = strdup("bool");
+        data_type_node->value.dtype->pointer_level = 0;
+        ast_add_child(node, data_type_node);
+    }
     else if (node->type == AstIntegerLit)
     {
         ast_node* data_type_node = ast_new(AstDataType);
@@ -35,7 +42,7 @@ ast_node* ast_new(enum ast_node_type type)
     {
         node->value.dtype = data_type_new();
     }
-    else if (node->type == AstAdd || node->type == AstDiv || node->type == AstMod || node->type == AstMul || node->type == AstPow || node->type == AstSub)
+    else if (node->type == AstAdd || node->type == AstDiv || node->type == AstMod || node->type == AstMul || node->type == AstPow || node->type == AstSub || node->type == AstGreaterThan || node->type == AstGreaterThanOrEqual  || node->type == AstLessThan || node->type == AstLessThanOrEqual)
     {
         node->value.dtype = 0;
     }
@@ -67,7 +74,7 @@ void ast_free(ast_node* node)
 
         hashtable_free(node->value.symbol_table);
     }
-    else if ((node->type == AstDataType || node->type == AstAdd || node->type == AstDiv || node->type == AstMod || node->type == AstMul || node->type == AstPow || node->type == AstSub) && node->value.dtype != 0)
+    else if ((node->type == AstDataType || node->type == AstAdd || node->type == AstDiv || node->type == AstMod || node->type == AstMul || node->type == AstPow || node->type == AstSub || node->type == AstGreaterThan || node->type == AstGreaterThanOrEqual  || node->type == AstLessThan || node->type == AstLessThanOrEqual) && node->value.dtype != 0)
     {
         data_type_free(node->value.dtype);
     }

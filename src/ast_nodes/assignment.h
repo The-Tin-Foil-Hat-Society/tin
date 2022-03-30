@@ -15,7 +15,7 @@ void preprocess_assignment(preproc_state* state, ast_node* node)
     if (found_dtype == 0)
     {
         // this should not happen
-        preproc_error(state, node, "%s, could not determine the data type of the right hand value (preprocessor bug)\n", left_sym->name);
+        preproc_error(state, node, "%sassignment, could not determine the data type of the right hand value (preprocessor bug)\n", "");
     }
 
     if (is_int(left_sym->dtype) && is_int(found_dtype) && !data_type_compare(left_sym->dtype, found_dtype))

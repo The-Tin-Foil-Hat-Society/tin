@@ -28,7 +28,7 @@ void yyerror (yyscan_t* locp, module* mod, const char* msg);
 
 %token IDENTIFIER INTEGER STRING
 %token ALLOC ASM BREAK CONT FREE FUNC IF ELSE INPUT PRINT RETURN WHILE
-%token I8 U8 I16 U16 I32 U32 VOID PTR
+%token I8 U8 I16 U16 I32 U32 VOID PTR BOOL BOOL_LIT
 %token IS ADD SUB MUL DIV POW MOD LT GT LE GE EQ NE AND OR REF
 %token SEMI_COLON COLON COMMA BRACKET_L BRACKET_R BRACE_L BRACE_R SQUARE_BRACKET_L SQUARE_BRACKET_R 
 
@@ -59,6 +59,7 @@ data_type
     | U16   { $$ = ast_new(AstDataType); $$->value.dtype->name = strdup("u16"); }
     | I32   { $$ = ast_new(AstDataType); $$->value.dtype->name = strdup("i32"); }
     | U32   { $$ = ast_new(AstDataType); $$->value.dtype->name = strdup("u32"); }
+    | BOOL  { $$ = ast_new(AstDataType); $$->value.dtype->name = strdup("bool"); }
     | VOID  { $$ = ast_new(AstDataType); $$->value.dtype->name = strdup("void"); }
     | PTR data_type { $$ = $2; $$->value.dtype->pointer_level += 1; } 
     ;
@@ -72,6 +73,7 @@ identifier
 expression
     : INTEGER { $$ = yylval; }
     | STRING { $$ = yylval; } 
+    | BOOL_LIT { $$ = yylval; }
     | BRACKET_L expression BRACKET_R { $$ = $1; }
     | expression MOD expression { $$ = ast_new(AstMod); ast_add_child($$, $1); ast_add_child($$, $3); }
     | expression POW expression { $$ = ast_new(AstPow); ast_add_child($$, $1); ast_add_child($$, $3); }
