@@ -29,7 +29,7 @@
 <br />
 <div align="center">
   <a href="https://github.com/aaf6aa/tin">
-    <img src="img/tinfol-icon.png" alt="Logo" width="142" height="108">
+    <img src="img/tinfoil-icon.png" alt="Logo" width="142" height="108">
   </a>
 
 <h3 align="center">Tin: a RISC-V Compiler Language</h3>
