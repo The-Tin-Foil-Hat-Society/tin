@@ -8,6 +8,7 @@
 #include "identifier.h"
 #include "input.h"
 #include "integer_lit.h"
+#include "logical_expression.h"
 #include "operation.h"
 #include "root.h"
 #include "relational_expression.h"

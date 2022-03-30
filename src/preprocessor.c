@@ -109,6 +109,12 @@ void process_nodes(preproc_state* state, ast_node* node)
         case AstNotEqual:
             preprocess_relational_expression(state, node);
             break;
+        case AstAnd:
+            preprocess_logical_expression(state, node);
+            break;
+        case AstOr:
+            preprocess_logical_expression(state, node);
+            break;
         default:
             break;
     }
