@@ -2,6 +2,11 @@
 
 #include <stdio.h>
 
+bool has_dtype(enum ast_node_type type)
+{
+    return type == AstDataType || type == AstAdd || type == AstDiv || type == AstMod || type == AstMul || type == AstPow || type == AstSub || type == AstGreaterThan || type == AstGreaterThanOrEqual  || type == AstLessThan || type == AstLessThanOrEqual  || type == AstEqual || type == AstNotEqual;
+}
+
 ast_node* ast_new(enum ast_node_type type)
 {
     // allocate space for the node struct
@@ -42,7 +47,7 @@ ast_node* ast_new(enum ast_node_type type)
     {
         node->value.dtype = data_type_new();
     }
-    else if (node->type == AstAdd || node->type == AstDiv || node->type == AstMod || node->type == AstMul || node->type == AstPow || node->type == AstSub || node->type == AstGreaterThan || node->type == AstGreaterThanOrEqual  || node->type == AstLessThan || node->type == AstLessThanOrEqual)
+    else if (has_dtype(node->type))
     {
         node->value.dtype = 0;
     }
@@ -74,7 +79,7 @@ void ast_free(ast_node* node)
 
         hashtable_free(node->value.symbol_table);
     }
-    else if ((node->type == AstDataType || node->type == AstAdd || node->type == AstDiv || node->type == AstMod || node->type == AstMul || node->type == AstPow || node->type == AstSub || node->type == AstGreaterThan || node->type == AstGreaterThanOrEqual  || node->type == AstLessThan || node->type == AstLessThanOrEqual) && node->value.dtype != 0)
+    else if (has_dtype(node->type) && node->value.dtype != 0)
     {
         data_type_free(node->value.dtype);
     }
@@ -185,7 +190,7 @@ hashtable* ast_get_closest_symtable(ast_node* node)
 
 data_type* ast_find_data_type(ast_node* node)
 {
-    if (node->type == AstDataType || node->type == AstAdd || node->type == AstDiv || node->type == AstMod || node->type == AstMul || node->type == AstPow || node->type == AstSub)
+    if (has_dtype(node->type))
     {
         return node->value.dtype;
     }

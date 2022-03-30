@@ -74,7 +74,7 @@ expression
     : INTEGER { $$ = yylval; }
     | STRING { $$ = yylval; } 
     | BOOL_LIT { $$ = yylval; }
-    | BRACKET_L expression BRACKET_R { $$ = $1; }
+    | BRACKET_L expression BRACKET_R { $$ = $2; }
     | expression MOD expression { $$ = ast_new(AstMod); ast_add_child($$, $1); ast_add_child($$, $3); }
     | expression POW expression { $$ = ast_new(AstPow); ast_add_child($$, $1); ast_add_child($$, $3); }
     | expression DIV expression { $$ = ast_new(AstDiv); ast_add_child($$, $1); ast_add_child($$, $3); }
@@ -105,22 +105,26 @@ relational_expression
 
 equality_expression
     : relational_expression  { $$ = $1; }
+    | BRACKET_L relational_expression BRACKET_R  { $$ = $2; }
     | equality_expression EQ relational_expression  { $$ = ast_new(AstEqual); ast_add_child($$, $1); ast_add_child($$, $3); }
     | equality_expression NE relational_expression  { $$ = ast_new(AstNotEqual); ast_add_child($$, $1); ast_add_child($$, $3); }
     ;
 
 logical_and_expression
     : equality_expression  { $$ = $1; }
+    | BRACKET_L equality_expression BRACKET_R  { $$ = $2; }
     | logical_and_expression AND equality_expression  { $$ = ast_new(AstAnd); ast_add_child($$, $1); ast_add_child($$, $3); }
     ;
 
 logical_or_expression 
     : logical_and_expression  { $$ = $1; }
+    | BRACKET_L logical_and_expression BRACKET_R  { $$ = $2; }
     | logical_or_expression OR logical_and_expression  { $$ = ast_new(AstOr); ast_add_child($$, $1); ast_add_child($$, $3); }
     ;
 
 condition
     : logical_or_expression  { $$ = $1; }
+    | BRACKET_L logical_or_expression BRACKET_R  { $$ = $2; }
     ;
 
 if
