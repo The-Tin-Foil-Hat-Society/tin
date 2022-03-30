@@ -92,22 +92,22 @@ void process_nodes(preproc_state* state, ast_node* node)
             break;
 
         case AstGreaterThan:
-            preprocess_comparison(state, node);
+            preprocess_relational_expression(state, node);
             break;
         case AstGreaterThanOrEqual:
-            preprocess_comparison(state, node);
+            preprocess_relational_expression(state, node);
             break;
         case AstLessThan:
-            preprocess_comparison(state, node);
+            preprocess_relational_expression(state, node);
             break;
         case AstLessThanOrEqual:
-            preprocess_comparison(state, node);
+            preprocess_relational_expression(state, node);
             break;
         case AstEqual:
-            preprocess_comparison(state, node);
+            preprocess_relational_expression(state, node);
             break;
         case AstNotEqual:
-            preprocess_comparison(state, node);
+            preprocess_relational_expression(state, node);
             break;
         default:
             break;
