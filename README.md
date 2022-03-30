@@ -29,10 +29,10 @@
 <br />
 <div align="center">
   <a href="https://github.com/aaf6aa/tin">
-    <img src="images/logo.png" alt="Logo" width="80" height="80">
+    <img src="img/tinfol-icon.png" alt="Logo" width="142" height="108">
   </a>
 
-<h3 align="center">Tin: a RISCV Compiler Language</h3>
+<h3 align="center">Tin: a RISC-V Compiler Language</h3>
 
   <p align="center">
     project_description
@@ -81,9 +81,9 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-[![Product Name Screen Shot][product-screenshot]](https://example.com)
+[![Product Name Screen Shot][product-screenshot]](https://github.com/aaf6aa/tin)
 
-Here's a blank template to get started: To avoid retyping too much info. Do a search and replace with your text editor for the following: `github_username`, `repo_name`, `twitter_handle`, `linkedin_username`, `email_client`, `email`, `project_title`, `project_description`
+This is a group project, originally as an assignment for the University of Lincoln. The project itself is a language built for the RISC-V architecture.
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -91,9 +91,8 @@ Here's a blank template to get started: To avoid retyping too much info. Do a se
 
 ### Built With
 
-* [C](hhttps://docs.microsoft.com/en-us/cpp/c-language/)
-* [Flex](https://www.gnu.org/)
-* [Bison](https://www.gnu.org/)
+* [Flex 2.6.4](https://www.gnu.org/)
+* [Bison 3.5.1](https://www.gnu.org/)
 * [GCC](https://gcc.gnu.org/)
 
 <p align="right">(<a href="#top">back to top</a>)</p>
@@ -103,12 +102,11 @@ Here's a blank template to get started: To avoid retyping too much info. Do a se
 <!-- GETTING STARTED -->
 ## Getting Started
 
-This is an example of how you may give instructions on setting up your project locally.
-To get a local copy up and running follow these simple example steps.
+Follow the Prerequisit and Installation guidence to get started, once complete you are able to start making your .tin files.
 
 ### Prerequisites
 
-This is an example of how to list things you need to use the software and how to install them.
+This is a list things you need to use the software and how to install them.
 * 
   ```sh
   sudo apt-get install flex bison
@@ -121,16 +119,11 @@ This is an example of how to list things you need to use the software and how to
    ```sh
    git clone https://github.com/aaf6aa/tin.git
    ```
-2. Install NPM packages
-   ```sh
-  sudo apt-get install flex bison
-  sudo apt-get gcc
-   ```
-3. Make the project 
+2. Make the project 
    ```sh
    make tin
    ```
-4. Compile your .tin file
+3. Compile your .tin file
    ```
    ./build/tin file-name.tin
    ```
@@ -142,9 +135,9 @@ This is an example of how to list things you need to use the software and how to
 <!-- USAGE EXAMPLES -->
 ## Usage
 
-Use this space to show useful examples of how a project can be used. Additional screenshots, code examples and demos work well in this space. You may also link to more resources.
+This language is currently for the RISC-V architecture, the usage of the language cna be seen in the documentation.
 
-_For more examples, please refer to the [Documentation](https://example.com)_
+_For more examples, please refer to the [Documentation](https://github.com/aaf6aa/tin/wiki)_
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -153,10 +146,11 @@ _For more examples, please refer to the [Documentation](https://example.com)_
 <!-- ROADMAP -->
 ## Roadmap
 
-- [ ] Feature 1
-- [ ] Feature 2
-- [ ] Feature 3
-    - [ ] Nested Feature
+- [ ] Standard Libraries
+- [ ] Optimisation
+- [ ] Implementing #include
+- [ ] Memory Tools
+- [ ] Non-RISC-V Interpreter
 
 See the [open issues](https://github.com/aaf6aa/tin/issues) for a full list of proposed features (and known issues).
 
@@ -173,9 +167,9 @@ If you have a suggestion that would make this better, please fork the repo and c
 Don't forget to give the project a star! Thanks again!
 
 1. Fork the Project
-2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the Branch (`git push origin feature/AmazingFeature`)
+2. Create your Feature Branch (`git checkout -b feature/YourFeature`)
+3. Commit your Changes (`git commit -m 'Add some YourFeature'`)
+4. Push to the Branch (`git push origin feature/YourFeature`)
 5. Open a Pull Request
 
 <p align="right">(<a href="#top">back to top</a>)</p>
@@ -194,7 +188,7 @@ Distributed under the MIT License. See `LICENSE.txt` for more information.
 <!-- CONTACT -->
 ## Contact
 
-Your Name - [@twitter_handle](https://twitter.com/twitter_handle) - email@email_client.com
+Hardijs Raubiskis - 25113420@students.lincoln.ac.uk
 
 Project Link: [https://github.com/aaf6aa/tin](https://github.com/aaf6aa/tin)
 
@@ -205,9 +199,8 @@ Project Link: [https://github.com/aaf6aa/tin](https://github.com/aaf6aa/tin)
 <!-- ACKNOWLEDGMENTS -->
 ## Acknowledgments
 
-* []()
-* []()
-* []()
+* [README Template](https://github.com/othneildrew/Best-README-Template)
+
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
