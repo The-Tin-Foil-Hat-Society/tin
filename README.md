@@ -7,24 +7,6 @@
 *** Thanks again! Now go create something AMAZING! :D
 -->
 
-
-
-<!-- PROJECT SHIELDS -->
-<!--
-*** I'm using markdown "reference style" links for readability.
-*** Reference links are enclosed in brackets [ ] instead of parentheses ( ).
-*** See the bottom of this document for the declaration of the reference variables
-*** for contributors-url, forks-url, etc. This is an optional, concise syntax you may use.
-*** https://www.markdownguide.org/basic-syntax/#reference-style-links
--->
-[![Contributors][contributors-shield]][contributors-url]
-[![Forks][forks-shield]][forks-url]
-[![Stargazers][stars-shield]][stars-url]
-[![Issues][issues-shield]][issues-url]
-[![MIT License][license-shield]][license-url]
-
-
-
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
@@ -35,17 +17,38 @@
 <h3 align="center">Tin: a RISC-V Compiler Language</h3>
 
   <p align="center">
-    project_description
+    A procedural programming language written primarily for use on RISC-V hardware.
     <br />
-    <a href="https://github.com/aaf6aa/tin"><strong>Explore the docs »</strong></a>
+    <a href="https://github.com/aaf6aa/tin/wiki"><strong>Explore the docs »</strong></a>
     <br />
     <br />
-    <a href="https://github.com/aaf6aa/tin">View Demo</a>
+    <a href="https://github.com/aaf6aa/tin/tree/main/examples">Samples</a>
     ·
     <a href="https://github.com/aaf6aa/tin/issues">Report Bug</a>
     ·
     <a href="https://github.com/aaf6aa/tin/issues">Request Feature</a>
   </p>
+</div>
+
+
+
+<!-- PROJECT SHIELDS -->
+<!--
+*** I'm using markdown "reference style" links for readability.
+*** Reference links are enclosed in brackets [ ] instead of parentheses ( ).
+*** See the bottom of this document for the declaration of the reference variables
+*** for contributors-url, forks-url, etc. This is an optional, concise syntax you may use.
+*** https://www.markdownguide.org/basic-syntax/#reference-style-links
+-->
+
+<div align="center">
+  
+  [![Contributors][contributors-shield]][contributors-url]
+  [![Forks][forks-shield]][forks-url]
+  [![Stargazers][stars-shield]][stars-url]
+  [![Issues][issues-shield]][issues-url]
+  [![MIT License][license-shield]][license-url]
+  
 </div>
 
 
@@ -81,7 +84,9 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-[![Product Name Screen Shot][product-screenshot]](https://github.com/aaf6aa/tin)
+![Code screenshot](https://user-images.githubusercontent.com/12881812/161107464-b0b15d78-11a6-4bbc-8d33-16bb6b348514.png)
+
+Tin is a structured, imperative and procedural programming language designed around the RISC-V instruction set architecture. It is aimed mainly at applications running on embedded systems, but should be suitable for applications outside of this field.
 
 This is a group project, originally as an assignment for the University of Lincoln. The project itself is a language built for the RISC-V architecture.
 
@@ -102,30 +107,29 @@ This is a group project, originally as an assignment for the University of Linco
 <!-- GETTING STARTED -->
 ## Getting Started
 
-Follow the Prerequisit and Installation guidence to get started, once complete you are able to start making your .tin files.
+Follow the [prerequisites](#prerequisites) and [installation](#installation) guidance to get started, once complete you are able to start making your .tin files.
 
 ### Prerequisites
 
-This is a list things you need to use the software and how to install them.
-* 
+Run the following command to fetch all of the required packages in order to build the toolchain:
+
   ```sh
-  sudo apt-get install flex bison
-  sudo apt-get gcc
+  $ sudo apt-get install build-essential flex bison
   ```
 
 ### Installation
 
 1. Clone the repo
    ```sh
-   git clone https://github.com/aaf6aa/tin.git
+   $ git clone https://github.com/aaf6aa/tin.git
    ```
 2. Make the project 
    ```sh
-   make tin
+   $ make tin
    ```
 3. Compile your .tin file
-   ```
-   ./build/tin file-name.tin
+   ```sh
+   $ ./build/tin file-name.tin
    ```
 
 <p align="right">(<a href="#top">back to top</a>)</p>
@@ -135,9 +139,9 @@ This is a list things you need to use the software and how to install them.
 <!-- USAGE EXAMPLES -->
 ## Usage
 
-This language is currently for the RISC-V architecture, the usage of the language cna be seen in the documentation.
+This language is currently for the RISC-V architecture, the usage of the language an be seen in the documentation or the [examples](https://github.com/aaf6aa/tin/tree/main/examples).
 
-_For more examples, please refer to the [Documentation](https://github.com/aaf6aa/tin/wiki)_
+_For more examples, please refer to the [documentation](https://github.com/aaf6aa/tin/wiki)_.
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
