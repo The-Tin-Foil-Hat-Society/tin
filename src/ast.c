@@ -160,28 +160,35 @@ void ast_delete_child(ast_node* node, ast_node* child)
     ast_free(child);
 }
 
-hashtable* ast_get_closest_symtable(ast_node* node)
+ast_node* ast_get_current_function(ast_node* node)
 {
-    hashtable* table = 0;
-
-    // traverse up the tree and check each symbol table for the given identifier
-    while (table == 0 && node != 0)
+    while (node != 0)
     {
-        if (node->type == AstRoot || node->type == AstScope)
+        if (node->type == AstFunction)
         {
-            table = node->value.symbol_table;
-            break;
+            return node;
         }
 
         node = node->parent;
     }
 
-    if (node == 0)
+    return 0;
+}
+
+hashtable* ast_get_closest_symtable(ast_node* node)
+{
+    // traverse up the tree and check each symbol table for the given identifier
+    while (node != 0)
     {
-        return 0;
+        if (node->type == AstRoot || node->type == AstScope)
+        {
+            return node->value.symbol_table;
+        }
+
+        node = node->parent;
     }
 
-    return node->value.symbol_table;
+    return 0;
 }
 
 data_type* ast_find_data_type(ast_node* node)
