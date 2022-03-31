@@ -7,6 +7,9 @@
 
 void preprocess_if(preproc_state* state, ast_node* node)
 {
-    // TODO: validate if condition
-    return;
+    data_type* condition_dtype = ast_find_data_type(ast_get_child(node, 0));
+    if (condition_dtype == 0 || !is_bool(condition_dtype))
+    {
+        preproc_error(state, node, "%sif condition is not valid\n", "");
+    }
 }
