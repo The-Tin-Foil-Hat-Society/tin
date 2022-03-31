@@ -1,12 +1,16 @@
 fn i32 main
 {
     i32 num = 5;
+    i32 val = num;
 
-    if (4 > 5) {
+    if (3==3) {
         print "yep";
     }
-    else {
+    else if (2+2==3) {
         print "nope";
+    }
+    else {
+        print"e";
     }
 
     return 0;

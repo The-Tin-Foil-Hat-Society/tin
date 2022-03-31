@@ -39,16 +39,20 @@ ast_node* find_conditions(ast_node* node)
     if (node->type == AstIf)
     {
         ast_node* condition = ast_get_child(node, 0);
-        ast_node* node1 = ast_get_child(condition, 0);
-        ast_node* node2 = ast_get_child(condition, 1);
-        
-        if (node1->type == AstIntegerLit && node2->type == AstIntegerLit)
-        {
-            int response = eval_condition(condition, node1, node2);
 
-            if (response != 0)
+        if (condition->children->size == 2)
+        {
+            ast_node* node1 = ast_get_child(condition, 0);
+            ast_node* node2 = ast_get_child(condition, 1);
+            
+            if (node1->type == AstIntegerLit && node2->type == AstIntegerLit)
             {
-                return ast_get_child(node, response);
+                int response = eval_condition(condition, node1, node2);
+
+                if (response != 0)
+                {
+                    return ast_get_child(node, response);
+                }
             }
         }
     }
@@ -58,7 +62,7 @@ ast_node* find_conditions(ast_node* node)
         for (size_t i = 0; i < node->children->size; i++)
         {
             ast_node* scope = find_conditions(ast_get_child(node, i));
-            if (scope != NULL)
+            if (scope)
             {
                 ast_set_child(node, i, scope);
             }
@@ -70,6 +74,5 @@ ast_node* find_conditions(ast_node* node)
 
 void optimize(module* mod, ast_node* node)
 {
-    // in progress
     find_conditions(node);
 }
