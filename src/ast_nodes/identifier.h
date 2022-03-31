@@ -3,7 +3,7 @@
 #include "preprocessor.h"
 #include "ast.h"
 #include "symbol.h"
-#include "typechecking.h"
+#include "data_type.h"
 
 void preprocess_identifier(preproc_state* state, ast_node* node)
 {
@@ -26,10 +26,17 @@ void preprocess_identifier(preproc_state* state, ast_node* node)
         sym = ast_find_symbol(node, node->value.string);
     }
 
-    if (sym == 0 && is_being_assigned_to)
+    if (sym == 0)
     {
         sym = symbol_new();
         sym->name = strdup(node->value.string);
+
+        if (!is_being_assigned_to)
+        {
+            preproc_error(state, node, "%s undefined\n", node->value.string);
+            sym->dtype = data_type_new("undefined");
+            // still continue to create a symbol so we don't want to propage the error, otherwise we'll get a segfault
+        }
 
         if (!is_function_argument_identifier)
         {
@@ -45,10 +52,6 @@ void preprocess_identifier(preproc_state* state, ast_node* node)
     else if (sym != 0 && node->parent->type == AstDefinition)
     {
         preproc_error(state, node, "%s is already defined\n", node->value.string); 
-    }
-    else if (sym == 0)
-    {
-        preproc_error(state, node, "%s undefined\n", node->value.string); 
     }
 
     ast_node* symbol_node = ast_new(AstSymbol);

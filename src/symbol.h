@@ -5,14 +5,16 @@
 #include <stddef.h>
 #include <stdio.h>
 
+#include "data_type.h"
 #include "hashtable.h"
 #include "vector.h"
 
 typedef struct
 {
     char* name;
-    char* data_type;
-    size_t pointer_level;
+
+    data_type* dtype;
+
     bool is_initialised;
     bool is_function;
 

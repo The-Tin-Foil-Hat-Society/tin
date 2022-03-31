@@ -5,12 +5,11 @@
 
 void preprocess_definition(preproc_state* state, ast_node* node)
 {
-    ast_node* data_type = ast_get_child(node, 0);
+    ast_node* data_type_node = ast_get_child(node, 0);
     ast_node* symbol_node = ast_get_child(node, 1);
     symbol* sym = symbol_node->value.symbol;
 
-    sym->data_type = strdup(data_type->value.string);
-    sym->pointer_level = data_type->pointer_level;
+    sym->dtype = data_type_copy(data_type_node->value.dtype);
 
     if (node->parent->type == AstFunction)
     {

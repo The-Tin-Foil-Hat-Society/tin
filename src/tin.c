@@ -15,7 +15,12 @@ int main(int argc, char** argv)
 		return 0;
 	}
 
-	FILE* src_file = fopen(argv[1], "rb");
+	FILE* src_file;
+	if (!(src_file = fopen(argv[1], "rb")))
+	{
+		printf("error: could not find file %s, exiting\n",argv[1]);
+		return 0;
+	}
 
 	module* mod = module_new();
 	module_set_src_file(mod, src_file);

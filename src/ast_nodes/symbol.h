@@ -3,16 +3,11 @@
 #include "preprocessor.h"
 #include "ast.h"
 #include "symbol.h"
-#include "typechecking.h"
+#include "data_type.h"
 
 void preprocess_symbol(preproc_state* state, ast_node* node)
 {
     symbol* sym = node->value.symbol;
-
-    if (sym == 0)
-    {
-        return; // can only have an empty symbol node if we've encountered an error already so being quiet here doesn't matter
-    }
 
     int index_in_parent = ast_get_child_index(node->parent, node);
 
@@ -24,41 +19,8 @@ void preprocess_symbol(preproc_state* state, ast_node* node)
         ||  node->parent->type == AstInput
         );
 
-    if (!is_being_assigned_to && !sym->is_initialised)
+    if ((!is_being_assigned_to || node->parent->type == AstFree) && !sym->is_initialised)
     {
-        preproc_error(state, node, "%s is not initialized\n", node->value.string);
-    }
-
-    if (!is_being_assigned_to && node->parent->type == AstAlloc)
-    {
-        if (!is_int(sym->data_type) || sym->pointer_level > 0)
-        {
-            preproc_error(state, node, "size must be an integer type\n");
-        }
-    }
-    else if (!is_being_assigned_to && (node->parent->type == AstAssignment || is_function_call_assignment))
-    {
-        symbol* left_sym;
-        if (is_function_call_assignment)
-        {
-            left_sym = ast_get_child(node->parent->parent, 0)->value.symbol;
-        }
-        else if (ast_get_child(node->parent, 0)->type == AstDefinition)
-        {
-            left_sym = ast_get_child(ast_get_child(node->parent, 0), 0)->value.symbol;
-        }
-        else
-        {
-            left_sym = ast_get_child(node->parent, 0)->value.symbol;
-        }
-
-        if (strcmp(left_sym->data_type, sym->data_type) != 0)
-        {
-            preproc_error(state, node, "%s has type %s while %s has type %s\n", left_sym->name, left_sym->data_type, sym->name, sym->data_type);
-        }
-        else if (left_sym->pointer_level != sym->pointer_level)
-        {
-            preproc_warn(state, node, "%s is a level %ld pointer while %s is a level %ld pointer\n", left_sym->name, left_sym->pointer_level, sym->name, sym->pointer_level);
-        }
+        preproc_error(state, node, "%s is not initialized\n", sym->name);
     }
 }
