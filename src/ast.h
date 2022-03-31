@@ -12,6 +12,7 @@
 #include "vector.h"
 
 
+// TODO: document child count and types for each node type
 enum ast_node_type
 { 
     AstRoot,

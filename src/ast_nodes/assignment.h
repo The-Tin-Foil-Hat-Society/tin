@@ -18,6 +18,7 @@ void preprocess_assignment(preproc_state* state, ast_node* node)
         preproc_error(state, node, "%sassignment, could not determine the data type of the right hand value (preprocessor bug)\n", "");
     }
 
+    // TODO: implement these checks somewhere else, they're repeated in many nodes
     if (is_int(left_sym->dtype) && is_int(found_dtype) && !data_type_compare(left_sym->dtype, found_dtype))
     {
         preproc_verb(state, node, "%s, implicit integer conversion\n", left_sym->name);
