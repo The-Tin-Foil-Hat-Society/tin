@@ -197,7 +197,7 @@ func
     ; 
 
 function
-    : func definition scope { $$ = $1; ast_add_child($$, $2); ast_add_child($$, $3); ast_add_child($$, ast_new(AstDefinitionList)); }
+    : func definition scope { $$ = $1; ast_add_child($$, $2); ast_add_child($$, ast_new(AstDefinitionList)); ast_add_child($$, $3); }
     | func definition BRACKET_L definition_list BRACKET_R scope { $$ = $1; ast_add_child($$, $2); ast_add_child($$, $4); ast_add_child($$, $6); }
     ;
 

@@ -35,3 +35,5 @@ bool preprocessor_process(module* mod, ast_node* node);
     printf("%s\n", ast_find_closest_src_line(node)); \
     printf("preprocessor warning: "); \
     printf(fmt, ##__VA_ARGS__ )
+
+#define min( a, b ) (((a) < (b)) ? (a) : (b))
