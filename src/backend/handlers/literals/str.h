@@ -9,13 +9,13 @@
 void write_string( ast_node* node ) 
 {
     //
-    // Adding string to string table is typically handled by AstDeclaration,
+    // Adding string to string table is typically handled by AstAssignment,
     // but if we're writing a raw string literal, we need to do it here.
     //
-    // TODO: Implement AstDeclaration
-    if ( node->parent->type == AstDeclaration )
+    // TODO: Implement AstAssignment
+    if ( node->parent->type == AstAssignment )
     {
-        trace( "Parent is AstDeclaration, skipping" );
+        trace( "Parent is AstAssignment, skipping" );
         return;
     }
 
