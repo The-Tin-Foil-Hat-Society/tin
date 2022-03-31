@@ -1,7 +1,7 @@
 #This is the make file for the tin interpreter
 
 #File to compile:
-file = ./examples/hello_world.tin
+file = ./examples/math.tin
 flags = -D TIN_COMPILER -D TIN_DEBUG_OUTPUT_AST -D TIN_DEBUG_VERBOSE
 
 sources = src/*.c src/backend/*.c src/backend/builtin/*.c

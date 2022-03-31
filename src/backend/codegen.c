@@ -4,122 +4,73 @@
 #include "ast.h"
 
 #include "backend/common.h"
-#include "backend/handlers/handlers.h"
-
+#include "backend/generators.h"
 #include "backend/builtin/rodata.h"
 
-void walk_through_nodes( FILE* file, ast_node* node ) 
+/*
+ * Depth-first recursive tree traversal
+ */
+int codegen_traverse_ast(FILE *file, ast_node *node)
 {
-    for (int i = 0; i < node->children->size; i++)
+    int left, right;
+
+    ast_node *left_node = ast_get_child(node, 0);
+    ast_node *right_node = ast_get_child(node, 1);
+
+    if (left_node)
+        left = codegen_traverse_ast(file, left_node);
+    if (right_node)
+        right = codegen_traverse_ast(file, right_node);
+
+    switch (node->type)
     {
-        ast_node* child = vector_get_item( node->children, i );
+    case AstAdd:
+        return gen_add(file, left, right);
+    case AstSub:
+        return gen_sub(file, left, right);
+    case AstMul:
+        return gen_mul(file, left, right);
+    case AstDiv:
+        return gen_div(file, left, right);
+    case AstIntegerLit:
+        return gen_load(file, node->value.integer);
 
-        trace( "\n==== Node %s ====", ast_type_names[child->type] );
-
-        bool node_was_handled = true;
-
-        switch (child->type)
-        {
-            //
-            // Keywords
-            //
-            case AstPrint: 
-                write_print( child );
-                break;
-            case AstInput:
-                write_input( child );
-                break;
-            case AstAlloc:
-                write_alloc( child );
-                break;
-            case AstAsm:
-                write_asm( child );
-                break;
-            
-            //
-            // Literals
-            //
-            case AstStringLit:
-                write_string( child );
-                break;
-            case AstIntegerLit:
-                write_i32( child );
-                break;
-
-            //
-            // Scoping
-            //
-            case AstFunction:
-                write_func( child );
-                break;
-            case AstFunctionCall:
-                write_func_call( child );
-                break;
-            case AstReturn:
-                write_return( child );
-                break;
-            case AstAssignment:
-                write_assignment( child );
-                break;
-            case AstSymbol:
-                write_symbol( child );
-                break;
-            default:
-                node_was_handled = false;
-                trace( "Node wasn't handled" );
-                break;
-        }
-
-        walk_through_nodes( file, child );
-
-        if ( child->type == AstFunction )
-        {
-            char* function_name = get_function_name( child );
-            write_function_epilogue( function_name );
-            add_comment( "End function" );
-        }
+    default:
+        trace("Unknown node type: %s\n", ast_type_names[node->type]);
+        break;
     }
+
+    return 0;
 }
 
-void init( )
+void codegen_init()
 {
+    register_freeall();
     instructions_init();
     rodata_init();
 }
 
-bool codegen_generate( module* mod, ast_node* node, FILE* file ) 
+void write_preamble(FILE *file)
 {
-    trace( "Running assembly codegen..." );
+    emit(".globl __start\n\n");
+    rodata_write(file);
+}
 
-    // Initialise all tables
-    init( );
+void write_postamble(FILE *file)
+{
+}
 
-    // Walk through each node so that we know what we're writing
-    walk_through_nodes( file, node );
+bool codegen_generate(module *mod, ast_node *node, FILE *file)
+{
+    codegen_init();
+    write_preamble(file);
 
-    write_to_file( "# \n" );
-    write_to_file( "# Auto-generated file \n" );
-    write_to_file( "# \n" );
-
-    //
-    // Definitions
-    //
-    write_to_file( ".globl __start\n" );
-    write_to_file( "\n" );
-
-    //
-    // Read-only data
-    //
-    rodata_write( file );
-
-    //
     // Text section
-    //
-    write_to_file( ".text\n" );
-    write_to_file( "\n" );
+    write_to_file(".text\n\n");
 
-    //
-    // Instructions
-    //
-    instructions_write( file );
+    // ASM
+    write_to_file("__start:\n");
+    int reg;
+    reg = codegen_traverse_ast(file, node);
+    gen_printint(file, reg);
 }
