@@ -6,6 +6,7 @@
 #include "definition.h"
 #include "free.h"
 #include "func_call.h"
+#include "func.h"
 #include "identifier.h"
 #include "if.h"
 #include "input.h"

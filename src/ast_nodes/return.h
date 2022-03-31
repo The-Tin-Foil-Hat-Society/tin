@@ -11,7 +11,7 @@ void preprocess_return(preproc_state* state, ast_node* node)
 
     if (node->children->size == 0)
     {
-        if (strcmp(function->dtype->name, "void") != 0)
+        if (strcmp(function->dtype->name, "void") != 0 || function->dtype->pointer_level > 0)
         {
             preproc_error(state, node, "%s requires a return of type %s\n", function->name, function->dtype->name);
         }
