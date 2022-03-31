@@ -183,7 +183,7 @@ argument_list
     ;
 
 func_call
-    : identifier BRACKET_L BRACKET_R    { $$ = ast_new(AstFunctionCall); ast_add_child($$, $1); }
+    : identifier BRACKET_L BRACKET_R    { $$ = ast_new(AstFunctionCall); ast_add_child($$, $1); ast_add_child($$, ast_new(AstArgumentList)); }
     | identifier BRACKET_L argument_list BRACKET_R  { $$ = ast_new(AstFunctionCall); ast_add_child($$, $1); ast_add_child($$, $3); }
     ;
 
@@ -197,7 +197,7 @@ func
     ; 
 
 function
-    : func definition scope { $$ = $1; ast_add_child($$, $2); ast_add_child($$, $3); }
+    : func definition scope { $$ = $1; ast_add_child($$, $2); ast_add_child($$, $3); ast_add_child($$, ast_new(AstDefinitionList)); }
     | func definition BRACKET_L definition_list BRACKET_R scope { $$ = $1; ast_add_child($$, $2); ast_add_child($$, $4); ast_add_child($$, $6); }
     ;
 
