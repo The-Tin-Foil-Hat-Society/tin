@@ -9,6 +9,7 @@
 #include "func.h"
 #include "identifier.h"
 #include "if.h"
+#include "include.h"
 #include "input.h"
 #include "integer_lit.h"
 #include "logical_expression.h"

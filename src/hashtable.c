@@ -35,6 +35,7 @@ hashtable* hashtable_new()
     for (int i = 0; i < table->capacity; i++)
     {
         table->keys[i] = 0;
+        table->items[i] = 0;
     }
 
     return table;
@@ -67,6 +68,7 @@ void hashtable_resize(hashtable* table)
     for (int i = 0; i < table->capacity; i++)
     {
         table->keys[i] = 0;
+        table->items[i] = 0;
     }
 
     for (int i = 0; i < old_capacity; i++)

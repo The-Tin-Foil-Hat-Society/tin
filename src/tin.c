@@ -4,7 +4,7 @@
 #include "optimisation.h"
 #include "preprocessor.h"
 
-#include "parser.tab.h" // always include parser before lexer to avoid circular dependency
+#include "parser.tab.h"
 #include "lex.yy.h"
 
 int main(int argc, char** argv)
@@ -15,29 +15,8 @@ int main(int argc, char** argv)
 		return 0;
 	}
 
-	FILE* src_file;
-	if (!(src_file = fopen(argv[1], "rb")))
-	{
-		printf("error: could not find file %s, exiting\n",argv[1]);
-		return 0;
-	}
-
 	module* mod = module_new();
-	module_set_src_file(mod, src_file);
-
-	// lexing and parsing
-
-    yyscan_t scanner;
-
-	yylex_init(&scanner);
-	yyset_in(src_file, scanner); /* parse file in from arg*/
-
-	int parser_status = yyparse(scanner, mod);
-
-	yylex_destroy(scanner);
-	fclose(src_file);
-
-	if (parser_status != 0)
+	if (module_parse(mod, argv[1]) != 0)
 	{
 		goto end;
 	}

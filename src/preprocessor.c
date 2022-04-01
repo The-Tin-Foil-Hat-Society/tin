@@ -27,6 +27,10 @@ void build_symbols(preproc_state* state, ast_node* node)
     {
         preprocess_identifier(state, node);
     }
+    else if (node->type == AstInclude)
+    {
+        preprocess_include(state, node);
+    }
 }
 
 // process all nodes (after building symbols)

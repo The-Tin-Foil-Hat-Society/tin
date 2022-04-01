@@ -1,11 +1,16 @@
 #include "module.h"
+#include "parser.tab.h"
+#include "lex.yy.h"
 #include <stdlib.h>
 
-module* module_new(void)
+module* module_new()
 {
     module* mod = malloc(sizeof(module));
 
+    mod->parent = 0;
+    mod->name = 0;
     mod->ast_root = ast_new(AstRoot);
+    mod->dependencies = 0;
     mod->src_code = 0;
 
     return mod;
@@ -13,9 +18,69 @@ module* module_new(void)
 
 void module_free(module* mod)
 {
+    if (mod->dependencies != 0)
+    {
+        hashtable_free(mod->dependencies);
+    }
+
+    free(mod->name);
     ast_free(mod->ast_root);
     free(mod->src_code);
     free(mod);
+}
+
+int module_parse(module* mod, char* filename)
+{
+    FILE* src_file;
+	if (!(src_file = fopen(filename, "rb")))
+	{
+		printf("error: could not find file %s\n", filename);
+		return 1;
+	}
+
+	module_set_src_file(mod, src_file);
+
+    yyscan_t scanner;
+
+	yylex_init(&scanner);
+	yyset_in(src_file, scanner); /* parse file in from arg*/
+
+	int parser_status = yyparse(scanner, mod);
+
+	yylex_destroy(scanner);
+	fclose(src_file);
+
+    return parser_status;
+}
+
+void module_add_dependency(module* mod, module* dependency)
+{
+    while (mod->parent != 0)
+    {
+        mod = mod->parent;
+    }
+
+    if (mod->dependencies == 0)
+    {
+        mod->dependencies = hashtable_new();
+    }
+
+    hashtable_set_item(mod->dependencies, dependency->name, dependency);
+}
+
+module* module_find_dependency(module* mod, char* name)
+{
+    while (mod->parent != 0)
+    {
+        mod = mod->parent;
+    }
+
+    if (mod->dependencies == 0)
+    {
+        return 0;
+    }
+
+    return hashtable_get_item(mod->dependencies, name);
 }
 
 void module_set_src_file(module* mod, FILE* file)
