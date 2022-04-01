@@ -11,7 +11,12 @@ int gen_store_global(FILE *file, int reg, char *identifier)
         offset = variable_set(identifier, current_variable_offset);
     }
 
-    fprintf(file, "\tsw\t%s, -%d(s0)\n", registers[reg], offset);
+    emit(
+        "Store global variable into memory",
+        "sw",
+        "%s, -%d(s0)",
+        registers[reg],
+        offset);
     free_register(reg);
 
     return reg;
@@ -22,13 +27,22 @@ int gen_load_global(FILE *file, char *identifier)
     int reg = register_alloc();
     int offset = variable_get(identifier);
 
-    fprintf(file, "\tlw\t%s, -%d(s0)\n", registers[reg], offset);
+    emit(
+        "Load global variable from memory",
+        "lw",
+        "%s, -%d(s0)",
+        registers[reg],
+        offset);
     return reg;
 }
 
 void gen_global_symbol(FILE *file, char *identifier)
 {
-    fprintf(file, "\t.globl\t%s\n", identifier);
+    emit(
+        "Global symbol",
+        "",
+        "%s",
+        identifier);
 }
 
 void register_freeall()
@@ -50,6 +64,7 @@ int register_alloc()
             return (i);
         }
     }
+
     compiler_error("No free registers");
 }
 
@@ -67,7 +82,7 @@ int gen_load(FILE *file, int value)
 {
     int r = register_alloc();
 
-    emit("Load integer", "li", "%s, %d", registers[r], value);
+    emit("Load integer literal", "li", "%s, %d", registers[r], value);
     return r;
 }
 
