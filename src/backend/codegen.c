@@ -51,6 +51,14 @@ int codegen_traverse_ast(FILE *file, ast_node *node, int reg)
     //
     case AstIntegerLit:
         return gen_load(file, node->value.integer);
+    case AstStringLit:
+        return gen_rodata_string(file, "Lstr0", node->value.string);
+
+    //
+    // Keywords
+    //
+    case AstPrint:
+        return gen_print(file, "Lstr0");
 
     //
     // Variables
@@ -90,15 +98,19 @@ void codegen_init()
 {
     register_freeall();
     variable_init();
+    rodata_init();
 }
 
 void write_preamble(FILE *file)
 {
+    trace("Writing preamble");
+
     write_to_file(".globl __start\n");
 }
 
 void write_postamble(FILE *file)
 {
+    trace("Writing postamble");
 }
 
 bool codegen_generate(module *mod, ast_node *node, FILE *file)
@@ -119,4 +131,7 @@ bool codegen_generate(module *mod, ast_node *node, FILE *file)
     int reg;
     reg = codegen_traverse_ast(file, node, 0);
     gen_printint(file, reg);
+
+    write_postamble(file);
+    gen_rodata(file);
 }

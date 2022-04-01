@@ -36,13 +36,34 @@ int gen_load_global(FILE *file, char *identifier)
     return reg;
 }
 
-void gen_global_symbol(FILE *file, char *identifier)
+int gen_rodata_string(FILE *file, char *identifier, char *string)
 {
+    rodata_add(identifier, string);
+}
+
+int gen_print(FILE *file, char *identifier)
+{
+    int reg = register_alloc();
+
     emit(
-        "Global symbol",
-        "",
-        "%s",
+        "Print string",
+        "li",
+        "a0, %d",
+        PrintString);
+
+    emit(
+        "Syscall args",
+        "la",
+        "a1, %s",
         identifier);
+
+    emit(
+        "Syscall",
+        "ecall",
+        "");
+
+    free_register(reg);
+    return reg;
 }
 
 void register_freeall()
@@ -159,4 +180,31 @@ int variable_set(char *identifier, int value)
 
     current_variable_offset += 4;
     return value;
+}
+
+void rodata_init()
+{
+}
+
+void rodata_add(char *identifier, char *string)
+{
+    rodata_entry *entry = (rodata_entry *)malloc(sizeof(rodata_entry));
+    entry->identifier = strdup(identifier);
+    entry->string = strdup(string);
+
+    trace("\tAdding string '%s' to rodata under identifier '%s'", entry->identifier, entry->string);
+
+    rodata[rodata_count] = entry;
+    rodata_count++;
+}
+
+void gen_rodata(FILE *file)
+{
+    write_to_file(".section\t.rodata\n");
+    for (int i = 0; i < rodata_count; i++)
+    {
+        trace("\tWriting rodata string %s ('%s')", rodata[i]->identifier, rodata[i]->string);
+        write_to_file("%s:\n", rodata[i]->identifier);
+        write_to_file("\t.string\t\"%s\"\n", rodata[i]->string);
+    }
 }
