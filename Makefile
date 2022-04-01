@@ -33,6 +33,8 @@ lex.o: src/tin.l
 clean:
 	@rm generated/* build/*
 	@rmdir generated build
+	@rm examples/*.tin.s
+	@rm examples/*.tin.ast.json
 
 check_leaks: tin
 	@valgrind ./build/tin $(file) --leak-check=full
