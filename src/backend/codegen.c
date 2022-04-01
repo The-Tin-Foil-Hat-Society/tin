@@ -3,7 +3,6 @@
 #include "codegen.h"
 #include "ast.h"
 
-#include "backend/common.h"
 #include "backend/generators.h"
 #include "backend/builtin/rodata.h"
 
@@ -12,8 +11,6 @@
  */
 int codegen_traverse_ast(FILE *file, ast_node *node, int reg)
 {
-    emit("\t# %s\n", ast_type_names[node->type]);
-
     int *regs = malloc(sizeof(int) * node->children->size);
 
     // HACK for something I shouldn't really need to do...
@@ -100,7 +97,7 @@ void codegen_init()
 
 void write_preamble(FILE *file)
 {
-    emit(".globl __start\n\n");
+    write_to_file(".globl __start\n");
     rodata_write(file);
 }
 

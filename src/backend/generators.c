@@ -67,13 +67,13 @@ int gen_load(FILE *file, int value)
 {
     int r = register_alloc();
 
-    emit("\tli\t%s, %d\n", registers[r], value);
+    emit("Load integer", "li", "%s, %d", registers[r], value);
     return r;
 }
 
 int gen_add(FILE *file, int left, int right)
 {
-    emit("\tadd\t%s, %s, %s\n", registers[left], registers[left], registers[right]);
+    emit("Add integers", "add", "%s, %s, %s", registers[left], registers[left], registers[right]);
     free_register(right);
 
     return left;
@@ -81,7 +81,7 @@ int gen_add(FILE *file, int left, int right)
 
 int gen_sub(FILE *file, int left, int right)
 {
-    emit("\tsub\t%s, %s, %s\n", registers[left], registers[left], registers[right]);
+    emit("Subtract integers", "sub", "%s, %s, %s", registers[left], registers[left], registers[right]);
     free_register(right);
 
     return left;
@@ -89,7 +89,7 @@ int gen_sub(FILE *file, int left, int right)
 
 int gen_mul(FILE *file, int left, int right)
 {
-    emit("\tmul\t%s, %s, %s\n", registers[left], registers[left], registers[right]);
+    emit("Multiply integers", "mul", "%s, %s, %s", registers[left], registers[left], registers[right]);
     free_register(right);
 
     return left;
@@ -97,7 +97,7 @@ int gen_mul(FILE *file, int left, int right)
 
 int gen_div(FILE *file, int left, int right)
 {
-    emit("\tdiv\t%s, %s, %s\n", registers[left], registers[left], registers[right]);
+    emit("Divide integers", "div", "%s, %s, %s", registers[left], registers[left], registers[right]);
     free_register(right);
 
     return left;
@@ -105,9 +105,9 @@ int gen_div(FILE *file, int left, int right)
 
 void gen_printint(FILE *file, int r)
 {
-    emit("\tli\ta0, 1\n");
-    emit("\tmv\ta1, %s\n", registers[r]);
-    emit("\tecall\n");
+    emit("Syscall ID", "li", "a0, %d", PrintInt);
+    emit("Parameter", "mv", "a1 %s", registers[r]);
+    emit("Syscall", "ecall", "");
 
     free_register(r);
 }

@@ -10,8 +10,14 @@
 #include <stdarg.h>
 #include <stdbool.h>
 
-#define emit(fmt, ...) \
-    fprintf(file, fmt, ##__VA_ARGS__);
+void _emit_comment(FILE *file, const char *fmt, ...);
+void _emit(FILE *file, const char *comment, const char *opcode, const char *operand, ...);
+
+#define emit_comment(...) \
+    _emit_comment(file, __VA_ARGS__)
+
+#define emit(comment, opcode, operand, ...) \
+    _emit(file, comment, opcode, operand, ##__VA_ARGS__)
 
 #ifdef TIN_DEBUG_VERBOSE
 #define trace(...)       \
