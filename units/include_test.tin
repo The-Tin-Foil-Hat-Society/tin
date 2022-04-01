@@ -1,0 +1,11 @@
+include "include_test_example_1.tin"
+include "include_test_folder/include_test_example_2.tin"
+
+fn i32 main
+{
+    include_test_example_1::test();
+
+    print include_test_example_2::string;
+
+    return 0;
+}
