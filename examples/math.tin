@@ -1,4 +1,7 @@
 fn i32 main
 {
-    return 4 * 4 + 2; // 18
+    i32 four = 4;
+    i32 eight = 8;
+
+    return four * eight;
 }
