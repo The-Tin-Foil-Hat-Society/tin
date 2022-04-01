@@ -3,9 +3,6 @@
 #include "ast.h"
 
 #include "backend/syscalls.h"
-#include "backend/builtin/instructions.h"
-#include "backend/builtin/variable.h"
-#include "backend/builtin/rodata.h"
 
 #include <stdarg.h>
 #include <stdbool.h>

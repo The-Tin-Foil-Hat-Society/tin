@@ -4,7 +4,6 @@
 #include "ast.h"
 
 #include "backend/generators.h"
-#include "backend/builtin/rodata.h"
 
 /*
  * Depth-first recursive tree traversal
@@ -91,14 +90,11 @@ void codegen_init()
 {
     register_freeall();
     variable_init();
-    instructions_init();
-    rodata_init();
 }
 
 void write_preamble(FILE *file)
 {
     write_to_file(".globl __start\n");
-    rodata_write(file);
 }
 
 void write_postamble(FILE *file)
