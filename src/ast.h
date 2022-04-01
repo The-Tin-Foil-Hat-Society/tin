@@ -46,11 +46,13 @@ enum ast_node_type
     AstIdentifierIndex,
     AstIdentifierReference,
     AstIf,
+    AstInclude,
     AstInput,
     AstLessThan,
     AstLessThanOrEqual,
     AstMod,
     AstMul,
+    AstNamespace,
     AstNot,
     AstNotEqual,
     AstOr,
@@ -64,7 +66,7 @@ enum ast_node_type
 };
 
 // for printing purposes
-static char ast_type_names[44][32] = { "AstRoot","AstIdentifier","AstBoolLit","AstIntegerLit","AstStringLit","AstAdd","AstAlloc","AstAnd","AstArgumentList","AstAsm","AstAssignment","AstBlock","AstBreak","AstContinue","AstDataType","AstDefinition","AstDefinitionList","AstDiv","AstEqual","AstFree","AstFunction","AstFunctionCall","AstGoto","AstGreaterThan","AstGreaterThanOrEqual","AstIdentifierDereference","AstIdentifierIndex","AstIdentifierReference","AstIf","AstInput","AstLessThan","AstLessThanOrEqual","AstMod","AstMul","AstNot","AstNotEqual","AstOr","AstPow","AstPrint","AstReturn","AstScope","AstSub","AstSymbol","AstWhile" };
+static char ast_type_names[46][32] = { "AstRoot","AstIdentifier","AstBoolLit","AstIntegerLit","AstStringLit","AstAdd","AstAlloc","AstAnd","AstArgumentList","AstAsm","AstAssignment","AstBlock","AstBreak","AstContinue","AstDataType","AstDefinition","AstDefinitionList","AstDiv","AstEqual","AstFree","AstFunction","AstFunctionCall","AstGoto","AstGreaterThan","AstGreaterThanOrEqual","AstIdentifierDereference","AstIdentifierIndex","AstIdentifierReference","AstIf","AstInclude","AstInput","AstLessThan","AstLessThanOrEqual","AstMod","AstMul","AstNamespace","AstNot","AstNotEqual","AstOr","AstPow","AstPrint","AstReturn","AstScope","AstSub","AstSymbol","AstWhile" };
 
 typedef struct ast_node ast_node; 
 struct ast_node
@@ -79,7 +81,7 @@ struct ast_node
         bool boolean;            // AstBoolLit
         data_type* dtype;        // AstDataType, AstAdd, AstDiv, AstMod, AstMul, AstPow, AstSub
         int64_t integer;         // AstIntegerLit
-        char* string;            // AstAsm, AstIdentifier, AstStringLit
+        char* string;            // AstAsm, AstIdentifier, AstInclude, AstNamespace, AstStringLit
         symbol* symbol;          // AstSymbol
         hashtable* symbol_table; // AstRoot, AstScope
     } value; 
