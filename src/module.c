@@ -12,6 +12,7 @@ module* module_new()
     mod->dir = 0;
     mod->ast_root = ast_new(AstRoot);
     mod->dependencies = 0;
+    mod->dependency_store = 0;
     mod->src_code = 0;
 
     return mod;
@@ -22,6 +23,7 @@ void module_free(module* mod)
     if (mod->dependencies != 0)
     {
         hashtable_free(mod->dependencies);
+        hashtable_free(mod->dependency_store);
     }
     if (mod->dir != 0)
     {
@@ -81,32 +83,47 @@ int module_parse(module* mod, char* filename)
 
 void module_add_dependency(module* mod, module* dependency)
 {
-    while (mod->parent != 0)
-    {
-        mod = mod->parent;
-    }
-
     if (mod->dependencies == 0)
     {
         mod->dependencies = hashtable_new();
     }
-
     hashtable_set_item(mod->dependencies, dependency->name, dependency);
-}
 
-module* module_find_dependency(module* mod, char* name)
-{
     while (mod->parent != 0)
     {
         mod = mod->parent;
     }
 
+    if (mod->dependency_store == 0)
+    {
+        mod->dependency_store = hashtable_new();
+    }
+    hashtable_set_item(mod->dependency_store, dependency->name, dependency);
+}
+
+module* module_get_dependency(module* mod, char* name)
+{
     if (mod->dependencies == 0)
     {
         return 0;
     }
 
     return hashtable_get_item(mod->dependencies, name);
+}
+
+module* module_find_dependency(module* mod, char* name)
+{
+    while(mod->parent != 0)
+    {
+        mod = mod->parent;
+    }
+
+    if (mod->dependency_store == 0)
+    {
+        return 0;
+    }
+
+    return hashtable_get_item(mod->dependency_store, name);
 }
 
 void module_set_src_file(module* mod, FILE* file)

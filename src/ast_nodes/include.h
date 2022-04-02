@@ -32,20 +32,25 @@ void preprocess_include(preproc_state* state, ast_node* node)
         name = strdup(s + 1);
     }
 
-    if (module_find_dependency(state->mod, name) == 0)
+    module* dependency = module_find_dependency(state->mod, name);
+    if (dependency == 0)
     {
-        module* dependency = module_new();
+        // if the dependency doesn't exist in the program, parse it 
+        dependency = module_new();
         dependency->parent = state->mod;
         dependency->name = name;
 
-        if (module_parse(dependency, filename) == 0)
-        {
-            module_add_dependency(state->mod, dependency);
-        }
-        else
+        if (module_parse(dependency, filename) != 0)
         {
             preproc_error(state, node, "could not parse %s\n", filename);
+            free(dependency);
+            dependency = 0;
         }
+    }
+    
+    if (dependency != 0)
+    {
+        module_add_dependency(state->mod, dependency);
     }
 
     free(filename_copy);
