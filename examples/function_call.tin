@@ -1,14 +1,12 @@
 fn i32 bar
 {
     print "bar\n";
-    return;
 }
 
 fn i32 foo
 {
     print "foo\n";
     bar();
-    return;
 }
 
 fn i32 main
