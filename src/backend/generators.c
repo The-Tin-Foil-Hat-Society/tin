@@ -2,6 +2,8 @@
 
 int gen_store_global(FILE *file, int reg, char *identifier)
 {
+    emit_comment("Store global %s into register %s\n", identifier, registers[reg]);
+
     // Do we already have an offset for this variable
     int offset = variable_get(identifier);
 
@@ -27,6 +29,8 @@ int gen_load_global(FILE *file, char *identifier)
     int reg = register_alloc();
     int offset = variable_get(identifier);
 
+    emit_comment("Load global %s from offset %d into register %s\n", identifier, offset, registers[reg]);
+
     emit(
         "Load global variable from memory",
         "lw",
@@ -43,6 +47,8 @@ int gen_rodata_string(FILE *file, char *identifier, char *string)
 
 int gen_print_string(FILE *file, int index, int reg)
 {
+    emit_comment("Print string constant %d\n", index);
+
     emit(
         "Print string",
         "li",
@@ -101,12 +107,16 @@ int gen_load(FILE *file, int value)
 {
     int r = register_alloc();
 
+    emit_comment("Load constant %d into register %s\n", value, registers[r]);
+
     emit("Load integer literal", "li", "%s, %d", registers[r], value);
     return r;
 }
 
 int gen_add(FILE *file, int left, int right)
 {
+    emit_comment("Addition of %s and %s\n", registers[left], registers[right]);
+
     emit("Add integers", "add", "%s, %s, %s", registers[left], registers[left], registers[right]);
     free_register(right);
 
@@ -115,6 +125,8 @@ int gen_add(FILE *file, int left, int right)
 
 int gen_sub(FILE *file, int left, int right)
 {
+    emit_comment("Subtraction of %s and %s\n", registers[left], registers[right]);
+
     emit("Subtract integers", "sub", "%s, %s, %s", registers[left], registers[left], registers[right]);
     free_register(right);
 
@@ -123,6 +135,8 @@ int gen_sub(FILE *file, int left, int right)
 
 int gen_mul(FILE *file, int left, int right)
 {
+    emit_comment("Multiplication of %s and %s\n", registers[left], registers[right]);
+
     emit("Multiply integers", "mul", "%s, %s, %s", registers[left], registers[left], registers[right]);
     free_register(right);
 
@@ -131,6 +145,8 @@ int gen_mul(FILE *file, int left, int right)
 
 int gen_div(FILE *file, int left, int right)
 {
+    emit_comment("Division of %s and %s\n", registers[left], registers[right]);
+
     emit("Divide integers", "div", "%s, %s, %s", registers[left], registers[left], registers[right]);
     free_register(right);
 
@@ -139,6 +155,8 @@ int gen_div(FILE *file, int left, int right)
 
 void gen_printint(FILE *file, int r)
 {
+    emit_comment("Print integer %s\n", registers[r]);
+
     emit("Syscall ID", "li", "a0, %d", PrintInt);
     emit("Parameter", "mv", "a1 %s", registers[r]);
     emit("Syscall", "ecall", "");
@@ -235,12 +253,17 @@ int gen_function_epilogue(FILE *file, int reg)
 
 int gen_function_call(FILE *file, int reg, char *identifier)
 {
+    emit_comment("Function call %s\n", identifier);
+
     emit("Call function", "call", "%s", identifier);
     return reg;
 }
 
 int gen_return(FILE *file, int reg)
 {
-    emit("Return", "ret", "");
+    emit_comment("Return\n");
+
+    gen_function_epilogue(file, reg);
+
     return reg;
 }
