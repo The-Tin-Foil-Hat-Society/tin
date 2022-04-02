@@ -1,8 +1,6 @@
 #include "ast.h"
 #include "interpreter.h"
 #include "module.h"
-#include "optimisation.h"
-#include "preprocessor.h"
 
 #include "parser.tab.h"
 #include "lex.yy.h"
@@ -16,22 +14,14 @@ int main(int argc, char** argv)
 	}
 
 	module* mod = module_new();
-	if (module_parse(mod, argv[1]) != 0)
+	if (!module_parse(mod, argv[1]))
 	{
 		goto end;
 	}
-
-	// preprocessing
-
-	if (!preprocessor_process(mod, mod->ast_root))
-	{
-		goto end;
-	}
-	optimize(mod, mod->ast_root);
 
 #ifdef TIN_INTERPRETER
 
-	// interpret(mod, mod->ast_root, 0); // not implemented yet . . .
+	// interpret(mod, 0, 0); // not implemented yet . . .
 
 	// output ast
 

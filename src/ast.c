@@ -235,9 +235,14 @@ symbol* ast_find_symbol(ast_node* node, char* name)
 
 char* ast_find_closest_src_line(ast_node* node)
 {
-    while (node->src_line == 0 && node != 0)
+    while (node != 0 && node->src_line == 0)
     {
         node = node->parent;
+    }
+
+    if (node == 0)
+    {
+        return 0;
     }
 
     return node->src_line;

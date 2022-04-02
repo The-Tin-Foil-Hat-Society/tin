@@ -1,4 +1,5 @@
 #include "module.h"
+#include "preprocessor.h"
 #include "parser.tab.h"
 #include "lex.yy.h"
 #include <stdlib.h>
@@ -36,7 +37,7 @@ void module_free(module* mod)
     free(mod);
 }
 
-int module_parse(module* mod, char* filename)
+bool module_parse(module* mod, char* filename)
 {
     char* path = malloc(1024);
     path[0] = '\0';
@@ -63,7 +64,7 @@ int module_parse(module* mod, char* filename)
 	if (!(src_file = fopen(path, "rb")))
 	{
 		printf("error: could not find file %s\n", filename);
-		return 1;
+		return false;
 	}
 
 	module_set_src_file(mod, src_file);
@@ -78,7 +79,13 @@ int module_parse(module* mod, char* filename)
 	yylex_destroy(scanner);
 	fclose(src_file);
 
-    return parser_status;
+    if (parser_status != 0)
+    {
+        printf("error: could not parse %s\n", filename);
+		return false;
+    }
+
+    return preprocessor_process(mod) == 0;
 }
 
 void module_add_dependency(module* mod, module* dependency)

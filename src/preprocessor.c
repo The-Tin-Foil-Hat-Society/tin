@@ -142,7 +142,7 @@ void process_nodes(preproc_state* state, ast_node* node)
     }
 }
 
-bool preprocessor_process(module* mod, ast_node* node)
+bool preprocessor_process(module* mod)
 {
     preproc_state* state = preproc_state_new();
     state->mod = mod;

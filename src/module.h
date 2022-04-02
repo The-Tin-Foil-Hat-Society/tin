@@ -19,7 +19,7 @@ struct module
 module* module_new(void);
 void module_free(module* mod);
 
-int module_parse(module* mod, char* filename);
+bool module_parse(module* mod, char* filename);
 
 void module_add_dependency(module* mod, module* dependency);
 // get the dependency from the specified module
