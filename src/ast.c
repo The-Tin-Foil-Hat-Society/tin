@@ -283,7 +283,7 @@ void ast_print_to_file(ast_node* node, FILE* file, bool recursive)
     {
         fprintf(file, ",\"str_value\": \"%s\"", node->value.symbol->name);
     }
-    else if (node->type == AstRoot || node->type == AstScope)
+    else if ((node->type == AstRoot || node->type == AstScope) && node->value.symbol_table->size > 0)
     {
         fprintf(file, ",\"symbol_table\": ");
         symtable_print_to_file(node->value.symbol_table, file);

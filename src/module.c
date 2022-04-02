@@ -220,20 +220,21 @@ void module_print_to_file(module* mod, FILE* file, bool recursive)
     fprintf(file, ", \"ast\": ");
     ast_print_to_file(mod->ast_root, file, recursive);
 
-    if (mod->dependency_store != 0)
+    if (mod->dependency_store != 0 && mod->dependency_store->size > 0)
     {
         fprintf(file, ",\"dependencies\": [");
 
-        for (int i = 0; i < mod->dependency_store->capacity; i++)
+        vector* dependency_vec = hashtable_to_vector(mod->dependency_store);
+        for (int i = 0; i < dependency_vec->size; i++)
         {
-            if (mod->dependency_store->keys[i] != 0)
+            module_print_to_file(vector_get_item(dependency_vec, i), file, recursive);
+            if (i < dependency_vec->size - 1) // don't print a comma after the last item
             {
-                module_print_to_file(mod->dependency_store->items[i], file, recursive);
                 fprintf(file, ",");
             }
         }
 
-        fprintf(file, "{}]");
+        fprintf(file, "]");
     }
 
     fprintf(file, "}");

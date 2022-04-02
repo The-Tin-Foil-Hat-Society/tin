@@ -62,14 +62,15 @@ void symtable_print_to_file(hashtable* table, FILE* file)
 {
     fprintf(file, "[");
 
-    for (int i = 0; i < table->capacity; i++)
+    vector* table_vec = hashtable_to_vector(table);
+    for (int i = 0; i < table_vec->size; i++)
     {
-        if (table->keys[i] != 0)
+        symbol_print_to_file(vector_get_item(table_vec, i), file);
+        if (i < table_vec->size - 1) // don't print a comma after the last item
         {
-            symbol_print_to_file(table->items[i], file);
             fprintf(file, ",");
         }
     }
 
-    fprintf(file, "{}]");
+    fprintf(file, "]");
 }

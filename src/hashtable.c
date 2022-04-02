@@ -137,3 +137,16 @@ void hashtable_delete_item(hashtable* table, char* key)
     table->items[i] = 0;
     table->size -= 1;
 }
+vector* hashtable_to_vector(hashtable* table)
+{
+    vector* vec = vector_new();
+    for (int i = 0; i < table->capacity; i++)
+    {
+        if (table->keys[i] != 0)
+        {
+            vector_add_item(vec, table->items[i]);
+        }
+    }
+
+    return vec;
+}
