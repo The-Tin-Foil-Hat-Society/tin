@@ -53,6 +53,11 @@ ast_node* ast_new(enum ast_node_type type)
 
 void ast_free(ast_node* node)
 {
+    if (node == 0)
+    {
+        return;
+    }
+
     for (size_t i = 0; i < node->children->size; i++)
     {
         ast_free(vector_get_item(node->children, i));
@@ -140,7 +145,10 @@ void ast_set_child(ast_node* node, size_t index, ast_node* new_child)
     {
         return;
     }
-    new_child->parent = node;
+    if (new_child != 0)
+    {
+        new_child->parent = node;
+    }
     vector_set_item(node->children, index, new_child);
 }
 

@@ -5,7 +5,7 @@ fn i32 main
 {
     include_test_example_1::test();
 
-    print include_test_example_2::string;
+    print include_test_example_2::test_str;
 
     return 0;
 }

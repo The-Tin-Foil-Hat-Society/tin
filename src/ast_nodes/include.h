@@ -38,11 +38,11 @@ void preprocess_include(preproc_state* state, ast_node* node)
         // if the dependency doesn't exist in the program, parse it 
         dependency = module_new();
         dependency->parent = state->mod;
-        dependency->name = name;
+        dependency->name = strdup(name);
 
-        if (module_parse(dependency, filename) != 0)
+        if (!module_parse(dependency, filename))
         {
-            preproc_error(state, node, "could not parse %s\n", filename);
+            preproc_error(state, node, "%scould not parse include\n", "");
             free(dependency);
             dependency = 0;
         }

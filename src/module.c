@@ -84,8 +84,8 @@ bool module_parse(module* mod, char* filename)
         printf("error: could not parse %s\n", filename);
 		return false;
     }
-
-    return preprocessor_process(mod) == 0;
+    
+    return preprocessor_process(mod);
 }
 
 void module_add_dependency(module* mod, module* dependency)
