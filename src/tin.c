@@ -27,14 +27,14 @@ int main(int argc, char** argv)
 
 	// make the filename for the ast by appending to the given code file
 	int orig_len = strlen(argv[1]);
-	char* ast_filename = malloc(orig_len + 10); // plus space for file extension
-	strcpy(ast_filename, argv[1]);
-	strcat(ast_filename, ".ast.json");
+	char* mod_filename = malloc(orig_len + 10); // plus space for file extension
+	strcpy(mod_filename, argv[1]);
+	strcat(mod_filename, ".mod.json");
 	
-	FILE* ast_file = fopen(ast_filename, "wb");
-	ast_print_to_file(mod->ast_root, ast_file, true);
-	fclose(ast_file);
-	free(ast_filename);
+	FILE* mod_file = fopen(mod_filename, "wb");
+	module_print_to_file(mod, mod_file, true);
+	fclose(mod_file);
+	free(mod_filename);
 #elif  TIN_COMPILER
 
 	// call the code generator and stuff here

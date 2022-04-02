@@ -22,7 +22,7 @@ void preprocess_include(preproc_state* state, ast_node* node)
     }
 
     // get name without the directory, if it is present
-    s = strrchr(filename_copy, '\\');
+    s = strrchr(filename_copy, '/');
     if (s == 0)
     {
         name = strdup(filename_copy);

@@ -48,7 +48,7 @@ bool module_parse(module* mod, char* filename)
     strcpy(path + strlen(path), filename);
 
     // get directory without filename, if it is present
-    char* s = strrchr(path, '\\');
+    char* s = strrchr(path, '/');
     if (s != 0)
     {
         char* temp = strdup(path);
@@ -199,4 +199,42 @@ char* module_get_src_line(module* mod, int linneno)
 
     free(line);
     return ret;
+}
+
+// prints a json representation of the module to the console
+void module_print(module* mod, bool recursive)
+{
+    module_print_to_file(mod, stdout, recursive);
+}
+
+// prints a json representation of the module to the given file
+void module_print_to_file(module* mod, FILE* file, bool recursive)
+{
+    fprintf(file, "{\"name\": \"%s\"", mod->name);
+
+    if (mod->dir != 0)
+    {
+        fprintf(file, ",\"dir\": \"%s\"", mod->dir);
+    }
+
+    fprintf(file, ", \"ast\": ");
+    ast_print_to_file(mod->ast_root, file, recursive);
+
+    if (mod->dependency_store != 0)
+    {
+        fprintf(file, ",\"dependencies\": [");
+
+        for (int i = 0; i < mod->dependency_store->capacity; i++)
+        {
+            if (mod->dependency_store->keys[i] != 0)
+            {
+                module_print_to_file(mod->dependency_store->items[i], file, recursive);
+                fprintf(file, ",");
+            }
+        }
+
+        fprintf(file, "{}]");
+    }
+
+    fprintf(file, "}");
 }

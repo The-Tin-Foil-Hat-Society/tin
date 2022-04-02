@@ -29,3 +29,8 @@ module* module_find_dependency(module* mod, char* name);
 
 void module_set_src_file(module* mod, FILE* file);
 char* module_get_src_line(module* mod, int lineno);
+
+// prints a json representation of the module to the console
+void module_print(module* mod, bool recursive);
+// prints a json representation of the module to the given file
+void module_print_to_file(module* mod, FILE* file, bool recursive);
