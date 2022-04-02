@@ -9,6 +9,7 @@ struct module
 {
     module* parent;
     char* name;
+    char* dir;
     ast_node* ast_root;
     hashtable* dependencies;
     char* src_code; // for debugging

@@ -9,6 +9,7 @@ module* module_new()
 
     mod->parent = 0;
     mod->name = 0;
+    mod->dir = 0;
     mod->ast_root = ast_new(AstRoot);
     mod->dependencies = 0;
     mod->src_code = 0;
@@ -22,6 +23,10 @@ void module_free(module* mod)
     {
         hashtable_free(mod->dependencies);
     }
+    if (mod->dir != 0)
+    {
+        free(mod->dir);
+    }
 
     free(mod->name);
     ast_free(mod->ast_root);
@@ -31,8 +36,29 @@ void module_free(module* mod)
 
 int module_parse(module* mod, char* filename)
 {
+    char* path = malloc(1024);
+    path[0] = '\0';
+    if (mod->parent != 0)
+    {
+        strcpy(path, mod->parent->dir);
+    }
+    strcpy(path + strlen(path), filename);
+
+    // get directory without filename, if it is present
+    char* s = strrchr(path, '\\');
+    if (s != 0)
+    {
+        char* temp = strdup(path);
+        temp[s - path + 1] = '\0';
+        mod->dir = strdup(temp);
+        free(temp);
+    }
+
+    printf("path: %s\n", path);
+    printf("dir:  %s\n", mod->dir);
+
     FILE* src_file;
-	if (!(src_file = fopen(filename, "rb")))
+	if (!(src_file = fopen(path, "rb")))
 	{
 		printf("error: could not find file %s\n", filename);
 		return 1;
