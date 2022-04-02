@@ -10,7 +10,26 @@
  */
 int codegen_traverse_ast(FILE *file, ast_node *node, int reg)
 {
+    trace("\nAST traversal - node: %s", ast_type_names[node->type]);
     int *regs = malloc(sizeof(int) * node->children->size);
+
+    switch (node->type)
+    {
+    case AstFunction:
+    {
+        // Symbol is first child
+        ast_node *child = vector_get_item(node->children, 0);
+        gen_function(file, reg, child->value.symbol->name);
+        break;
+    }
+    case AstFunctionCall:
+    {
+        // Symbol is first child
+        ast_node *child = vector_get_item(node->children, 0);
+        gen_function_call(file, reg, child->value.symbol->name);
+        break;
+    }
+    }
 
     // HACK for something I shouldn't really need to do...
     if (node->type == AstAssignment)
@@ -31,7 +50,6 @@ int codegen_traverse_ast(FILE *file, ast_node *node, int reg)
         }
     }
 
-    trace("\nAST traversal - node: %s", ast_type_names[node->type]);
     switch (node->type)
     {
     //
@@ -52,13 +70,26 @@ int codegen_traverse_ast(FILE *file, ast_node *node, int reg)
     case AstIntegerLit:
         return gen_load(file, node->value.integer);
     case AstStringLit:
-        return gen_rodata_string(file, "Lstr0", node->value.string);
+    {
+        char *name = "Lstr";
+        name = malloc(sizeof(char) * (strlen(name) + 1));
+        sprintf(name, "Lstr%d", rodata_count++);
+        return gen_rodata_string(file, name, node->value.string);
+    }
 
     //
     // Keywords
     //
     case AstPrint:
-        return gen_print(file, "Lstr0");
+        return gen_print_string(file, rodata_count - 1, regs[0]);
+
+    //
+    // Functions
+    //
+    case AstFunction:
+        return gen_function_epilogue(file, reg);
+    case AstReturn:
+        return gen_return(file, regs[0]);
 
     //
     // Variables
@@ -74,6 +105,11 @@ int codegen_traverse_ast(FILE *file, ast_node *node, int reg)
             trace("\tFunctions are not supported yet");
             return 0;
         }
+        else if (node->parent->type == AstFunctionCall)
+        {
+            trace("\tFunction calls are not supported yet");
+            return 0;
+        }
         else
         {
             return gen_load_global(file, node->value.symbol->name);
@@ -81,10 +117,6 @@ int codegen_traverse_ast(FILE *file, ast_node *node, int reg)
     }
     case AstAssignment:
         return regs[1];
-
-    case AstReturn:
-        trace("\tReturning from function");
-        return regs[0];
 
     default:
         trace("Unhandled node type: %s", ast_type_names[node->type]);
@@ -121,17 +153,19 @@ bool codegen_generate(module *mod, ast_node *node, FILE *file)
     // Text section
     write_to_file(".text\n\n");
 
+    int reg;
+    reg = codegen_traverse_ast(file, node, 0);
+    write_postamble(file);
+
     // ASM
     write_to_file("__start:\n");
     write_to_file("\t# Function preamble\n");
-    write_to_file("\taddi\tsp, sp, -32\n");
-    write_to_file("\tsw\tsp, 24(sp)\n");
-    write_to_file("\taddi\ts0, sp, 32\n");
-
-    int reg;
-    reg = codegen_traverse_ast(file, node, 0);
+    write_to_file("\taddi\tsp, sp, -16\n");
+    write_to_file("\tsw\tsp, 12(sp)\n");
+    write_to_file("\taddi\ts0, sp, 16\n");
+    write_to_file("\t# Call main function\n");
+    write_to_file("\tcall\tmain\n");
     gen_printint(file, reg);
 
-    write_postamble(file);
     gen_rodata(file);
 }

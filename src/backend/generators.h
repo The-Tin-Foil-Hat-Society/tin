@@ -39,7 +39,7 @@ struct rodata_entry
     char *string;
 };
 
-#define RODATA_COUNT 10
+#define RODATA_COUNT 1024
 static struct rodata_entry *rodata[RODATA_COUNT];
 static int rodata_count = 0;
 
@@ -57,7 +57,7 @@ int gen_store_global(FILE *file, int reg, char *identifier);
 void gen_global_symbol(FILE *file, char *identifier);
 
 int gen_rodata_string(FILE *file, char *identifier, char *string);
-int gen_print(FILE *file, char *identifier);
+int gen_print_string(FILE *file, int index, int reg);
 
 int gen_add(FILE *file, int left, int right);
 int gen_sub(FILE *file, int left, int right);
@@ -65,3 +65,8 @@ int gen_mul(FILE *file, int left, int right);
 int gen_div(FILE *file, int left, int right);
 
 void gen_printint(FILE *file, int r);
+
+int gen_function(FILE *file, int reg, char *identifier);
+int gen_function_epilogue(FILE *file, int reg);
+int gen_function_call(FILE *file, int reg, char *identifier);
+int gen_return(FILE *file, int reg);

@@ -41,28 +41,26 @@ int gen_rodata_string(FILE *file, char *identifier, char *string)
     rodata_add(identifier, string);
 }
 
-int gen_print(FILE *file, char *identifier)
+int gen_print_string(FILE *file, int index, int reg)
 {
-    int reg = register_alloc();
-
     emit(
         "Print string",
         "li",
         "a0, %d",
         PrintString);
 
+    // Move offset into register a1
     emit(
-        "Syscall args",
+        "Syscall args: print string",
         "la",
-        "a1, %s",
-        identifier);
+        "a1, Lstr%d",
+        index);
 
     emit(
-        "Syscall",
+        "syscall",
         "ecall",
         "");
 
-    free_register(reg);
     return reg;
 }
 
@@ -207,4 +205,42 @@ void gen_rodata(FILE *file)
         write_to_file("%s:\n", rodata[i]->identifier);
         write_to_file("\t.string\t\"%s\"\n", rodata[i]->string);
     }
+}
+
+int gen_function(FILE *file, int reg, char *identifier)
+{
+    write_to_file("%s:\t# Declare function %s\n", identifier, identifier);
+
+    emit_comment("Function prologue\n");
+    emit("Move the stack point 16 bytes back", "addi", "sp, sp, -16");
+    emit("Store the return address", "sw", "ra, 12(sp)");
+    emit("Store the s0 register", "sw", "s0, 8(sp)");
+    emit("Move the stack point back", "addi", "sp, sp, 16");
+    emit_comment("End function prologue\n");
+
+    return reg;
+}
+
+int gen_function_epilogue(FILE *file, int reg)
+{
+    emit_comment("Function epilogue\n");
+    emit("Load the return address", "lw", "ra, 12(sp)");
+    emit("Load the s0 register", "lw", "s0, 8(sp)");
+    emit("Move the stack point 16 bytes back", "addi", "sp, sp, 16");
+    emit("Return", "jr", "ra");
+    emit_comment("End function epilogue\n");
+
+    return reg;
+}
+
+int gen_function_call(FILE *file, int reg, char *identifier)
+{
+    emit("Call function", "call", "%s", identifier);
+    return reg;
+}
+
+int gen_return(FILE *file, int reg)
+{
+    emit("Return", "ret", "");
+    return reg;
 }
