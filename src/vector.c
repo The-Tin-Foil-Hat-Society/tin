@@ -77,7 +77,7 @@ void* vector_get_item(vector* vec, size_t index)
 }
 size_t vector_get_item_index(vector* vec, void* item)
 {
-    size_t item_i = 0;
+    size_t item_i = -1;
 
     for (size_t i = 0; i < vec->size; i++)
     {
@@ -99,7 +99,7 @@ void vector_delete_item(vector* vec, void* item)
 {
     size_t item_i = vector_get_item_index(vec, item);
 
-    if (item_i != 0)
+    if (item_i != -1)
     {
         vector_delete_item_at(vec, item_i);
     }

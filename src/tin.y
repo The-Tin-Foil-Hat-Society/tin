@@ -66,7 +66,7 @@ data_type
 
 simple_identifier
     : IDENTIFIER { $$ = $1; } 
-    | IDENTIFIER DOUBLE_COLON simple_identifier { $$ = $1; $$->type = AstNamespace; ast_add_child($$, $3); } 
+    | IDENTIFIER DOUBLE_COLON simple_identifier { $$ = $3; $1->type = AstNamespace; ast_add_child($$, $1); } 
     ;
 
 identifier

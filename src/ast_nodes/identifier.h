@@ -7,20 +7,15 @@
 
 void preprocess_identifier(preproc_state* state, ast_node* node)
 {
-    bool namespaced_identifier = node->parent->type == AstNamespace;
+    bool namespaced_identifier = node->children->size > 0 && ast_get_child(node, 0)->type == AstNamespace;
 
     // evaluate which module the referenced identifier belongs to if it has a namespace
     module* namespace = state->mod;
-    while (node->parent->type == AstNamespace)
+    while (node->children->size > 0)
     {
-        ast_node* namespace_node = node->parent;
+        ast_node* namespace_node = ast_get_child(node, node->children->size - 1); // start with the last child
         namespace = module_get_dependency(namespace, namespace_node->value.string);
-
-        // replace the namespace node with the current node
-        node->parent = namespace_node->parent;
-        ast_set_child(namespace_node->parent, ast_get_child_index(namespace_node->parent, namespace_node), node);
-        ast_set_child(namespace_node, 0, 0); // the current node should be the 0-th child of the namespace
-        ast_free(namespace_node);
+        ast_delete_child(node, namespace_node);
     }
 
     hashtable* table = 0;

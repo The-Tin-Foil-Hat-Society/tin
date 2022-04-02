@@ -18,18 +18,6 @@ void preproc_state_free(preproc_state* state)
 // replaces all identifiers with shared symbols
 void build_symbols(preproc_state* state, ast_node* node)
 {
-    if (node->type == AstNamespace)
-    {
-        /*
-            if there is a chain of namespace nodes, this guard ensures we 
-            immeditelly leave after processing the identifier at the bottom,
-            since the whole chain is freed in the process, otherwise
-            'node->children' accesses freed memory and segfaults
-        */
-        build_symbols(state, ast_get_child(node, 0));
-        return;
-    }
-
     for (int i = 0; i < node->children->size; i++)
     {
         build_symbols(state, ast_get_child(node, i));
