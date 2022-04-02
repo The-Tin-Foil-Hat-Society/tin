@@ -65,7 +65,7 @@ data_type
     ;
 
 simple_identifier
-    : IDENTIFIER { $$ = yylval; } 
+    : IDENTIFIER { $$ = $1; } 
     | IDENTIFIER DOUBLE_COLON IDENTIFIER { $$ = $1; $$->type = AstNamespace; ast_add_child($$, $3); } 
     ;
 
