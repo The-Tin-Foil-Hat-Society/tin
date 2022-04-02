@@ -1,0 +1,50 @@
+name: Testing
+
+on:
+  push:
+    branches:
+      - main
+      - testing
+
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    
+      
+    - name: Install flex bison
+      run: sudo apt-get install build-essential 
+      
+    - name: Install update
+      run:  sudo apt-get update
+      
+    - name: Install valgrind
+      run: sudo apt-get install valgrind
+      
+    - name: Make tin
+      run: make tin
+  
+    - name: Memory leak check
+      run: valgrind --leak-check=full --track-origins=yes ./build/tin example.tin
+      
+    - name: Run working test
+      run: ./build/tin units/working.tin
+    - name: Run typecheck test
+      run: ./build/tin units/typecheck-test.tin
+          ## ./build/tin units/missing-semicolon.tin
+           ##./build/tin units/missing-arguement.tin
+           ##./build/tin units/redefined-variable.tin
+           ##./build/tin units/undefined-variable.tin
+           
+    - name: Install dependencies
+      run: make
+      
+    - name: Run check
+      run: make check
+      
+    - name: Run distcheck
+      run: make distcheck
