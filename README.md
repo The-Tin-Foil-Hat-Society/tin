@@ -127,10 +127,23 @@ Run the following command to fetch all of the required packages in order to buil
    ```sh
    $ make tin
    ```
-3. Compile your .tin file
+3. Install a cross-compiling toolchain
+   ```sh
+   $ sudo apt-get install binutils-riscv64-linux-gnu
+   ```
+4. Install user-space QEMU tools
+   ```sh
+   $ sudo apt install qemu qemu-system-misc qemu-user
+   ```
+5. Compile your .tin file
    ```sh
    $ ./build/tin file-name.tin
    ```
+6. Run the executable through QEMU
+   ```sh
+   $ qemu-riscv64 ./file-name
+   ```
+
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
