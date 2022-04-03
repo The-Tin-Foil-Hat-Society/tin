@@ -55,7 +55,7 @@ char* path_get_directory(char* path)
 }
 char* path_get_filename(char* path)
 {
-    char* filename = malloc(PATH_MAX_LENGTH);
+    char* filename;
 
     // check for both kinds of delimiters
     char* s = strrchr(path, PATH_DELIM_UNIX);

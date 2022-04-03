@@ -9,7 +9,9 @@
 
 void preprocess_include(preproc_state* state, ast_node* node)
 {
-    module* dependency = module_find_dependency(state->mod, path_get_filename_wo_ext(node->value.string));
+    char* name = path_get_filename_wo_ext(node->value.string);
+    module* dependency = module_find_dependency(state->mod, name);
+    free(name);
 
     if (dependency == 0)
     {
