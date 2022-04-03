@@ -10,11 +10,16 @@ sources_generated =generated/lex.yy.c generated/parser.tab.c
 tin: dir parser.o lex.o
 	@ gcc $(flags) -Isrc -Igenerated -Werror -g -O0 $(sources) $(sources_generated) -o build/tin -lm
 
+assemble:
+	@riscv64-linux-gnu-as math.tin.s -o math.o
+
+link:
+	@riscv64-linux-gnu-ld -o build/tin math.o build/tin
+
 run: tin
 	@./build/tin $(file)
-	@echo "Running in jupiter"
-	@echo "\n\n\n"
-	@jupiter $(file).s
+	@echo "\nRunning result file"
+	@qemu-riscv64 $(basename $(file))
 
 #Generates directories to store generated files and build
 dir:
