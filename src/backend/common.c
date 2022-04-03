@@ -16,10 +16,25 @@ void _emit(FILE *file, const char *comment, const char *opcode, const char *oper
     va_list args;
 
     va_start(args, operand_fmt);
-    fprintf(file, "\t%s\t", opcode);
-    vfprintf(file, operand_fmt, args);
-    va_end(args);
+#ifdef TIN_DEBUG_VERBOSE
+    char *comment_prefixed = malloc(strlen(comment) + 3);
+    sprintf(comment_prefixed, " # %s", comment);
 
-    _emit_comment(file, comment);
-    fprintf(file, "\n");
+    char *operand_formatted = malloc(strlen(operand_fmt) + 1024);
+    vsprintf(operand_formatted, operand_fmt, args);
+
+    char *instruction = malloc(strlen(opcode) + strlen(operand_formatted) + 1);
+    sprintf(instruction, "%s %s", opcode, operand_formatted);
+
+    fprintf(file, "\t%-32s %-32s\n", instruction, comment_prefixed);
+#else
+    char *operand_formatted = malloc(strlen(operand_fmt) + 1024);
+    vsprintf(operand_formatted, operand_fmt, args);
+
+    char *instruction = malloc(strlen(opcode) + strlen(operand_formatted) + 1);
+    sprintf(instruction, "%s %s", opcode, operand_formatted);
+
+    fprintf(file, "\t%s\n", instruction);
+#endif
+    va_end(args);
 }

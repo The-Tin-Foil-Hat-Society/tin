@@ -230,11 +230,7 @@ void gen_rodata(FILE *file)
 
 int gen_function(FILE *file, int reg, char *identifier)
 {
-#ifdef TIN_DEBUG_VERBOSE
-    write_to_file("%s:\t# Declare function %s\n", identifier, identifier);
-#else
     write_to_file("%s:\n", identifier);
-#endif
 
     emit_comment("Function prologue\n");
     emit("Move the stack point 16 bytes back", "addi", "sp, sp, -16");
