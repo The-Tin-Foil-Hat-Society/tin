@@ -24,13 +24,8 @@ typedef struct
 symbol* symbol_new(void);
 void symbol_free(symbol* sym);
 
-// prints a json representation of the symbol to the console
-void symbol_print(symbol* sym);
-// prints a json representation of the symbol to the given file
+// prints a json representation of the symbol to the given file (can be stdout)
 void symbol_print_to_file(symbol* sym, FILE* file);
 
-
-// prints a json representation of the symbol table to the console
-void symtable_print(hashtable* table);
-// prints a json representation of the symbol table to the given file
+// prints a json representation of the symbol table to the given file (can be stdout)
 void symtable_print_to_file(hashtable* table, FILE* file);
