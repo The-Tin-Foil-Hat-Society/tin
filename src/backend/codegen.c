@@ -139,7 +139,7 @@ void write_preamble(FILE *file)
 {
     trace("Writing preamble");
 
-    write_to_file(".globl __start\n");
+    write_to_file(".globl _start\n");
 }
 
 void write_postamble(FILE *file)
@@ -160,7 +160,7 @@ bool codegen_generate(module *mod, ast_node *node, FILE *file)
     write_postamble(file);
 
     // ASM
-    write_to_file("__start:\n");
+    write_to_file("_start:\n");
 #ifdef TIN_DEBUG_VERBOSE
     write_to_file("\t# Function preamble\n");
 #endif
