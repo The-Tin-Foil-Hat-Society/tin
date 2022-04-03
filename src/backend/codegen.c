@@ -159,13 +159,25 @@ bool codegen_generate(module *mod, ast_node *node, FILE *file)
 
     // ASM
     write_to_file("__start:\n");
+#ifdef TIN_DEBUG_VERBOSE
     write_to_file("\t# Function preamble\n");
+#endif
     write_to_file("\taddi\tsp, sp, -16\n");
-    write_to_file("\tsw\tsp, 12(sp)\n");
+    write_to_file("\tsw\tra, 8(sp)\n");
+    write_to_file("\tsw\tsp, 0(sp)\n");
     write_to_file("\taddi\ts0, sp, 16\n");
+#ifdef TIN_DEBUG_VERBOSE
     write_to_file("\t# Call main function\n");
+#endif
     write_to_file("\tcall\tmain\n");
     gen_printint(file, reg);
+
+    // Exit cleanly
+#ifdef TIN_DEBUG_VERBOSE
+    write_to_file("\t# Exit cleanly\n");
+#endif
+    write_to_file("\tli\ta0, %d\n", Exit);
+    write_to_file("\tecall\n");
 
     gen_rodata(file);
 }
