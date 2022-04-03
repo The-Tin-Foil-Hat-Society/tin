@@ -1,7 +1,7 @@
 #This is the make file for the tin interpreter
 
 #File to compile:
-file = ./examples/hello_world.tin
+file = ./examples/math.tin
 flags = -D TIN_COMPILER -D TIN_DEBUG_OUTPUT_AST -D TIN_DEBUG_VERBOSE
 
 sources = src/*.c src/backend/*.c src/utils/*.c
@@ -36,12 +36,12 @@ lex.o: src/tin.l
 
 #Removes all generated and built files including generated direcories
 clean:
-	@rm generated/* build/*
+	-@rm -f generated/* build/*
 	@rmdir generated build
-	@rm examples/*.s
-	@rm examples/*.o
-	@rm examples/*.out
-	@rm examples/*.tin.ast.json
+	-@rm -f examples/*.s
+	-@rm -f examples/*.o
+	-@rm -f examples/*.out
+	-@rm -f examples/*.mod.json
 
 check_leaks: tin
 	@valgrind ./build/tin $(file) --leak-check=full
