@@ -233,6 +233,8 @@ int gen_function(FILE *file, int reg, char *identifier)
     write_to_file("%s:\n", identifier);
 #endif
 
+    return reg;
+
     emit_comment("Function prologue\n");
     emit("Move the stack point 16 bytes back", "addi", "sp, sp, -16");
     emit("Store the return address", "sw", "ra, 8(sp)");
@@ -245,6 +247,8 @@ int gen_function(FILE *file, int reg, char *identifier)
 
 int gen_function_epilogue(FILE *file, int reg)
 {
+    return reg;
+
     emit_comment("Function epilogue\n");
     emit("Load the return address", "lw", "ra, 8(sp)");
     emit("Load the s0 register", "lw", "s0, 0(sp)");

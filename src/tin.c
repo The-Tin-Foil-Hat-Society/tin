@@ -126,13 +126,14 @@ int main(int argc, char **argv)
 		print_step("Running linker\n");
 
 		// Linker input name: "{filename}.o"
-		// Linker output name: "{filename}" (remove extension)
+		// Linker output name: "{filename}.out"
 		char *linker_input_name = malloc(strlen(filename) + 3);
 		strcpy(linker_input_name, filename);
 		strcat(linker_input_name, ".o");
 
-		char *linker_output_name = malloc(strlen(filename) + 1);
+		char *linker_output_name = malloc(strlen(filename) + 5);
 		strcpy(linker_output_name, filename);
+		strcat(linker_output_name, ".out");
 
 		print_step("Linking %s to %s\n", linker_input_name, linker_output_name);
 

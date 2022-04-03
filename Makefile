@@ -1,7 +1,7 @@
 #This is the make file for the tin interpreter
 
 #File to compile:
-file = ./examples/asm.tin
+file = ./examples/hello_world.tin
 flags = -D TIN_COMPILER -D TIN_DEBUG_OUTPUT_AST -D TIN_DEBUG_VERBOSE
 
 sources = src/*.c src/backend/*.c
@@ -19,7 +19,7 @@ link:
 run: tin
 	@./build/tin $(file)
 	@echo "\nRunning result file"
-	@qemu-riscv64 $(basename $(file))
+	@qemu-riscv64 $(basename $(file)).out
 
 #Generates directories to store generated files and build
 dir:
@@ -38,7 +38,9 @@ lex.o: src/tin.l
 clean:
 	@rm generated/* build/*
 	@rmdir generated build
-	@rm examples/*.tin.s
+	@rm examples/*.s
+	@rm examples/*.o
+	@rm examples/*.out
 	@rm examples/*.tin.ast.json
 
 check_leaks: tin
