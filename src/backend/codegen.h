@@ -4,6 +4,6 @@
 
 #include "ast.h"
 #include "module.h"
-#include "vector.h"
+#include "utils/vector.h"
 
-bool codegen_generate(module* mod, ast_node* node, FILE* file);
+bool codegen_generate(module *mod, ast_node *node, FILE *file);

@@ -27,7 +27,7 @@ int main(int argc, char **argv)
 		return 0;
 	}
 
-	module* mod = module_parse(argv[1], 0);
+	module *mod = module_parse(argv[1], 0);
 
 	if (mod == 0) // parsing failed
 	{
@@ -47,7 +47,7 @@ int main(int argc, char **argv)
 		strcat(ast_filename, ".ast.json");
 
 		FILE *ast_file = fopen(ast_filename, "wb");
-		ast_print_to_file(mod->ast_root, ast_file, true);
+		ast_print_to_file(mod->ast_root, ast_file);
 		fclose(ast_file);
 		free(ast_filename);
 	}
@@ -57,8 +57,8 @@ int main(int argc, char **argv)
 	print_step("Running in interpreter mode\n");
 
 	// interpret(mod, 0, 0); // not implemented yet . . .
-	
-#elif  TIN_COMPILER
+
+#elif TIN_COMPILER
 	// interpret(mod, mod->ast_root, 0); // not implemented yet . . .
 
 #elif TIN_COMPILER

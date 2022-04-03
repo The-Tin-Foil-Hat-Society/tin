@@ -1,7 +1,7 @@
 #pragma once
 
 #include <stdio.h>
-#include "hashtable.h"
+#include "utils/hashtable.h"
 
 #include "backend/common.h"
 
