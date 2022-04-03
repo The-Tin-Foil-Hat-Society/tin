@@ -210,14 +210,7 @@ void module_print(module* mod, bool recursive)
 // prints a json representation of the module to the given file
 void module_print_to_file(module* mod, FILE* file, bool recursive)
 {
-    fprintf(file, "{\"name\": \"%s\"", mod->name);
-
-    if (mod->dir != 0)
-    {
-        fprintf(file, ",\"dir\": \"%s\"", mod->dir);
-    }
-
-    fprintf(file, ", \"ast\": ");
+    fprintf(file, "{\"name\": \"%s\", \"ast\":", mod->name);
     ast_print_to_file(mod->ast_root, file, recursive);
 
     if (mod->dependency_store != 0 && mod->dependency_store->size > 0)

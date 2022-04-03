@@ -55,4 +55,6 @@ void preprocess_include(preproc_state* state, ast_node* node)
 
     free(filename_copy);
     free(name);
+
+    ast_delete_child(node->parent, node);
 }

@@ -20,7 +20,13 @@ void build_symbols(preproc_state* state, ast_node* node)
 {
     for (int i = 0; i < node->children->size; i++)
     {
+        int old_size = node->children->size;
         build_symbols(state, ast_get_child(node, i));
+
+        if (old_size > node->children->size) // the child was removed, do this to avoid skipping over the items that follow
+        {
+            i -= old_size - node->children->size;
+        }
     }
 
     if (node->type == AstIdentifier)

@@ -7,7 +7,7 @@
 
 void preprocess_assignment(preproc_state* state, ast_node* node)
 {
-    symbol* left_sym = ast_get_child(node, 0)->value.symbol; // 1st child should always be an identifier/symbol
+    symbol* left_sym = ast_get_child(node, 0)->value.symbol; // 1st child should always be a symbol
     ast_node* right_node = ast_get_child(node, 1);
 
     // just look for the closest data type, expressions should already be validated to have the same data type for all values

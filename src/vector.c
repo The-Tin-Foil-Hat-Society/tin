@@ -92,8 +92,13 @@ size_t vector_get_item_index(vector* vec, void* item)
 }
 void vector_delete_item_at(vector* vec, size_t index)
 {
-    vec->items[index] = 0;
     vec->size -= 1;
+
+    for (int i = index; i < vec->size; i++)
+    {
+        vec->items[i] = vec->items[i+1];
+    }
+    vec->items[vec->size] = 0;
 }
 void vector_delete_item(vector* vec, void* item)
 {
