@@ -257,12 +257,7 @@ char* ast_find_closest_src_line(ast_node* node)
 }
 
 
-void ast_print(ast_node* node, bool recursive)
-{
-    ast_print_to_file(node, stdout, recursive);
-}
-
-void ast_print_to_file(ast_node* node, FILE* file, bool recursive)
+void ast_print_to_file(ast_node* node, FILE* file)
 {
     fprintf(file, "{\"type\": \"%s\"", ast_type_names[node->type]);
 
@@ -294,13 +289,13 @@ void ast_print_to_file(ast_node* node, FILE* file, bool recursive)
         fprintf(file, ",\"name\": \"%s\",\"pointer_level\": %ld", node->value.dtype->name, node->value.dtype->pointer_level);
     }
 
-    if (recursive && node->children->size > 0)
+    if (node->children->size > 0)
     {
         fprintf(file, ",\"children\": [");
 
         for (size_t i = 0; i < node->children->size; i++)
         {
-            ast_print_to_file(vector_get_item(node->children, i), file, true);
+            ast_print_to_file(vector_get_item(node->children, i), file);
             if (i < node->children->size - 1) // don't print a comma after the last child
             {
                 fprintf(file, ",");

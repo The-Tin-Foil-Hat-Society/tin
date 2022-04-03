@@ -22,11 +22,6 @@ void symbol_free(symbol* sym)
     free(sym);
 }
 
-void symbol_print(symbol* sym)
-{
-    symbol_print_to_file(sym, stdout);
-}
-
 void symbol_print_to_file(symbol* sym, FILE* file)
 {
     fprintf(file, "{\"name\":\"%s\",\"data_type\":\"%s\",\"data_type_pointer_level\":%ld,\"data_type_size\":%ld", sym->name, sym->dtype->name, sym->dtype->pointer_level, sym->dtype->size);
@@ -50,12 +45,6 @@ void symbol_print_to_file(symbol* sym, FILE* file)
     }
 
     fprintf(file, "}");
-}
-
-
-void symtable_print(hashtable* table)
-{
-    symtable_print_to_file(table, stdout);
 }
 
 void symtable_print_to_file(hashtable* table, FILE* file)

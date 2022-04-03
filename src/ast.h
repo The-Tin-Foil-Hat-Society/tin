@@ -108,7 +108,5 @@ symbol* ast_find_symbol(ast_node* node, char* name);
 
 char* ast_find_closest_src_line(ast_node* node);
 
-// prints a json representation of the AST to the console
-void ast_print(ast_node* node, bool recursive);
-// prints a json representation of the AST to the given file
-void ast_print_to_file(ast_node* node, FILE* file, bool recursive);
+// prints a json representation of the AST to the given file (can be stdout)
+void ast_print_to_file(ast_node* node, FILE* file);

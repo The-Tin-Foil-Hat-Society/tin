@@ -19,7 +19,7 @@ int main(int argc, char** argv)
 	{
 		goto end;
 	}
-	module_print_to_file(mod, 0, true);
+	module_print_to_file(mod, 0);
 
 #ifdef TIN_INTERPRETER
 

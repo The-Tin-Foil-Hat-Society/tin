@@ -239,14 +239,7 @@ char* module_get_src_line(module* mod, int linneno)
     return ret;
 }
 
-// prints a json representation of the module to the console
-void module_print(module* mod, bool recursive)
-{
-    module_print_to_file(mod, stdout, recursive);
-}
-
-// prints a json representation of the module to the given file
-void module_print_to_file(module* mod, FILE* file, bool recursive)
+void module_print_to_file(module* mod, FILE* file)
 {
     bool new_file = file == 0;
     char* out_filename;
@@ -262,7 +255,7 @@ void module_print_to_file(module* mod, FILE* file, bool recursive)
     }
 
     fprintf(file, "{\"name\": \"%s\", \"ast\":", mod->name);
-    ast_print_to_file(mod->ast_root, file, recursive);
+    ast_print_to_file(mod->ast_root, file);
 
     if (mod->dependency_store != 0 && mod->dependency_store->size > 0)
     {
@@ -271,7 +264,7 @@ void module_print_to_file(module* mod, FILE* file, bool recursive)
         vector* dependency_vec = hashtable_to_vector(mod->dependency_store);
         for (int i = 0; i < dependency_vec->size; i++)
         {
-            module_print_to_file(vector_get_item(dependency_vec, i), file, recursive);
+            module_print_to_file(vector_get_item(dependency_vec, i), file);
             if (i < dependency_vec->size - 1) // don't print a comma after the last item
             {
                 fprintf(file, ",");
