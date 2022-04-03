@@ -52,6 +52,8 @@ void gen_rodata(FILE *file);
 //
 int gen_load(FILE *file, int value);
 
+int gen_asm(FILE *file, char *string, int reg);
+
 int gen_load_global(FILE *file, char *identifier);
 int gen_store_global(FILE *file, int reg, char *identifier);
 void gen_global_symbol(FILE *file, char *identifier);

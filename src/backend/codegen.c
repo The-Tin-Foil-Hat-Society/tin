@@ -82,6 +82,8 @@ int codegen_traverse_ast(FILE *file, ast_node *node, int reg)
     //
     case AstPrint:
         return gen_print_string(file, rodata_count - 1, regs[0]);
+    case AstAsm:
+        return gen_asm(file, node->value.string, regs[0]);
 
     //
     // Functions

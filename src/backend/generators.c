@@ -271,3 +271,11 @@ int gen_return(FILE *file, int reg)
 
     return reg;
 }
+
+int gen_asm(FILE *file, char *string, int reg)
+{
+    emit_comment("Assembler directive\n");
+    write_to_file("\t%s\n", string);
+
+    return reg;
+}
