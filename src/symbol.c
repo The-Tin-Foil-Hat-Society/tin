@@ -60,6 +60,7 @@ void symtable_print_to_file(hashtable* table, FILE* file)
             fprintf(file, ",");
         }
     }
+    vector_free(table_vec);
 
     fprintf(file, "]");
 }

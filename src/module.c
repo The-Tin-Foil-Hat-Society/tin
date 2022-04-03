@@ -13,7 +13,7 @@ module* module_new()
     
     mod->ast_root = ast_new(AstRoot);
     mod->dependencies = 0;
-    mod->dependency_store = 0;
+    mod->module_store = 0;
 
     mod->filename = 0;
     mod->dir = 0;
@@ -24,16 +24,16 @@ module* module_new()
 
 void module_free(module* mod)
 {
-    if (mod->dependency_store != 0)
+    if (mod->module_store != 0)
     {
-        for (size_t i = 0; i < mod->dependency_store->capacity; i++)
+        for (size_t i = 0; i < mod->module_store->capacity; i++)
         {
-            if (mod->dependency_store->keys[i] != 0)
+            if (mod->module_store->keys[i] != 0)
             {
-                module_free(mod->dependency_store->items[i]);
+                module_free(mod->module_store->items[i]);
             }
         }
-        hashtable_free(mod->dependency_store);
+        hashtable_free(mod->module_store);
     }
     if (mod->dependencies != 0)
     {
@@ -139,11 +139,11 @@ void module_add_dependency(module* mod, module* dependency)
         mod = mod->parent;
     }
 
-    if (mod->dependency_store == 0)
+    if (mod->module_store == 0)
     {
-        mod->dependency_store = hashtable_new();
+        mod->module_store = hashtable_new();
     }
-    hashtable_set_item(mod->dependency_store, dependency->name, dependency);
+    hashtable_set_item(mod->module_store, dependency->name, dependency);
 }
 
 module* module_get_dependency(module* mod, char* name)
@@ -163,12 +163,12 @@ module* module_find_dependency(module* mod, char* name)
         mod = mod->parent;
     }
 
-    if (mod->dependency_store == 0)
+    if (mod->module_store == 0)
     {
         return 0;
     }
 
-    return hashtable_get_item(mod->dependency_store, name);
+    return hashtable_get_item(mod->module_store, name);
 }
 
 void module_set_src_file(module* mod, FILE* file)
@@ -246,7 +246,7 @@ void module_print_to_file(module* mod, FILE* file)
 
     if (new_file)
     {	    
-        out_filename = malloc(strlen(mod->filename) + 10); // plus space for dir and file extension
+        out_filename = malloc(strlen(mod->dir) + strlen(mod->filename) + 10); // plus space for dir and file extension
         strcpy(out_filename, mod->dir);
 	    strcat(out_filename, mod->filename);
 	    strcat(out_filename, ".mod.json");
@@ -257,19 +257,20 @@ void module_print_to_file(module* mod, FILE* file)
     fprintf(file, "{\"name\": \"%s\", \"ast\":", mod->name);
     ast_print_to_file(mod->ast_root, file);
 
-    if (mod->dependency_store != 0 && mod->dependency_store->size > 0)
+    if (mod->module_store != 0 && mod->module_store->size > 0)
     {
         fprintf(file, ",\"dependencies\": [");
 
-        vector* dependency_vec = hashtable_to_vector(mod->dependency_store);
-        for (int i = 0; i < dependency_vec->size; i++)
+        vector* module_vec = hashtable_to_vector(mod->module_store);
+        for (int i = 0; i < module_vec->size; i++)
         {
-            module_print_to_file(vector_get_item(dependency_vec, i), file);
-            if (i < dependency_vec->size - 1) // don't print a comma after the last item
+            module_print_to_file(vector_get_item(module_vec, i), file);
+            if (i < module_vec->size - 1) // don't print a comma after the last item
             {
                 fprintf(file, ",");
             }
         }
+        vector_free(module_vec);
 
         fprintf(file, "]");
     }
