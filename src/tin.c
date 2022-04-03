@@ -59,6 +59,24 @@ int main(int argc, char **argv)
 	}
 	optimize(mod, mod->ast_root);
 
+#ifdef TIN_DEBUG_OUTPUT_AST
+	print_step("Writing AST\n");
+
+	// output ast
+	{
+		// make the filename for the ast by appending to the given code file
+		int orig_len = strlen(argv[1]);
+		char *ast_filename = malloc(orig_len + 10); // plus space for file extension
+		strcpy(ast_filename, argv[1]);
+		strcat(ast_filename, ".ast.json");
+
+		FILE *ast_file = fopen(ast_filename, "wb");
+		ast_print_to_file(mod->ast_root, ast_file, true);
+		fclose(ast_file);
+		free(ast_filename);
+	}
+#endif // TIN_DEBUG_OUTPUT_AST
+
 #ifdef TIN_INTERPRETER
 	print_step("Running in interpreter mode\n");
 
@@ -153,24 +171,6 @@ int main(int argc, char **argv)
 		free(linker_args_str);
 	}
 #endif
-
-#ifdef TIN_DEBUG_OUTPUT_AST
-	print_step("Writing AST\n");
-
-	// output ast
-	{
-		// make the filename for the ast by appending to the given code file
-		int orig_len = strlen(argv[1]);
-		char *ast_filename = malloc(orig_len + 10); // plus space for file extension
-		strcpy(ast_filename, argv[1]);
-		strcat(ast_filename, ".ast.json");
-
-		FILE *ast_file = fopen(ast_filename, "wb");
-		ast_print_to_file(mod->ast_root, ast_file, true);
-		fclose(ast_file);
-		free(ast_filename);
-	}
-#endif // TIN_DEBUG_OUTPUT_AST
 
 end:
 	module_free(mod);
