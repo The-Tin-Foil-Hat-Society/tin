@@ -1,9 +1,9 @@
-fn i32 bar
+fn void bar
 {
     print "bar\n";
 }
 
-fn i32 foo
+fn void foo
 {
     print "foo\n";
     bar();
@@ -13,4 +13,6 @@ fn i32 main
 {
     print "main\n";
     foo();
+
+    return 0;
 }

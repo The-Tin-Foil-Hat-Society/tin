@@ -32,4 +32,6 @@ fn i32 main
     i32 asd = 30;
     i32 fgh = 31;
     i32 jkl = 32;
+
+    return 0;
 }
