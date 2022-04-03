@@ -17,13 +17,13 @@ void _emit(FILE *file, const char *comment, const char *opcode, const char *oper
 
     va_start(args, operand_fmt);
 #ifdef TIN_DEBUG_VERBOSE
-    char *comment_prefixed = malloc(strlen(comment) + 3);
+    char *comment_prefixed = malloc(strlen(comment) + 4);
     sprintf(comment_prefixed, " # %s", comment);
 
     char *operand_formatted = malloc(strlen(operand_fmt) + 1024);
     vsprintf(operand_formatted, operand_fmt, args);
 
-    char *instruction = malloc(strlen(opcode) + strlen(operand_formatted) + 1);
+    char *instruction = malloc(strlen(opcode) + strlen(operand_formatted) + 2);
     sprintf(instruction, "%s %s", opcode, operand_formatted);
 
     fprintf(file, "\t%-32s %-32s\n", instruction, comment_prefixed);
@@ -31,7 +31,7 @@ void _emit(FILE *file, const char *comment, const char *opcode, const char *oper
     char *operand_formatted = malloc(strlen(operand_fmt) + 1024);
     vsprintf(operand_formatted, operand_fmt, args);
 
-    char *instruction = malloc(strlen(opcode) + strlen(operand_formatted) + 1);
+    char *instruction = malloc(strlen(opcode) + strlen(operand_formatted) + 2);
     sprintf(instruction, "%s %s", opcode, operand_formatted);
 
     fprintf(file, "\t%s\n", instruction);
