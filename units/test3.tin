@@ -6,7 +6,7 @@
 
 i32 a = 12;
 i32 b = 34;
-ptr u8 prompt = "Input a number: ";
+ptr i8 prompt = "Input a number: ";
 
 fn i32 add(i32 x, i32 y)
 {
@@ -26,7 +26,7 @@ fn i32 main
     i32 e = a * b;
     i32 f = a / b;
 
-    ptr u8 x = "test";//variable with an already defined name but in a different function/scope
+    ptr i8 x = "test";//variable with an already defined name but in a different function/scope
 
     i32 b = 10;// ERROR: predefined variable name
 

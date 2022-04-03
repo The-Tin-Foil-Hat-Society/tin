@@ -84,7 +84,7 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-![Code screenshot](https://user-images.githubusercontent.com/12881812/161107464-b0b15d78-11a6-4bbc-8d33-16bb6b348514.png)
+![Code screenshot](https://user-images.githubusercontent.com/12881812/161390756-f98deb3b-ccb1-495d-bccc-56a2cdeaac99.png)
 
 Tin is a structured, imperative and procedural programming language designed around the RISC-V instruction set architecture. It is aimed mainly at applications running on embedded systems, but should be suitable for applications outside of this field.
 

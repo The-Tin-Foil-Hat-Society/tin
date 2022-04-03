@@ -1,6 +1,6 @@
 #include "preprocessor.h"
 #include "ast_nodes/ast_nodes.h"
-#include "typechecking.h"
+#include "data_type.h"
 
 preproc_state* preproc_state_new()
 {
@@ -42,6 +42,17 @@ void process_nodes(preproc_state* state, ast_node* node)
         case AstRoot:
             preprocess_root(state, node);
             break;
+        
+        case AstBoolLit:
+            preprocess_bool_lit(state, node);
+            break;
+        case AstIntegerLit:
+            preprocess_integer_lit(state, node);
+            break;
+        case AstStringLit:
+            preprocess_string_lit(state, node);
+            break;
+
         case AstAlloc:
             preprocess_alloc(state, node);
             break;
@@ -51,17 +62,76 @@ void process_nodes(preproc_state* state, ast_node* node)
         case AstDefinition:
             preprocess_definition(state, node);
             break;
+        case AstFree:
+            preprocess_free(state, node);
+            break;
+        case AstFunction:
+            preprocess_func(state, node);
+            break;
+        case AstFunctionCall:
+            preprocess_func_call(state, node);
+            break;
+        case AstIf:
+            preprocess_if(state, node);
+            break;
         case AstInput:
             preprocess_input(state, node);
             break;
-        case AstIntegerLit:
-            preprocess_integer_lit(state, node);
-            break;
-        case AstStringLit:
-            preprocess_string_lit(state, node);
+        case AstReturn:
+            preprocess_return(state, node);
             break;
         case AstSymbol:
             preprocess_symbol(state, node);
+            break;
+        case AstWhile:
+            preprocess_while(state, node);
+            break;
+
+        case AstAdd:
+            preprocess_operation(state, node);
+            break;
+        case AstDiv:
+            preprocess_operation(state, node);
+            break;
+        case AstMod:
+            preprocess_operation(state, node);
+            break;
+        case AstMul:
+            preprocess_operation(state, node);
+            break;
+        case AstPow:
+            preprocess_operation(state, node);
+            break;
+        case AstSub:
+            preprocess_operation(state, node);
+            break;
+
+        case AstGreaterThan:
+            preprocess_relational_expression(state, node);
+            break;
+        case AstGreaterThanOrEqual:
+            preprocess_relational_expression(state, node);
+            break;
+        case AstLessThan:
+            preprocess_relational_expression(state, node);
+            break;
+        case AstLessThanOrEqual:
+            preprocess_relational_expression(state, node);
+            break;
+        case AstEqual:
+            preprocess_relational_expression(state, node);
+            break;
+        case AstNotEqual:
+            preprocess_relational_expression(state, node);
+            break;
+        case AstAnd:
+            preprocess_logical_expression(state, node);
+            break;
+        case AstOr:
+            preprocess_logical_expression(state, node);
+            break;
+        case AstNot:
+            preprocess_not(state, node);
             break;
         default:
             break;

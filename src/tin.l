@@ -26,8 +26,22 @@ comment		[/][*][^*]*[*]+([^*/][^*]*[*]+)*[/]
 "u16"                   { return U16;   }
 "i32"                   { return I32;   }
 "u32"                   { return U32;   }
+"bool"                  { return BOOL;  }
 "void"                  { return VOID;  }
 "ptr"                   { return PTR;   }
+
+"false"                 { 
+    ast_node* node = ast_new(AstBoolLit);
+    node->value.boolean = false;
+    *yylval = node;
+    return BOOL_LIT;
+}
+"true"                  { 
+    ast_node* node = ast_new(AstBoolLit);
+    node->value.boolean = true;
+    *yylval = node;
+    return BOOL_LIT;
+}
 
 "alloc"                 { return ALLOC; }   /* match keywords */
 "asm"                   { return ASM;   }
@@ -47,7 +61,7 @@ comment		[/][*][^*]*[*]+([^*/][^*]*[*]+)*[/]
 "-"                     { return SUB;   }
 "*"                     { return MUL;   }
 "/"                     { return DIV;   }
-"**"                    { return EXP;   }
+"**"                    { return POW;   }
 "%"                     { return MOD;   }
 "<"                     { return LT;    }
 ">"                     { return GT;    }
@@ -56,6 +70,7 @@ comment		[/][*][^*]*[*]+([^*/][^*]*[*]+)*[/]
 "=="                    { return EQ;    }
 "!="                    { return NE;    }
 "&&"                    { return AND;   }
+"!"                     { return NOT;    }
 "||"                    { return OR;    }
 "&"                    	{ return REF; 	}
 
