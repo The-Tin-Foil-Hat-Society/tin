@@ -59,9 +59,6 @@ int main(int argc, char **argv)
 	// interpret(mod, 0, 0); // not implemented yet . . .
 
 #elif TIN_COMPILER
-	// interpret(mod, mod->ast_root, 0); // not implemented yet . . .
-
-#elif TIN_COMPILER
 	print_step("Running in compiler mode\n");
 
 	// Remove extension from file name
