@@ -1,5 +1,6 @@
 #include "module.h"
 #include "preprocessor.h"
+#include "path.h"
 #include "parser.tab.h"
 #include "lex.yy.h"
 #include <stdlib.h>
@@ -51,55 +52,32 @@ void module_free(module* mod)
     free(mod);
 }
 
-module* module_parse(char* filename, module* parent)
+module* module_parse(char* path, module* parent)
 {
-    // TODO: implement general file handling utils ( with support for Windows delimiters )
-
     module* mod = module_new();
     mod->parent = parent;
 
-    char* path = malloc(1024);
-    path[0] = '\0';
-
-    // combine filename with the parent's directory, if present
+    /*
+        we need to add the parent's (the file that includes this one)
+        directory to the given path to accomodate subdirectories and
+        ensure that the path stays relative to the working directory, 
+        so we can can still fopen it.
+    */
+    char* parent_dir = 0;
     if (parent != 0)
     {
-        strcpy(path, parent->dir);
-    }
-    strcpy(path + strlen(path), filename);
-
-    // seperate filename into directory and name
-    char* temp;
-    char* s = strrchr(path, '/');
-    if (s != 0)
-    {
-        temp = strdup(path);
-        temp[s - path + 1] = '\0';
-        mod->dir = strdup(temp);
-        free(temp);
-        s += 1;
-    }
-    else
-    {
-        s = path;
+        parent_dir = parent->dir;
     }
 
-    // get rid of extension
-    temp = strdup(s);
-    mod->filename = strdup(temp);
-    s = strrchr(temp, '.');
-    if (s != 0)
-    {
-        s[0] = '\0';
-    }
-    mod->name = strdup(temp);
-    free(temp);
-
+    char* relative_path = path_join(2, parent_dir, path); 
+    mod->dir = path_get_directory(relative_path);
+    mod->filename = path_get_filename(path);
+    mod->name = path_get_filename_wo_ext(path);
 
     FILE* src_file;
-	if (!(src_file = fopen(path, "rb")))
+	if (!(src_file = fopen(relative_path, "rb")))
 	{
-		printf("error: could not find file %s\n", filename);
+		printf("error: could not find file %s\n", path);
 		return false;
 	}
 
@@ -115,11 +93,11 @@ module* module_parse(char* filename, module* parent)
 	yylex_destroy(scanner);
 
 	fclose(src_file);
-    free(path);
+    free(relative_path);
 
     if (parser_status != 0)
     {
-        printf("error: could not parse %s\n", filename);
+        printf("error: could not lex and/or parse %s\n", path);
         module_free(mod);
 		return 0;
     }
@@ -253,21 +231,7 @@ void module_print_to_file(module* mod, FILE* file)
 
     if (new_file)
     {
-        int dir_len = 0;
-        if (mod->dir != 0)
-        {
-            dir_len = strlen(mod->dir);
-        }
-
-        out_filename = malloc(dir_len + strlen(mod->filename) + 10); // plus space for dir and file extension
-        out_filename[0] = '\0';
-
-        if (mod->dir != 0)
-        {
-            strcpy(out_filename, mod->dir);
-        }
-	    strcat(out_filename, mod->filename);
-	    strcat(out_filename, ".mod.json");
+        out_filename = path_join(3, mod->dir, mod->name, ".mod.json");
 	
 	    file = fopen(out_filename, "wb");
     }
@@ -277,7 +241,7 @@ void module_print_to_file(module* mod, FILE* file)
 
     if (mod->module_store != 0 && mod->module_store->size > 0)
     {
-        fprintf(file, ",\"dependencies\": [");
+        fprintf(file, ",\"modules\": [");
 
         vector* module_vec = hashtable_to_vector(mod->module_store);
         for (int i = 0; i < module_vec->size; i++)

@@ -4,35 +4,12 @@
 #include "ast.h"
 #include "symbol.h"
 #include "data_type.h"
+#include "path.h"
 #include <string.h>
 
 void preprocess_include(preproc_state* state, ast_node* node)
 {
-    char* filename_copy = strdup(node->value.string);
-    char* name;
-    char* s;
-
-    // get rid of extension
-    s = strrchr(filename_copy, '.');
-    if (s != 0)
-    {
-        s[0] = '\0';
-    }
-
-    // get name without the directory, if it is present
-    s = strrchr(filename_copy, '/');
-    if (s == 0)
-    {
-        name = strdup(filename_copy);
-    }
-    else
-    {
-        name = strdup(s + 1);
-    }
-    free(filename_copy);
-
-    module* dependency = module_find_dependency(state->mod, name);
-    free(name);
+    module* dependency = module_find_dependency(state->mod, path_get_filename_wo_ext(node->value.string));
 
     if (dependency == 0)
     {
