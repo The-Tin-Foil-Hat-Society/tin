@@ -253,8 +253,9 @@ void module_print_to_file(module* mod, FILE* file, bool recursive)
 
     if (new_file)
     {	    
-        out_filename = malloc(strlen(mod->filename) + 10); // plus space for file extension
-	    strcpy(out_filename, mod->filename);
+        out_filename = malloc(strlen(mod->filename) + 10); // plus space for dir and file extension
+        strcpy(out_filename, mod->dir);
+	    strcat(out_filename, mod->filename);
 	    strcat(out_filename, ".mod.json");
 	
 	    file = fopen(out_filename, "wb");
