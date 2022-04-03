@@ -1,11 +1,23 @@
 #include "module.h"
+#include "preprocessor.h"
+#include "path.h"
+#include "parser.tab.h"
+#include "lex.yy.h"
 #include <stdlib.h>
 
-module* module_new(void)
+module* module_new()
 {
     module* mod = malloc(sizeof(module));
 
+    mod->parent = 0;
+    mod->name = 0;
+    
     mod->ast_root = ast_new(AstRoot);
+    mod->dependencies = 0;
+    mod->module_store = 0;
+
+    mod->filename = 0;
+    mod->dir = 0;
     mod->src_code = 0;
 
     return mod;
@@ -13,9 +25,135 @@ module* module_new(void)
 
 void module_free(module* mod)
 {
+    if (mod->module_store != 0)
+    {
+        for (size_t i = 0; i < mod->module_store->capacity; i++)
+        {
+            if (mod->module_store->keys[i] != 0)
+            {
+                module_free(mod->module_store->items[i]);
+            }
+        }
+        hashtable_free(mod->module_store);
+    }
+    if (mod->dependencies != 0)
+    {
+        hashtable_free(mod->dependencies);
+    }
+    if (mod->dir != 0)
+    {
+        free(mod->dir);
+    }
+
+    free(mod->name);
     ast_free(mod->ast_root);
+    free(mod->filename);
     free(mod->src_code);
     free(mod);
+}
+
+module* module_parse(char* path, module* parent)
+{
+    module* mod = module_new();
+    mod->parent = parent;
+
+    /*
+        we need to add the parent's (the file that includes this one)
+        directory to the given path to accomodate subdirectories and
+        ensure that the path stays relative to the working directory, 
+        so we can can still fopen it.
+    */
+    char* parent_dir = 0;
+    if (parent != 0)
+    {
+        parent_dir = parent->dir;
+    }
+
+    char* relative_path = path_join(2, parent_dir, path); 
+    mod->dir = path_get_directory(relative_path);
+    mod->filename = path_get_filename(path);
+    mod->name = path_get_filename_wo_ext(path);
+
+    FILE* src_file;
+	if (!(src_file = fopen(relative_path, "rb")))
+	{
+		printf("error: could not find file %s\n", path);
+		return false;
+	}
+
+	module_set_src_file(mod, src_file);
+
+    yyscan_t scanner;
+
+	yylex_init(&scanner);
+	yyset_in(src_file, scanner); /* parse file in from arg*/
+
+	int parser_status = yyparse(scanner, mod);
+
+	yylex_destroy(scanner);
+
+	fclose(src_file);
+    free(relative_path);
+
+    if (parser_status != 0)
+    {
+        printf("error: could not lex and/or parse %s\n", path);
+        module_free(mod);
+		return 0;
+    }
+    
+    if (!preprocessor_process(mod))
+    {
+        module_free(mod);
+		return 0;
+    }
+    
+    return mod;
+}
+
+void module_add_dependency(module* mod, module* dependency)
+{
+    if (mod->dependencies == 0)
+    {
+        mod->dependencies = hashtable_new();
+    }
+    hashtable_set_item(mod->dependencies, dependency->name, dependency);
+
+    while (mod->parent != 0)
+    {
+        mod = mod->parent;
+    }
+
+    if (mod->module_store == 0)
+    {
+        mod->module_store = hashtable_new();
+    }
+    hashtable_set_item(mod->module_store, dependency->name, dependency);
+}
+
+module* module_get_dependency(module* mod, char* name)
+{
+    if (mod->dependencies == 0)
+    {
+        return 0;
+    }
+
+    return hashtable_get_item(mod->dependencies, name);
+}
+
+module* module_find_dependency(module* mod, char* name)
+{
+    while(mod->parent != 0)
+    {
+        mod = mod->parent;
+    }
+
+    if (mod->module_store == 0)
+    {
+        return 0;
+    }
+
+    return hashtable_get_item(mod->module_store, name);
 }
 
 void module_set_src_file(module* mod, FILE* file)
@@ -84,4 +222,46 @@ char* module_get_src_line(module* mod, int linneno)
 
     free(line);
     return ret;
+}
+
+void module_print_to_file(module* mod, FILE* file)
+{
+    bool new_file = file == 0;
+    char* out_filename;
+
+    if (new_file)
+    {
+        out_filename = path_join(3, mod->dir, mod->name, ".mod.json");
+	
+	    file = fopen(out_filename, "wb");
+    }
+
+    fprintf(file, "{\"name\": \"%s\", \"ast\":", mod->name);
+    ast_print_to_file(mod->ast_root, file);
+
+    if (mod->module_store != 0 && mod->module_store->size > 0)
+    {
+        fprintf(file, ",\"modules\": [");
+
+        vector* module_vec = hashtable_to_vector(mod->module_store);
+        for (int i = 0; i < module_vec->size; i++)
+        {
+            module_print_to_file(vector_get_item(module_vec, i), file);
+            if (i < module_vec->size - 1) // don't print a comma after the last item
+            {
+                fprintf(file, ",");
+            }
+        }
+        vector_free(module_vec);
+
+        fprintf(file, "]");
+    }
+
+    fprintf(file, "}");
+
+    if (new_file)
+    {
+        fclose(file);
+	    free(out_filename);
+    }
 }

@@ -19,6 +19,11 @@ bool interpret_function(module* mod, ast_node* node, vector* stack)
 // returns false if an error occurred
 bool interpret_program(module* mod, ast_node* node, vector* stack)
 {
+    if (node = 0)
+    {
+        node = mod->ast_root;
+    }
+
     if (stack = 0)
     {
         stack = vector_new();

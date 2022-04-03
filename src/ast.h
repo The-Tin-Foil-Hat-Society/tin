@@ -22,6 +22,10 @@ enum ast_node_type
     AstIntegerLit,
     AstStringLit,
 
+    AstOffset,
+    AstReference,
+    AstDereference,
+
     AstAdd,
     AstAlloc,
     AstAnd,
@@ -42,15 +46,14 @@ enum ast_node_type
     AstGoto,
     AstGreaterThan,
     AstGreaterThanOrEqual,
-    AstIdentifierDereference,
-    AstIdentifierIndex,
-    AstIdentifierReference,
     AstIf,
+    AstInclude,
     AstInput,
     AstLessThan,
     AstLessThanOrEqual,
     AstMod,
     AstMul,
+    AstNamespace,
     AstNot,
     AstNotEqual,
     AstOr,
@@ -64,7 +67,7 @@ enum ast_node_type
 };
 
 // for printing purposes
-static char ast_type_names[44][32] = { "AstRoot","AstIdentifier","AstBoolLit","AstIntegerLit","AstStringLit","AstAdd","AstAlloc","AstAnd","AstArgumentList","AstAsm","AstAssignment","AstBlock","AstBreak","AstContinue","AstDataType","AstDefinition","AstDefinitionList","AstDiv","AstEqual","AstFree","AstFunction","AstFunctionCall","AstGoto","AstGreaterThan","AstGreaterThanOrEqual","AstIdentifierDereference","AstIdentifierIndex","AstIdentifierReference","AstIf","AstInput","AstLessThan","AstLessThanOrEqual","AstMod","AstMul","AstNot","AstNotEqual","AstOr","AstPow","AstPrint","AstReturn","AstScope","AstSub","AstSymbol","AstWhile" };
+static char ast_type_names[46][32] = { "AstRoot","AstIdentifier","AstBoolLit","AstIntegerLit","AstStringLit","AstOffset","AstReference","AstDereference","AstAdd","AstAlloc","AstAnd","AstArgumentList","AstAsm","AstAssignment","AstBlock","AstBreak","AstContinue","AstDataType","AstDefinition","AstDefinitionList","AstDiv","AstEqual","AstFree","AstFunction","AstFunctionCall","AstGoto","AstGreaterThan","AstGreaterThanOrEqual","AstIf","AstInclude","AstInput","AstLessThan","AstLessThanOrEqual","AstMod","AstMul","AstNamespace","AstNot","AstNotEqual","AstOr","AstPow","AstPrint","AstReturn","AstScope","AstSub","AstSymbol","AstWhile" };
 
 typedef struct ast_node ast_node; 
 struct ast_node
@@ -79,7 +82,7 @@ struct ast_node
         bool boolean;            // AstBoolLit
         data_type* dtype;        // AstDataType, AstAdd, AstDiv, AstMod, AstMul, AstPow, AstSub
         int64_t integer;         // AstIntegerLit
-        char* string;            // AstAsm, AstIdentifier, AstStringLit
+        char* string;            // AstAsm, AstIdentifier, AstInclude, AstNamespace, AstStringLit
         symbol* symbol;          // AstSymbol
         hashtable* symbol_table; // AstRoot, AstScope
     } value; 
@@ -106,7 +109,5 @@ symbol* ast_find_symbol(ast_node* node, char* name);
 
 char* ast_find_closest_src_line(ast_node* node);
 
-// prints a json representation of the AST to the console
-void ast_print(ast_node* node, bool recursive);
-// prints a json representation of the AST to the given file
-void ast_print_to_file(ast_node* node, FILE* file, bool recursive);
+// prints a json representation of the AST to the given file (can be stdout)
+void ast_print_to_file(ast_node* node, FILE* file);

@@ -14,7 +14,7 @@ struct preproc_state
 preproc_state* preproc_state_new();
 void preproc_state_free(preproc_state* state);
 
-bool preprocessor_process(module* mod, ast_node* node);
+bool preprocessor_process(module* mod);
 
 #define preproc_error( state, node, fmt, ... ) \
     printf("%s\n", ast_find_closest_src_line(node)); \

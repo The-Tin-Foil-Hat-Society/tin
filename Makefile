@@ -4,7 +4,7 @@
 file = ./examples/hello_world.tin
 flags = -D TIN_COMPILER -D TIN_DEBUG_OUTPUT_AST -D TIN_DEBUG_VERBOSE
 
-sources = src/*.c src/backend/*.c
+sources = src/*.c src/backend/*.c src/utils/*.c
 sources_generated =generated/lex.yy.c generated/parser.tab.c
 
 tin: dir parser.o lex.o

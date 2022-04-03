@@ -20,12 +20,22 @@ void build_symbols(preproc_state* state, ast_node* node)
 {
     for (int i = 0; i < node->children->size; i++)
     {
+        int old_size = node->children->size;
         build_symbols(state, ast_get_child(node, i));
+
+        if (old_size > node->children->size) // the child was removed, do this to avoid skipping over the items that follow
+        {
+            i -= old_size - node->children->size;
+        }
     }
 
     if (node->type == AstIdentifier)
     {
         preprocess_identifier(state, node);
+    }
+    else if (node->type == AstInclude)
+    {
+        preprocess_include(state, node);
     }
 }
 
@@ -138,7 +148,7 @@ void process_nodes(preproc_state* state, ast_node* node)
     }
 }
 
-bool preprocessor_process(module* mod, ast_node* node)
+bool preprocessor_process(module* mod)
 {
     preproc_state* state = preproc_state_new();
     state->mod = mod;

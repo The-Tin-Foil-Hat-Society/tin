@@ -1,10 +1,8 @@
 #include "ast.h"
 #include "interpreter.h"
 #include "module.h"
-#include "optimisation.h"
-#include "preprocessor.h"
 
-#include "parser.tab.h" // always include parser before lexer to avoid circular dependency
+#include "parser.tab.h"
 #include "lex.yy.h"
 
 #include "exec.h"
@@ -29,35 +27,13 @@ int main(int argc, char **argv)
 		return 0;
 	}
 
-	FILE *src_file = fopen(argv[1], "rb");
+	module* mod = module_parse(argv[1], 0);
 
-	module *mod = module_new();
-	module_set_src_file(mod, src_file);
-
-	// lexing and parsing
-
-	yyscan_t scanner;
-
-	yylex_init(&scanner);
-	yyset_in(src_file, scanner); /* parse file in from arg*/
-
-	int parser_status = yyparse(scanner, mod);
-
-	yylex_destroy(scanner);
-	fclose(src_file);
-
-	if (parser_status != 0)
+	if (mod == 0) // parsing failed
 	{
 		goto end;
 	}
-
-	// preprocessing
-
-	if (!preprocessor_process(mod, mod->ast_root))
-	{
-		goto end;
-	}
-	optimize(mod, mod->ast_root);
+	module_print_to_file(mod, 0);
 
 #ifdef TIN_DEBUG_OUTPUT_AST
 	print_step("Writing AST\n");
@@ -80,6 +56,9 @@ int main(int argc, char **argv)
 #ifdef TIN_INTERPRETER
 	print_step("Running in interpreter mode\n");
 
+	// interpret(mod, 0, 0); // not implemented yet . . .
+	
+#elif  TIN_COMPILER
 	// interpret(mod, mod->ast_root, 0); // not implemented yet . . .
 
 #elif TIN_COMPILER
@@ -173,7 +152,10 @@ int main(int argc, char **argv)
 #endif
 
 end:
-	module_free(mod);
+	if (mod != 0)
+	{
+		module_free(mod);
+	}
 
 	return 0;
 }
