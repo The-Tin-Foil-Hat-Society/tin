@@ -50,22 +50,36 @@ int gen_print_string(FILE *file, int index, int reg)
     emit_comment("Print string constant %d\n", index);
 
     emit(
-        "Print string",
+        "Syscall type: stdout / sys_write",
         "li",
         "a0, %d",
-        PrintString);
+        Sys_Write);
 
-    // Move offset into register a1
+    // Sys_Write parameters:
+    // a1 - address of string
+    // a2 - length of string
+    // a7 - linux write system call
+
     emit(
-        "Syscall args: print string",
+        "Syscall args: string address",
         "la",
         "a1, Lstr%d",
         index);
 
+    rodata_entry *string_entry = rodata[index];
+
     emit(
-        "syscall",
-        "ecall",
-        "");
+        "Syscall args: string length",
+        "li",
+        "a2, %d",
+        strlen(string_entry->string));
+
+    emit(
+        "Syscall args: write system call",
+        "li",
+        "a7, 64");
+
+    emit("Syscall", "ecall", "");
 
     return reg;
 }
@@ -153,17 +167,6 @@ int gen_div(FILE *file, int left, int right)
     return left;
 }
 
-void gen_printint(FILE *file, int r)
-{
-    emit_comment("Print integer %s\n", registers[r]);
-
-    emit("Syscall ID", "li", "a0, %d", PrintInt);
-    emit("Parameter", "mv", "a1, %s", registers[r]);
-    emit("Syscall", "ecall", "");
-
-    free_register(r);
-}
-
 void variable_init()
 {
     variables = hashtable_new();
@@ -221,7 +224,7 @@ void gen_rodata(FILE *file)
     {
         trace("\tWriting rodata string %s ('%s')", rodata[i]->identifier, rodata[i]->string);
         write_to_file("%s:\n", rodata[i]->identifier);
-        write_to_file("\t.string\t\"%s\"\n", rodata[i]->string);
+        write_to_file("\t.ascii\t\"%s\"\n", rodata[i]->string);
     }
 }
 
@@ -232,8 +235,6 @@ int gen_function(FILE *file, int reg, char *identifier)
 #else
     write_to_file("%s:\n", identifier);
 #endif
-
-    return reg;
 
     emit_comment("Function prologue\n");
     emit("Move the stack point 16 bytes back", "addi", "sp, sp, -16");
@@ -247,8 +248,6 @@ int gen_function(FILE *file, int reg, char *identifier)
 
 int gen_function_epilogue(FILE *file, int reg)
 {
-    return reg;
-
     emit_comment("Function epilogue\n");
     emit("Load the return address", "lw", "ra, 8(sp)");
     emit("Load the s0 register", "lw", "s0, 0(sp)");
