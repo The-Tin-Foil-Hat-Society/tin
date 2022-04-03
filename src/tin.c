@@ -13,8 +13,9 @@ int main(int argc, char** argv)
 		return 0;
 	}
 
-	module* mod = module_new();
-	if (!module_parse(mod, argv[1]))
+	module* mod = module_parse(argv[1], 0);
+
+	if (mod == 0) // parsing failed
 	{
 		goto end;
 	}
@@ -31,7 +32,10 @@ int main(int argc, char** argv)
 #endif
 
 end:
-	module_free(mod);
+	if (mod != 0)
+	{
+		module_free(mod);
+	}
 
     return 0; 
 }

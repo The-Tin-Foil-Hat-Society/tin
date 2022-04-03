@@ -24,10 +24,20 @@ module* module_new()
 
 void module_free(module* mod)
 {
+    if (mod->dependency_store != 0)
+    {
+        for (size_t i = 0; i < mod->dependency_store->capacity; i++)
+        {
+            if (mod->dependency_store->keys[i] != 0)
+            {
+                module_free(mod->dependency_store->items[i]);
+            }
+        }
+        hashtable_free(mod->dependency_store);
+    }
     if (mod->dependencies != 0)
     {
         hashtable_free(mod->dependencies);
-        hashtable_free(mod->dependency_store);
     }
     if (mod->dir != 0)
     {
@@ -41,19 +51,24 @@ void module_free(module* mod)
     free(mod);
 }
 
-bool module_parse(module* mod, char* filename)
+module* module_parse(char* filename, module* parent)
 {
-    mod->filename = strdup(filename);
+    // TODO : implement general file handling utils
+
+    module* mod = module_new();
+    mod->parent = parent;
 
     char* path = malloc(1024);
     path[0] = '\0';
-    if (mod->parent != 0)
+
+    // combine filename with the parent's directory, if present
+    if (parent != 0)
     {
-        strcpy(path, mod->parent->dir);
+        strcpy(path, parent->dir);
     }
     strcpy(path + strlen(path), filename);
 
-    // get directory without filename, if it is present
+    // seperate filename into directory and name
     char* s = strrchr(path, '/');
     if (s != 0)
     {
@@ -61,10 +76,18 @@ bool module_parse(module* mod, char* filename)
         temp[s - path + 1] = '\0';
         mod->dir = strdup(temp);
         free(temp);
-    }
 
-    printf("path: %s\n", path);
-    printf("dir:  %s\n", mod->dir);
+        // get rid of extension
+        temp = strdup(s + 1);
+        mod->filename = strdup(temp);
+        s = strrchr(temp, '.');
+        if (s != 0)
+        {
+            s[0] = '\0';
+        }
+        mod->name = strdup(temp);
+        free(temp);
+    }
 
     FILE* src_file;
 	if (!(src_file = fopen(path, "rb")))
@@ -83,17 +106,24 @@ bool module_parse(module* mod, char* filename)
 	int parser_status = yyparse(scanner, mod);
 
 	yylex_destroy(scanner);
+
 	fclose(src_file);
+    free(path);
 
     if (parser_status != 0)
     {
         printf("error: could not parse %s\n", filename);
-		return false;
+        module_free(mod);
+		return 0;
     }
     
-    int preprocessor_status = preprocessor_process(mod);
-
-    return preprocessor_status;
+    if (!preprocessor_process(mod))
+    {
+        module_free(mod);
+		return 0;
+    }
+    
+    return mod;
 }
 
 void module_add_dependency(module* mod, module* dependency)

@@ -9,8 +9,7 @@
 void preprocess_include(preproc_state* state, ast_node* node)
 {
     // TODO : implement general file handling utils
-    char* filename = node->value.string;
-    char* filename_copy = strdup(filename);
+    char* filename_copy = strdup(node->value.string);
     char* name;
     char* s;
 
@@ -31,16 +30,16 @@ void preprocess_include(preproc_state* state, ast_node* node)
     {
         name = strdup(s + 1);
     }
+    free(filename_copy);
 
     module* dependency = module_find_dependency(state->mod, name);
+    free(name);
+
     if (dependency == 0)
     {
         // if the dependency doesn't exist in the program, parse it 
-        dependency = module_new();
-        dependency->parent = state->mod;
-        dependency->name = strdup(name);
-
-        if (!module_parse(dependency, filename))
+        dependency = module_parse(node->value.string, state->mod);
+        if (dependency == 0)
         {
             preproc_error(state, node, "%scould not parse include\n", "");
             free(dependency);
@@ -52,9 +51,6 @@ void preprocess_include(preproc_state* state, ast_node* node)
     {
         module_add_dependency(state->mod, dependency);
     }
-
-    free(filename_copy);
-    free(name);
 
     ast_delete_child(node->parent, node);
 }
