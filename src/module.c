@@ -10,10 +10,13 @@ module* module_new()
 
     mod->parent = 0;
     mod->name = 0;
-    mod->dir = 0;
+    
     mod->ast_root = ast_new(AstRoot);
     mod->dependencies = 0;
     mod->dependency_store = 0;
+
+    mod->filename = 0;
+    mod->dir = 0;
     mod->src_code = 0;
 
     return mod;
@@ -33,12 +36,15 @@ void module_free(module* mod)
 
     free(mod->name);
     ast_free(mod->ast_root);
+    free(mod->filename);
     free(mod->src_code);
     free(mod);
 }
 
 bool module_parse(module* mod, char* filename)
 {
+    mod->filename = strdup(filename);
+
     char* path = malloc(1024);
     path[0] = '\0';
     if (mod->parent != 0)
@@ -85,7 +91,9 @@ bool module_parse(module* mod, char* filename)
 		return false;
     }
     
-    return preprocessor_process(mod);
+    int preprocessor_status = preprocessor_process(mod);
+
+    return preprocessor_status;
 }
 
 void module_add_dependency(module* mod, module* dependency)
@@ -210,6 +218,18 @@ void module_print(module* mod, bool recursive)
 // prints a json representation of the module to the given file
 void module_print_to_file(module* mod, FILE* file, bool recursive)
 {
+    bool new_file = file == 0;
+    char* out_filename;
+
+    if (new_file)
+    {	    
+        out_filename = malloc(strlen(mod->filename) + 10); // plus space for file extension
+	    strcpy(out_filename, mod->filename);
+	    strcat(out_filename, ".mod.json");
+	
+	    file = fopen(out_filename, "wb");
+    }
+
     fprintf(file, "{\"name\": \"%s\", \"ast\":", mod->name);
     ast_print_to_file(mod->ast_root, file, recursive);
 
@@ -231,4 +251,10 @@ void module_print_to_file(module* mod, FILE* file, bool recursive)
     }
 
     fprintf(file, "}");
+
+    if (new_file)
+    {
+        fclose(file);
+	    free(out_filename);
+    }
 }

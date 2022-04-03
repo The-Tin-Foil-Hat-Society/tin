@@ -18,23 +18,12 @@ int main(int argc, char** argv)
 	{
 		goto end;
 	}
+	module_print_to_file(mod, 0, true);
 
 #ifdef TIN_INTERPRETER
 
 	// interpret(mod, 0, 0); // not implemented yet . . .
-
-	// output ast
-
-	// make the filename for the ast by appending to the given code file
-	int orig_len = strlen(argv[1]);
-	char* mod_filename = malloc(orig_len + 10); // plus space for file extension
-	strcpy(mod_filename, argv[1]);
-	strcat(mod_filename, ".mod.json");
 	
-	FILE* mod_file = fopen(mod_filename, "wb");
-	module_print_to_file(mod, mod_file, true);
-	fclose(mod_file);
-	free(mod_filename);
 #elif  TIN_COMPILER
 
 	// call the code generator and stuff here

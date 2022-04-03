@@ -9,10 +9,13 @@ struct module
 {
     module* parent;
     char* name;
-    char* dir;
+
     ast_node* ast_root;
     hashtable* dependencies;
     hashtable* dependency_store; // stores ALL dependencies in the module tree for redundancy 
+
+    char* filename;
+    char* dir;
     char* src_code; // for debugging
 };
 
