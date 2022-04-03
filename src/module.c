@@ -53,7 +53,7 @@ void module_free(module* mod)
 
 module* module_parse(char* filename, module* parent)
 {
-    // TODO : implement general file handling utils
+    // TODO: implement general file handling utils ( with support for Windows delimiters )
 
     module* mod = module_new();
     mod->parent = parent;
@@ -69,25 +69,32 @@ module* module_parse(char* filename, module* parent)
     strcpy(path + strlen(path), filename);
 
     // seperate filename into directory and name
+    char* temp;
     char* s = strrchr(path, '/');
     if (s != 0)
     {
-        char* temp = strdup(path);
+        temp = strdup(path);
         temp[s - path + 1] = '\0';
         mod->dir = strdup(temp);
         free(temp);
-
-        // get rid of extension
-        temp = strdup(s + 1);
-        mod->filename = strdup(temp);
-        s = strrchr(temp, '.');
-        if (s != 0)
-        {
-            s[0] = '\0';
-        }
-        mod->name = strdup(temp);
-        free(temp);
+        s += 1;
     }
+    else
+    {
+        s = path;
+    }
+
+    // get rid of extension
+    temp = strdup(s);
+    mod->filename = strdup(temp);
+    s = strrchr(temp, '.');
+    if (s != 0)
+    {
+        s[0] = '\0';
+    }
+    mod->name = strdup(temp);
+    free(temp);
+
 
     FILE* src_file;
 	if (!(src_file = fopen(path, "rb")))
@@ -245,9 +252,20 @@ void module_print_to_file(module* mod, FILE* file)
     char* out_filename;
 
     if (new_file)
-    {	    
-        out_filename = malloc(strlen(mod->dir) + strlen(mod->filename) + 10); // plus space for dir and file extension
-        strcpy(out_filename, mod->dir);
+    {
+        int dir_len = 0;
+        if (mod->dir != 0)
+        {
+            dir_len = strlen(mod->dir);
+        }
+
+        out_filename = malloc(dir_len + strlen(mod->filename) + 10); // plus space for dir and file extension
+        out_filename[0] = '\0';
+
+        if (mod->dir != 0)
+        {
+            strcpy(out_filename, mod->dir);
+        }
 	    strcat(out_filename, mod->filename);
 	    strcat(out_filename, ".mod.json");
 	

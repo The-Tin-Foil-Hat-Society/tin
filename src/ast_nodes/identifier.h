@@ -47,9 +47,17 @@ void preprocess_identifier(preproc_state* state, ast_node* node)
     {
         table = ast_get_child(node->parent->parent->parent, 2)->value.symbol_table; // scope should always be the 3rd child as per the grammar if there's also a definition list
         // for definitions for function args, make sure they're in the function's scope and not outside it
+        sym = hashtable_get_item(table, node->value.string);
     }
-    
-    sym = hashtable_get_item(table, node->value.string);
+    else if (namespaced_identifier)
+    {
+        sym = hashtable_get_item(table, node->value.string);
+    }
+    else
+    {
+        // look for the symbol in all scopes above us
+        sym = ast_find_symbol(node, node->value.string);
+    }
 
     if (sym == 0)
     {

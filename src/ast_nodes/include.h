@@ -8,7 +8,6 @@
 
 void preprocess_include(preproc_state* state, ast_node* node)
 {
-    // TODO : implement general file handling utils
     char* filename_copy = strdup(node->value.string);
     char* name;
     char* s;
