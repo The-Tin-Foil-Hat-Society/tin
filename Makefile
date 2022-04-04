@@ -1,7 +1,7 @@
 #This is the make file for the tin interpreter
 
 #File to compile:
-file = ./examples/math.tin
+file = ./examples/types.tin
 flags = -D TIN_COMPILER -D TIN_DEBUG_OUTPUT_AST -D TIN_DEBUG_VERBOSE
 
 sources = src/*.c src/backend/*.c src/utils/*.c
@@ -10,11 +10,11 @@ sources_generated =generated/lex.yy.c generated/parser.tab.c
 tin: dir parser.o lex.o
 	@ gcc $(flags) -Isrc -Igenerated -Werror -g -O0 $(sources) $(sources_generated) -o build/tin -lm
 
-assemble:
-	@riscv64-linux-gnu-as math.tin.s -o math.o
+debug_assembly:
+	@riscv64-linux-gnu-as ./examples/itoa.s -o ./examples/itoa.o
+	@riscv64-linux-gnu-ld -o ./examples/itoa.out ./examples/itoa.o
+	@qemu-riscv64 ./examples/itoa.out
 
-link:
-	@riscv64-linux-gnu-ld -o build/tin math.o build/tin
 
 run: tin
 	@./build/tin $(file)
