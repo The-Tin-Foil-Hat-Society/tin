@@ -151,6 +151,8 @@ void write_preamble(FILE *file)
 void write_postamble(FILE *file)
 {
     trace("Writing postamble");
+
+    gen_rodata(file);
 }
 
 bool codegen_generate(module *mod, ast_node *node, FILE *file)
@@ -163,12 +165,12 @@ bool codegen_generate(module *mod, ast_node *node, FILE *file)
 
     int reg;
     reg = codegen_traverse_ast(file, node, 0);
-    write_postamble(file);
 
     // ASM
+    write_to_file("\t# Program entry point\n");
     write_to_file("_start:\n");
 #ifdef TIN_DEBUG_VERBOSE
-    write_to_file("\t# Function preamble\n");
+    write_to_file("\t# Function prologue\n");
 #endif
     write_to_file("\taddi\tsp, sp, -16\n");
     write_to_file("\tsw\tra, 8(sp)\n");
@@ -181,11 +183,11 @@ bool codegen_generate(module *mod, ast_node *node, FILE *file)
 
     // Exit cleanly
 #ifdef TIN_DEBUG_VERBOSE
-    write_to_file("\t# Exit cleanly\n");
+    write_to_file("\t# Exit program cleanly\n");
 #endif
     write_to_file("\tli\ta0, 0\n");
     write_to_file("\tli\ta7, 93\n");
     write_to_file("\tecall\n");
 
-    gen_rodata(file);
+    write_postamble(file);
 }
