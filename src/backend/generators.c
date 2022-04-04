@@ -218,6 +218,16 @@ int gen_div(FILE *file, int left, int right)
     return left;
 }
 
+int gen_mod(FILE *file, int left, int right)
+{
+    emit_comment("Remainder of %s and %s\n", registers[left], registers[right]);
+
+    emit("Find remainder", "rem", "%s, %s, %s", registers[left], registers[left], registers[right]);
+    free_register(right);
+
+    return left;
+}
+
 void variable_init()
 {
     variables = hashtable_new();

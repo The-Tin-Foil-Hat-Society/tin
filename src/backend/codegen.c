@@ -63,6 +63,11 @@ int codegen_traverse_ast(FILE *file, ast_node *node, int reg)
         return gen_mul(file, regs[0], regs[1]);
     case AstDiv:
         return gen_div(file, regs[0], regs[1]);
+    case AstPow:
+        // TODO
+        // This one will be difficult, we're going to need loops first
+    case AstMod:
+        return gen_mod(file, regs[0], regs[1]);
 
     //
     // Literals

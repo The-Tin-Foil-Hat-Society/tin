@@ -65,6 +65,7 @@ int gen_add(FILE *file, int left, int right);
 int gen_sub(FILE *file, int left, int right);
 int gen_mul(FILE *file, int left, int right);
 int gen_div(FILE *file, int left, int right);
+int gen_mod(FILE *file, int left, int right);
 
 void gen_printint(FILE *file, int r);
 
