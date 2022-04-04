@@ -72,7 +72,7 @@ int gen_print_string(FILE *file, int index, int reg)
         "Syscall args: string length",
         "li",
         "a2, %d",
-        strlen(string_entry->string));
+        strlen(string_entry->string) - 1);
 
     emit(
         "Syscall args: write system call",
