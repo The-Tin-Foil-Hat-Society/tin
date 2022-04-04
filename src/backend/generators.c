@@ -1,8 +1,8 @@
 #include "backend/generators.h"
 
-int gen_store_global(FILE *file, int reg, char *identifier)
+int gen_store_global(FILE *file, int reg, char *identifier, int size)
 {
-    emit_comment("Store global %s into register %s\n", identifier, registers[reg]);
+    emit_comment("Store global %s into register %s (size: %d)\n", identifier, registers[reg], size);
 
     // Do we already have an offset for this variable
     int offset = variable_get(identifier);
@@ -10,12 +10,41 @@ int gen_store_global(FILE *file, int reg, char *identifier)
     // If we don't have an offset, add it
     if (offset == -1)
     {
-        offset = variable_set(identifier, current_variable_offset);
+        // Align current_variable_offset to size
+        if (current_variable_offset % size != 0)
+        {
+            current_variable_offset += size - (current_variable_offset % size);
+            trace("\tAligned current_variable_offset to %d\n", current_variable_offset);
+        }
+
+        offset = variable_set(identifier, current_variable_offset, size);
     }
+
+    char *instruction = malloc(sizeof(char) * 3);
+    switch (size)
+    {
+    case 8:
+        instruction = "sd"; // Store double
+        break;
+    case 4:
+        instruction = "sw"; // Store word
+        break;
+    case 2:
+        instruction = "sh"; // Store half
+        break;
+    case 1:
+        instruction = "sb"; // Store byte
+        break;
+    default:
+        compiler_error("Unknown size %d\n", size);
+        break;
+    }
+
+    trace("\tSize %d has instruction %s", size, instruction);
 
     emit(
         "Store global variable into memory",
-        "sw",
+        instruction,
         "%s, -%d(s0)",
         registers[reg],
         offset);
@@ -24,16 +53,38 @@ int gen_store_global(FILE *file, int reg, char *identifier)
     return reg;
 }
 
-int gen_load_global(FILE *file, char *identifier)
+int gen_load_global(FILE *file, char *identifier, int size)
 {
     int reg = register_alloc();
     int offset = variable_get(identifier);
 
-    emit_comment("Load global %s from offset %d into register %s\n", identifier, offset, registers[reg]);
+    emit_comment("Load global %s from offset %d into register %s (size: %d)\n", identifier, offset, registers[reg], size);
+
+    char *instruction = malloc(sizeof(char) * 3);
+    switch (size)
+    {
+    case 8:
+        instruction = "ld"; // Load double
+        break;
+    case 4:
+        instruction = "lw"; // Load word
+        break;
+    case 2:
+        instruction = "lh"; // Load half
+        break;
+    case 1:
+        instruction = "lb"; // Load byte
+        break;
+    default:
+        compiler_error("Unknown size %d\n", size);
+        break;
+    }
+
+    trace("\tSize %d has instruction %s", size, instruction);
 
     emit(
         "Load global variable from memory",
-        "lw",
+        instruction,
         "%s, -%d(s0)",
         registers[reg],
         offset);
@@ -190,14 +241,14 @@ int variable_get(char *identifier)
     return *value;
 }
 
-int variable_set(char *identifier, int value)
+int variable_set(char *identifier, int value, int size)
 {
     trace("\tSetting variable %s to %d\n", identifier, value);
     int *item = (int *)malloc(sizeof(int));
     *item = value;
     hashtable_set_item(variables, identifier, item);
 
-    current_variable_offset += 4;
+    current_variable_offset += size;
     return value;
 }
 

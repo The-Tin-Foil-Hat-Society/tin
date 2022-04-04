@@ -100,7 +100,7 @@ int codegen_traverse_ast(FILE *file, ast_node *node, int reg)
     {
         if (node->parent->type == AstAssignment)
         {
-            return gen_store_global(file, reg, node->value.symbol->name);
+            return gen_store_global(file, reg, node->value.symbol->name, node->value.symbol->dtype->size);
         }
         else if (node->parent->type == AstFunction)
         {
@@ -112,9 +112,15 @@ int codegen_traverse_ast(FILE *file, ast_node *node, int reg)
             trace("\tFunction calls are not supported yet");
             return 0;
         }
+        else if (node->parent->type == AstDefinitionList)
+        {
+            // Do nothing
+            return 0;
+        }
         else
         {
-            return gen_load_global(file, node->value.symbol->name);
+            trace("\tLoading (parent type: %s)", ast_type_names[node->parent->type]);
+            return gen_load_global(file, node->value.symbol->name, node->value.symbol->dtype->size);
         }
     }
     case AstAssignment:
