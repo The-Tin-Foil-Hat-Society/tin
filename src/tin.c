@@ -44,8 +44,12 @@ int main(int argc, char **argv)
 #elif TIN_COMPILER
 	print_step("Running in compiler mode\n");
 
-	// Remove extension from file name
-	char *filename = path_get_filename_wo_ext(argv[1]);
+	// Remove extension from file name, but preserve path
+	char *filename = malloc(strlen(argv[1]) + 1);
+	strcpy(filename, argv[1]);
+	char *dot = strrchr(filename, '.');
+	if (dot != NULL)
+		*dot = '\0';
 
 	// call the code generator
 	{
@@ -93,6 +97,8 @@ int main(int argc, char **argv)
 		exec(asm_args_str);
 
 		free(asm_args_str);
+		free(asm_input_name);
+		free(asm_output_name);
 	}
 
 	// Run linker
@@ -126,6 +132,8 @@ int main(int argc, char **argv)
 		exec(linker_args_str);
 
 		free(linker_args_str);
+		free(linker_input_name);
+		free(linker_output_name);
 	}
 #endif
 
