@@ -1,8 +1,8 @@
 #This is the make file for the tin interpreter
 
 #File to compile:
-file = ./examples/types.tin
-flags = -D TIN_COMPILER -D TIN_DEBUG_OUTPUT_AST -D TIN_DEBUG_VERBOSE
+file = ./examples/stresstest.tin
+flags = -D TIN_COMPILER -D TIN_DEBUG_VERBOSE
 
 sources = src/*.c src/backend/*.c src/utils/*.c
 sources_generated =generated/lex.yy.c generated/parser.tab.c
