@@ -24,7 +24,7 @@ void _emit(FILE *file, const char *comment, const char *opcode, const char *oper
     vsprintf(operand_formatted, operand_fmt, args);
 
     char *instruction = malloc(strlen(opcode) + strlen(operand_formatted) + 2);
-    sprintf(instruction, "%s %s", opcode, operand_formatted);
+    sprintf(instruction, "%-8s %s", opcode, operand_formatted);
 
     fprintf(file, "\t%-32s %-32s\n", instruction, comment_prefixed);
 #else
