@@ -69,6 +69,12 @@ void process_nodes(preproc_state* state, ast_node* node)
             preprocess_string_lit(state, node);
             break;
 
+        case AstOffset:
+        case AstReference:
+        case AstDereference:
+            preprocess_pointer_operation(state, node);
+            break;
+
         case AstAlloc:
             preprocess_alloc(state, node);
             break;
@@ -107,45 +113,23 @@ void process_nodes(preproc_state* state, ast_node* node)
             break;
 
         case AstAdd:
-            preprocess_operation(state, node);
-            break;
         case AstDiv:
-            preprocess_operation(state, node);
-            break;
         case AstMod:
-            preprocess_operation(state, node);
-            break;
         case AstMul:
-            preprocess_operation(state, node);
-            break;
         case AstPow:
-            preprocess_operation(state, node);
-            break;
         case AstSub:
             preprocess_operation(state, node);
             break;
 
         case AstGreaterThan:
-            preprocess_relational_expression(state, node);
-            break;
         case AstGreaterThanOrEqual:
-            preprocess_relational_expression(state, node);
-            break;
         case AstLessThan:
-            preprocess_relational_expression(state, node);
-            break;
         case AstLessThanOrEqual:
-            preprocess_relational_expression(state, node);
-            break;
         case AstEqual:
-            preprocess_relational_expression(state, node);
-            break;
         case AstNotEqual:
             preprocess_relational_expression(state, node);
             break;
         case AstAnd:
-            preprocess_logical_expression(state, node);
-            break;
         case AstOr:
             preprocess_logical_expression(state, node);
             break;
