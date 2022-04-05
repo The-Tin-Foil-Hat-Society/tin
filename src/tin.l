@@ -78,7 +78,7 @@ comment		[/][*][^*]*[*]+([^*/][^*]*[*]+)*[/]
 "&&"                    { return AND; }
 "!"                     { return NOT; }
 "||"                    { return OR;  }
-"&"                    	{ return REF; }
+"ref"                   { return REF; }
 
 ";"                     { return SEMI_COLON;    }
 "::"                    { return DOUBLE_COLON;  }
