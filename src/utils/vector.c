@@ -66,6 +66,21 @@ void vector_set_item(vector* vec, size_t index, void* item)
     
     vec->items[index] = item;
 }
+void vector_insert_item(vector* vec, size_t index, void* item)
+{
+    if (index >= vec->size)
+    {
+        return;
+    }
+
+    for (int i = vec->size; i > index; i--)
+    {
+        vec->items[i] = vec->items[i - 1];
+    }
+
+    vec->items[index] = item;
+    vec->size += 1;
+}
 void* vector_get_item(vector* vec, size_t index)
 {
     if (index >= vec->size)

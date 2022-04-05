@@ -40,6 +40,7 @@ enum ast_node_type
     AstDefinitionList,
     AstDiv,
     AstEqual,
+    AstFor,
     AstFree,
     AstFunction,
     AstFunctionCall,
@@ -67,7 +68,7 @@ enum ast_node_type
 };
 
 // for printing purposes
-static char ast_type_names[46][32] = { "AstRoot","AstIdentifier","AstBoolLit","AstIntegerLit","AstStringLit","AstOffset","AstReference","AstDereference","AstAdd","AstAlloc","AstAnd","AstArgumentList","AstAsm","AstAssignment","AstBlock","AstBreak","AstContinue","AstDataType","AstDefinition","AstDefinitionList","AstDiv","AstEqual","AstFree","AstFunction","AstFunctionCall","AstGoto","AstGreaterThan","AstGreaterThanOrEqual","AstIf","AstInclude","AstInput","AstLessThan","AstLessThanOrEqual","AstMod","AstMul","AstNamespace","AstNot","AstNotEqual","AstOr","AstPow","AstPrint","AstReturn","AstScope","AstSub","AstSymbol","AstWhile" };
+static char ast_type_names[47][32] = { "AstRoot","AstIdentifier","AstBoolLit","AstIntegerLit","AstStringLit","AstOffset","AstReference","AstDereference","AstAdd","AstAlloc","AstAnd","AstArgumentList","AstAsm","AstAssignment","AstBlock","AstBreak","AstContinue","AstDataType","AstDefinition","AstDefinitionList","AstDiv","AstEqual","AstFor","AstFree","AstFunction","AstFunctionCall","AstGoto","AstGreaterThan","AstGreaterThanOrEqual","AstIf","AstInclude","AstInput","AstLessThan","AstLessThanOrEqual","AstMod","AstMul","AstNamespace","AstNot","AstNotEqual","AstOr","AstPow","AstPrint","AstReturn","AstScope","AstSub","AstSymbol","AstWhile" };
 
 typedef struct ast_node ast_node; 
 struct ast_node
@@ -81,7 +82,7 @@ struct ast_node
     {
         bool boolean;            // AstBoolLit
         data_type* dtype;        // AstDataType, AstAdd, AstDiv, AstMod, AstMul, AstPow, AstSub
-        int64_t integer;         // AstIntegerLit
+        int64_t integer;         // AstIntegerLit, AstOffset
         char* string;            // AstAsm, AstIdentifier, AstInclude, AstNamespace, AstStringLit
         symbol* symbol;          // AstSymbol
         hashtable* symbol_table; // AstRoot, AstScope
@@ -97,6 +98,7 @@ ast_node* ast_copy(ast_node* node);
 void ast_resize(ast_node* node);
 void ast_add_child(ast_node* node, ast_node* child);
 void ast_set_child(ast_node* node, size_t index, ast_node* new_child);
+void ast_insert_child(ast_node* node, size_t index, ast_node* new_child);
 ast_node* ast_get_child(ast_node* node, size_t index);
 size_t ast_get_child_index(ast_node* node, ast_node* child);
 void ast_delete_child(ast_node* node, ast_node* child);
