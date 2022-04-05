@@ -4,6 +4,7 @@
 #include "assignment.h"
 #include "bool_lit.h"
 #include "definition.h"
+#include "for.h"
 #include "free.h"
 #include "func_call.h"
 #include "func.h"

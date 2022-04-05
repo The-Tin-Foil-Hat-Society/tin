@@ -23,7 +23,7 @@ void build_symbols(preproc_state* state, ast_node* node)
         int old_size = node->children->size;
         build_symbols(state, ast_get_child(node, i));
 
-        if (old_size > node->children->size) // the child was removed, do this to avoid skipping over the items that follow
+        if (old_size > node->children->size) // a child was removed, do this to avoid skipping over the items that follow
         {
             i -= old_size - node->children->size;
         }
@@ -44,7 +44,13 @@ void process_nodes(preproc_state* state, ast_node* node)
 {
     for (int i = 0; i < node->children->size; i++)
     {
+        int old_size = node->children->size;
         process_nodes(state, ast_get_child(node, i));
+
+        if (old_size > node->children->size) // a child was removed, do this to avoid skipping over the items that follow
+        {
+            i -= old_size - node->children->size;
+        }
     }
 
     switch(node->type)
@@ -71,6 +77,9 @@ void process_nodes(preproc_state* state, ast_node* node)
             break;
         case AstDefinition:
             preprocess_definition(state, node);
+            break;
+        case AstFor:
+            preprocess_for(state, node);
             break;
         case AstFree:
             preprocess_free(state, node);
