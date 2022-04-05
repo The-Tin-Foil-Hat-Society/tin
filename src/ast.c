@@ -125,7 +125,7 @@ ast_node* ast_copy(ast_node* node)
 
     for (size_t i = 0; i < node->children->size; i++)
     {
-        ast_node* child_copy = vector_get_item(node->children, i);
+        ast_node* child_copy = ast_copy(vector_get_item(node->children, i));
         child_copy->parent = copy;
         vector_set_item(copy->children, i, child_copy);
     }
