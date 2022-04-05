@@ -141,17 +141,16 @@ void ast_add_child(ast_node* node, ast_node* child)
 
 void ast_set_child(ast_node* node, size_t index, ast_node* new_child)
 {
-    if (index >= node->children->size)
-    {
-        return;
-    }
     if (new_child != 0)
     {
         new_child->parent = node;
     }
     vector_set_item(node->children, index, new_child);
 }
-
+void ast_insert_child(ast_node* node, size_t index, ast_node* new_child)
+{
+    vector_insert_item(node->children, index, new_child);
+}
 ast_node* ast_get_child(ast_node* node, size_t index)
 {
     return vector_get_item(node->children, index);

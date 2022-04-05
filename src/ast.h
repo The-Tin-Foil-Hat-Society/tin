@@ -98,6 +98,7 @@ ast_node* ast_copy(ast_node* node);
 void ast_resize(ast_node* node);
 void ast_add_child(ast_node* node, ast_node* child);
 void ast_set_child(ast_node* node, size_t index, ast_node* new_child);
+void ast_insert_child(ast_node* node, size_t index, ast_node* new_child);
 ast_node* ast_get_child(ast_node* node, size_t index);
 size_t ast_get_child_index(ast_node* node, ast_node* child);
 void ast_delete_child(ast_node* node, ast_node* child);
