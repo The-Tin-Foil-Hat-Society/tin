@@ -33,6 +33,11 @@ void yyerror (yyscan_t* locp, module* mod, const char* msg);
 %token SEMI_COLON COLON DOUBLE_COLON COMMA BRACKET_L BRACKET_R BRACE_L BRACE_R SQUARE_BRACKET_L SQUARE_BRACKET_R 
 
 /* operator precedence */
+%left BOR
+%left BXOR
+%left BAND
+%left SHIFTL SHIFTR
+%left ROTL ROTR
 %left ADD SUB
 %left DIV MUL MOD
 %left POW
@@ -94,7 +99,6 @@ expression
     | expression MUL expression { $$ = ast_new(AstMul); ast_add_child($$, $1); ast_add_child($$, $3); }
     | expression ADD expression { $$ = ast_new(AstAdd); ast_add_child($$, $1); ast_add_child($$, $3); }
     | expression SUB expression { $$ = ast_new(AstSub); ast_add_child($$, $1); ast_add_child($$, $3); }
-
     | expression BAND expression   { $$ = ast_new(AstBitwiseAnd);  ast_add_child($$, $1); ast_add_child($$, $3); }
     | expression BOR expression    { $$ = ast_new(AstBitwiseOr);   ast_add_child($$, $1); ast_add_child($$, $3); }
     | expression BXOR expression   { $$ = ast_new(AstBitwiseXor);  ast_add_child($$, $1); ast_add_child($$, $3); }
@@ -109,7 +113,6 @@ operator_assignment
     | identifier MUL IS expression { $$ = ast_new(AstAssignment); ast_add_child($$, $1); ast_node* expression = ast_new(AstMul); ast_add_child(expression, ast_copy($1)); ast_add_child(expression, $4); ast_add_child($$, expression); }
     | identifier ADD IS expression { $$ = ast_new(AstAssignment); ast_add_child($$, $1); ast_node* expression = ast_new(AstAdd); ast_add_child(expression, ast_copy($1)); ast_add_child(expression, $4); ast_add_child($$, expression); }
     | identifier SUB IS expression { $$ = ast_new(AstAssignment); ast_add_child($$, $1); ast_node* expression = ast_new(AstSub); ast_add_child(expression, ast_copy($1)); ast_add_child(expression, $4); ast_add_child($$, expression); }
-    
     | identifier BAND IS expression   { $$ = ast_new(AstAssignment); ast_add_child($$, $1); ast_node* expression = ast_new(AstBitwiseAnd);  ast_add_child(expression, ast_copy($1)); ast_add_child(expression, $4); ast_add_child($$, expression); }
     | identifier BOR IS expression    { $$ = ast_new(AstAssignment); ast_add_child($$, $1); ast_node* expression = ast_new(AstBitwiseOr);   ast_add_child(expression, ast_copy($1)); ast_add_child(expression, $4); ast_add_child($$, expression); }
     | identifier BXOR IS expression   { $$ = ast_new(AstAssignment); ast_add_child($$, $1); ast_node* expression = ast_new(AstBitwiseXor);  ast_add_child(expression, ast_copy($1)); ast_add_child(expression, $4); ast_add_child($$, expression); }
