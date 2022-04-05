@@ -81,7 +81,7 @@ struct ast_node
     {
         bool boolean;            // AstBoolLit
         data_type* dtype;        // AstDataType, AstAdd, AstDiv, AstMod, AstMul, AstPow, AstSub
-        int64_t integer;         // AstIntegerLit, AstOffset
+        int64_t integer;         // AstIntegerLit
         char* string;            // AstAsm, AstIdentifier, AstInclude, AstNamespace, AstStringLit
         symbol* symbol;          // AstSymbol
         hashtable* symbol_table; // AstRoot, AstScope
