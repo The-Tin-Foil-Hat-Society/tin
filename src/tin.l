@@ -29,6 +29,7 @@ comment		[/][*][^*]*[*]+([^*/][^*]*[*]+)*[/]
 "bool"                  { return BOOL;  }
 "void"                  { return VOID;  }
 "ptr"                   { return PTR;   }
+"ref"                   { return REF;   }
 
 "false"                 { 
     ast_node* node = ast_new(AstBoolLit);
@@ -78,7 +79,9 @@ comment		[/][*][^*]*[*]+([^*/][^*]*[*]+)*[/]
 "&&"                    { return AND; }
 "!"                     { return NOT; }
 "||"                    { return OR;  }
-"ref"                   { return REF; }
+"&"                     { return BAND; }
+"|"                     { return BOR;  }
+"^"                     { return BXOR; }
 
 ";"                     { return SEMI_COLON;    }
 "::"                    { return DOUBLE_COLON;  }
