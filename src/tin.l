@@ -65,6 +65,10 @@ comment		[/][*][^*]*[*]+([^*/][^*]*[*]+)*[/]
 "/"                     { return DIV; }
 "**"                    { return POW; }
 "%"                     { return MOD; }
+"<<<"                   { return ROTL; }
+">>>"                   { return ROTR; }
+"<<"                    { return SHIFTL; }
+">>"                    { return SHIFTR; }
 "<"                     { return LT;  }
 ">"                     { return GT;  }
 "<="                    { return LE;  }
@@ -84,8 +88,8 @@ comment		[/][*][^*]*[*]+([^*/][^*]*[*]+)*[/]
 ")"                     { return BRACKET_R;     }
 "{"                     { return BRACE_L;       }
 "}"                     { return BRACE_R;       }
-"["                     { return SQUARE_BRACKET_L;     }
-"]"                     { return SQUARE_BRACKET_R;     }
+"["                     { return SQUARE_BRACKET_L; }
+"]"                     { return SQUARE_BRACKET_R; }
 
 {string} { 
     ast_node* node = ast_new(AstStringLit);
