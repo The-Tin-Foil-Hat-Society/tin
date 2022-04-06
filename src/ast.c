@@ -53,13 +53,18 @@ ast_node* ast_new(enum ast_node_type type)
 
 void ast_free(ast_node* node)
 {
+    if (node == 0)
+    {
+        return;
+    }
+
     for (size_t i = 0; i < node->children->size; i++)
     {
         ast_free(vector_get_item(node->children, i));
     }
     vector_free(node->children);
     
-    if (node->type == AstAsm || node->type == AstIdentifier || node->type == AstStringLit)
+    if (node->type == AstAsm || node->type == AstIdentifier || node->type == AstInclude || node->type == AstNamespace || node->type == AstStringLit)
     {
         free(node->value.string);
     }
@@ -98,7 +103,7 @@ ast_node* ast_copy(ast_node* node)
     copy->type = node->type;
     copy->value = node->value;
 
-    if (node->type == AstAsm || node->type == AstIdentifier || node->type == AstStringLit)
+    if (node->type == AstAsm || node->type == AstIdentifier || node->type == AstInclude || node->type == AstNamespace || node->type == AstStringLit)
     {
         copy->value.string = strdup(node->value.string);
     }
@@ -120,7 +125,7 @@ ast_node* ast_copy(ast_node* node)
 
     for (size_t i = 0; i < node->children->size; i++)
     {
-        ast_node* child_copy = vector_get_item(node->children, i);
+        ast_node* child_copy = ast_copy(vector_get_item(node->children, i));
         child_copy->parent = copy;
         vector_set_item(copy->children, i, child_copy);
     }
@@ -136,14 +141,16 @@ void ast_add_child(ast_node* node, ast_node* child)
 
 void ast_set_child(ast_node* node, size_t index, ast_node* new_child)
 {
-    if (index >= node->children->size)
+    if (new_child != 0)
     {
-        return;
+        new_child->parent = node;
     }
-    new_child->parent = node;
     vector_set_item(node->children, index, new_child);
 }
-
+void ast_insert_child(ast_node* node, size_t index, ast_node* new_child)
+{
+    vector_insert_item(node->children, index, new_child);
+}
 ast_node* ast_get_child(ast_node* node, size_t index)
 {
     return vector_get_item(node->children, index);
@@ -235,21 +242,21 @@ symbol* ast_find_symbol(ast_node* node, char* name)
 
 char* ast_find_closest_src_line(ast_node* node)
 {
-    while (node->src_line == 0 && node != 0)
+    while (node != 0 && node->src_line == 0)
     {
         node = node->parent;
+    }
+
+    if (node == 0)
+    {
+        return 0;
     }
 
     return node->src_line;
 }
 
 
-void ast_print(ast_node* node, bool recursive)
-{
-    ast_print_to_file(node, stdout, recursive);
-}
-
-void ast_print_to_file(ast_node* node, FILE* file, bool recursive)
+void ast_print_to_file(ast_node* node, FILE* file)
 {
     fprintf(file, "{\"type\": \"%s\"", ast_type_names[node->type]);
 
@@ -258,7 +265,7 @@ void ast_print_to_file(ast_node* node, FILE* file, bool recursive)
         fprintf(file, ",\"src_line\": \"%s\"", node->src_line);
     }
 
-    if (node->type == AstAsm || node->type == AstIdentifier || node->type == AstStringLit)
+    if (node->type == AstAsm || node->type == AstIdentifier || node->type == AstInclude || node->type == AstNamespace || node->type == AstStringLit)
     {
         fprintf(file, ",\"str_value\": \"%s\"", node->value.string);
     }
@@ -268,9 +275,9 @@ void ast_print_to_file(ast_node* node, FILE* file, bool recursive)
     }
     else if (node->type == AstSymbol)
     {
-        fprintf(file, ",\"str_value\": \"%s\"", node->value.symbol->name);
+        fprintf(file, ",\"symbol_id\":\"%p\",\"str_value\": \"%s\"", node->value.symbol, node->value.symbol->name);
     }
-    else if (node->type == AstRoot || node->type == AstScope)
+    else if ((node->type == AstRoot || node->type == AstScope) && node->value.symbol_table->size > 0)
     {
         fprintf(file, ",\"symbol_table\": ");
         symtable_print_to_file(node->value.symbol_table, file);
@@ -281,13 +288,13 @@ void ast_print_to_file(ast_node* node, FILE* file, bool recursive)
         fprintf(file, ",\"name\": \"%s\",\"pointer_level\": %ld", node->value.dtype->name, node->value.dtype->pointer_level);
     }
 
-    if (recursive && node->children->size > 0)
+    if (node->children->size > 0)
     {
         fprintf(file, ",\"children\": [");
 
         for (size_t i = 0; i < node->children->size; i++)
         {
-            ast_print_to_file(vector_get_item(node->children, i), file, true);
+            ast_print_to_file(vector_get_item(node->children, i), file);
             if (i < node->children->size - 1) // don't print a comma after the last child
             {
                 fprintf(file, ",");

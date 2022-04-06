@@ -43,38 +43,41 @@ comment		[/][*][^*]*[*]+([^*/][^*]*[*]+)*[/]
     return BOOL_LIT;
 }
 
-"alloc"                 { return ALLOC; }   /* match keywords */
-"asm"                   { return ASM;   }
-"break"                 { return BREAK; }
-"continue"              { return CONT;  }
-"free"                  { return FREE;  }
-"fn"                    { return FUNC;  }
-"if"                    { return IF;    }
-"else"                  { return ELSE;  }
-"input"                 { return INPUT; }
-"print"                 { return PRINT; }
-"return"                { return RETURN;}
-"while"                 { return WHILE; }
+"alloc"                 { return ALLOC;   }   /* match keywords */
+"asm"                   { return ASM;     }
+"break"                 { return BREAK;   }
+"continue"              { return CONT;    }
+"for"                   { return FOR;     }
+"free"                  { return FREE;    }
+"fn"                    { return FUNC;    }
+"if"                    { return IF;      }
+"else"                  { return ELSE;    }
+"include"               { return INCLUDE; }
+"input"                 { return INPUT;   }
+"print"                 { return PRINT;   }
+"return"                { return RETURN;  }
+"while"                 { return WHILE;   }
 
-"="                     { return IS;    }   /* match operators */
-"+"                     { return ADD;   }
-"-"                     { return SUB;   }
-"*"                     { return MUL;   }
-"/"                     { return DIV;   }
-"**"                    { return POW;   }
-"%"                     { return MOD;   }
-"<"                     { return LT;    }
-">"                     { return GT;    }
-"<="                    { return LE;    }
-">="                    { return GE;    }
-"=="                    { return EQ;    }
-"!="                    { return NE;    }
-"&&"                    { return AND;   }
-"!"                     { return NOT;    }
-"||"                    { return OR;    }
-"&"                    	{ return REF; 	}
+"="                     { return IS;  }   /* match operators */
+"+"                     { return ADD; }
+"-"                     { return SUB; }
+"*"                     { return MUL; }
+"/"                     { return DIV; }
+"**"                    { return POW; }
+"%"                     { return MOD; }
+"<"                     { return LT;  }
+">"                     { return GT;  }
+"<="                    { return LE;  }
+">="                    { return GE;  }
+"=="                    { return EQ;  }
+"!="                    { return NE;  }
+"&&"                    { return AND; }
+"!"                     { return NOT; }
+"||"                    { return OR;  }
+"&"                    	{ return REF; }
 
 ";"                     { return SEMI_COLON;    }
+"::"                    { return DOUBLE_COLON;  }
 ":"                     { return COLON;         }
 ","                     { return COMMA;         }
 "("                     { return BRACKET_L;     }

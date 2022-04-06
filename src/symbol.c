@@ -22,14 +22,9 @@ void symbol_free(symbol* sym)
     free(sym);
 }
 
-void symbol_print(symbol* sym)
-{
-    symbol_print_to_file(sym, stdout);
-}
-
 void symbol_print_to_file(symbol* sym, FILE* file)
 {
-    fprintf(file, "{\"name\":\"%s\",\"data_type\":\"%s\",\"data_type_pointer_level\":%ld,\"data_type_size\":%ld", sym->name, sym->dtype->name, sym->dtype->pointer_level, sym->dtype->size);
+    fprintf(file, "{\"id\":\"%p\",\"name\":\"%s\",\"data_type\":\"%s\",\"data_type_pointer_level\":%ld,\"data_type_size\":%ld", sym, sym->name, sym->dtype->name, sym->dtype->pointer_level, sym->dtype->size);
 
     if (sym->is_initialised)
     {
@@ -52,24 +47,20 @@ void symbol_print_to_file(symbol* sym, FILE* file)
     fprintf(file, "}");
 }
 
-
-void symtable_print(hashtable* table)
-{
-    symtable_print_to_file(table, stdout);
-}
-
 void symtable_print_to_file(hashtable* table, FILE* file)
 {
     fprintf(file, "[");
 
-    for (int i = 0; i < table->capacity; i++)
+    vector* table_vec = hashtable_to_vector(table);
+    for (int i = 0; i < table_vec->size; i++)
     {
-        if (table->keys[i] != 0)
+        symbol_print_to_file(vector_get_item(table_vec, i), file);
+        if (i < table_vec->size - 1) // don't print a comma after the last item
         {
-            symbol_print_to_file(table->items[i], file);
             fprintf(file, ",");
         }
     }
+    vector_free(table_vec);
 
-    fprintf(file, "{}]");
+    fprintf(file, "]");
 }

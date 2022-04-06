@@ -7,12 +7,40 @@
 
 void preprocess_identifier(preproc_state* state, ast_node* node)
 {
+    bool namespaced_identifier = node->children->size > 0 && ast_get_child(node, 0)->type == AstNamespace;
+
+    // evaluate which module the referenced identifier belongs to if it has a namespace
+    module* namespace = state->mod;
+    while (node->children->size > 0)
+    {
+        ast_node* namespace_node = ast_get_child(node, node->children->size - 1); // start with the last child
+        namespace = module_get_dependency(namespace, namespace_node->value.string);
+        ast_delete_child(node, namespace_node);
+    }
+
+    hashtable* table = 0;
+    if (namespaced_identifier)
+    {
+        if (namespace == 0)
+        {
+            preproc_error(state, node, "%scould not locate given namespace", "");
+        }
+        else
+        {
+            table = namespace->ast_root->value.symbol_table;
+        }
+    }
+
+    if (table == 0)
+    {
+        table = ast_get_closest_symtable(node);
+    }
+
     int index_in_parent = ast_get_child_index(node->parent, node);
 
     bool is_function_argument_identifier = node->parent->type == AstDefinition && node->parent->parent != 0 && node->parent->parent->type == AstDefinitionList && node->parent->parent->parent->type == AstFunction;
     bool is_being_assigned_to = (node->parent->type == AstAlloc || node->parent->type == AstDefinition || node->parent->type == AstInput || (node->parent->type == AstAssignment && index_in_parent == 0));
 
-    hashtable* table;
     symbol* sym;
 
     if (is_function_argument_identifier)
@@ -21,8 +49,13 @@ void preprocess_identifier(preproc_state* state, ast_node* node)
         // for definitions for function args, make sure they're in the function's scope and not outside it
         sym = hashtable_get_item(table, node->value.string);
     }
+    else if (namespaced_identifier)
+    {
+        sym = hashtable_get_item(table, node->value.string);
+    }
     else
     {
+        // look for the symbol in all scopes above us
         sym = ast_find_symbol(node, node->value.string);
     }
 
@@ -38,11 +71,7 @@ void preprocess_identifier(preproc_state* state, ast_node* node)
             // still continue to create a symbol so we don't want to propage the error, otherwise we'll get a segfault
         }
 
-        if (!is_function_argument_identifier)
-        {
-            table = ast_get_closest_symtable(node);
-        }
-        else
+        if (is_function_argument_identifier)
         {
             sym->is_initialised = true; // if its a function argument, assume it's already initialized. actually check for that during function calls not in function definitions
         }
