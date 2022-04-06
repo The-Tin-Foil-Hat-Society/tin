@@ -1,17 +1,16 @@
 fn i32 main
 {
-    i32 num = 5;
-    i32 val = num;
+    i32 num1 = 2;
 
-    if (3==3) {
-        print "yep";
-    }
-    else if (2+2==3) {
-        print "nope";
-    }
-    else {
-        print"e";
-    }
+    i32 num2;
+    num2 = num1 + 1;
+
+    i32 num4;
+    num4 = num2 * 2 * 3 + 1;
+
+    num2 = 10;
+
+    print num4 + num2;
 
     return 0;
 }

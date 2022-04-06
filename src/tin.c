@@ -1,6 +1,7 @@
 #include "ast.h"
 #include "interpreter.h"
 #include "module.h"
+#include "optimisation.h"
 
 #include "parser.tab.h"
 #include "lex.yy.h"
@@ -19,6 +20,7 @@ int main(int argc, char** argv)
 	{
 		goto end;
 	}
+	optimize(mod, mod->ast_root);
 	module_print_to_file(mod, 0);
 
 #ifdef TIN_INTERPRETER

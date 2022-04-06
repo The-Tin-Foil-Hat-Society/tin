@@ -17,8 +17,16 @@ typedef struct
 
     bool is_initialised;
     bool is_function;
+    bool is_const; // for the optimiser to determine if values are never changed
 
-    void* function_node;  // for the interperter to follow function symbols
+    void* function_node;  // for the interpreter to follow function symbols
+    //void* value; // for the optimiser to simplify expressions
+    union 
+    {
+        bool boolean;            // AstBoolLit
+        int64_t integer;         // AstIntegerLit
+        char* string;            // AstAsm, AstIdentifier, AstInclude, AstNamespace, AstStringLit
+    } value;  // for the optimiser to simplify expressions
 } symbol;
 
 symbol* symbol_new(void);

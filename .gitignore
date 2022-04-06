@@ -41,3 +41,5 @@ generated/
 # vscode configs
 .vscode/settings.json
 .vscode/c_cpp_properties.json
+txt2.txt
+txt.txt
