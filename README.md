@@ -152,7 +152,7 @@ _For more examples, please refer to the [documentation](https://github.com/aaf6a
 
 - [ ] Standard Libraries
 - [ ] Optimisation
-- [ ] Implementing #include
+- [x] Implementing #include
 - [ ] Memory Tools
 - [ ] Non-RISC-V Interpreter
 
