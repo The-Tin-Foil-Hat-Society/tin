@@ -118,6 +118,11 @@ void process_nodes(preproc_state* state, ast_node* node)
         case AstMul:
         case AstPow:
         case AstSub:
+        case AstBitwiseAnd:
+        case AstBitwiseOr:
+        case AstBitwiseXor:
+        case AstShiftLeft:
+        case AstShiftRight:
             preprocess_operation(state, node);
             break;
 

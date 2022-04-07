@@ -106,6 +106,7 @@ expression
     | expression SHIFTR expression { $$ = ast_new(AstShiftRight);  ast_add_child($$, $1); ast_add_child($$, $3); }
     ;
 
+/* TODO: these and other complex rules and abstractions (i.e. circular shifts, for loops) could be written using macros once those are implemented */
 operator_assignment
     : identifier MOD IS expression { $$ = ast_new(AstAssignment); ast_add_child($$, $1); ast_node* expression = ast_new(AstMod); ast_add_child(expression, ast_copy($1)); ast_add_child(expression, $4); ast_add_child($$, expression); }
     | identifier POW IS expression { $$ = ast_new(AstAssignment); ast_add_child($$, $1); ast_node* expression = ast_new(AstPow); ast_add_child(expression, ast_copy($1)); ast_add_child(expression, $4); ast_add_child($$, expression); }
