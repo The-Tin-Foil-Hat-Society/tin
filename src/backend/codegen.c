@@ -59,6 +59,42 @@ static int codegen_generate_if_ast(FILE *file, ast_node *node)
     return 0;
 }
 
+static int codegen_generate_while_ast(FILE *file, ast_node *node)
+{
+    int start_label, end_label;
+
+    ast_node *left, *right;
+
+    left = (ast_node *)ast_get_child(node, 0);  // Comparison
+    right = (ast_node *)ast_get_child(node, 1); // Block
+
+    start_label = label_add();
+    end_label = label_add();
+
+    trace("\tProcessing while statement");
+    trace("\t\t* Comparison node type: %s", ast_type_names[left->type]);
+    trace("\t\t* Block node type: %s", ast_type_names[right->type]);
+    trace("\t\t* Start label: %d", start_label);
+    trace("\t\t* End label: %d", end_label);
+
+    emit_comment("While loop start");
+    gen_label(file, start_label);
+
+    codegen_traverse_ast(file, left, end_label);
+    register_freeall();
+
+    codegen_traverse_ast(file, right, 0);
+    register_freeall();
+
+    emit_comment("Jump to while loop start");
+    gen_jump(file, start_label);
+
+    emit_comment("While loop end");
+    gen_label(file, end_label);
+
+    return 0;
+}
+
 int *codegen_alloc_registers(size_t count)
 {
     /*
@@ -91,6 +127,10 @@ int codegen_traverse_ast(FILE *file, ast_node *node, int reg)
     case AstIf:
     {
         return codegen_generate_if_ast(file, node);
+    }
+    case AstWhile:
+    {
+        return codegen_generate_while_ast(file, node);
     }
     case AstFunction:
     {
@@ -158,7 +198,7 @@ int codegen_traverse_ast(FILE *file, ast_node *node, int reg)
     case AstLessThanOrEqual:
     case AstGreaterThan:
     {
-        if (node->parent->type == AstIf)
+        if (node->parent->type == AstIf || node->parent->type == AstWhile)
         {
             return gen_comparison_jump(file, node->type, regs[0], regs[1], reg);
         }

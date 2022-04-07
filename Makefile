@@ -1,7 +1,7 @@
 #This is the make file for the tin interpreter
 
 #File to compile:
-file = examples/if.tin
+file = examples/for.tin
 flags = -D TIN_COMPILER -D TIN_DEBUG_VERBOSE
 
 sources = src/*.c src/backend/*.c src/utils/*.c

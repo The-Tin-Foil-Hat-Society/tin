@@ -123,7 +123,7 @@ int gen_print_string(FILE *file, int index, int reg)
         "Syscall args: string length",
         "li",
         "a2, %d",
-        strlen(string_entry->string) - 1);
+        strlen(string_entry->string) + 1);
 
     emit(
         "Syscall args: write system call",
@@ -285,7 +285,7 @@ void gen_rodata(FILE *file)
     {
         trace("\tWriting rodata string %s ('%s')", rodata[i]->identifier, rodata[i]->string);
         write_to_file("%s:\n", rodata[i]->identifier);
-        write_to_file("\t.ascii\t\"%s\"\n", rodata[i]->string);
+        write_to_file("\t.ascii\t\"%s\\0\"\n", rodata[i]->string);
     }
 }
 
@@ -369,17 +369,17 @@ int gen_comparison_jump(FILE *file, int operation, int reg1, int reg2, int label
         break;
 
     case AstLessThan:
-        emit("Less than", "blt", "%s, %s, .LB%d", registers[reg2], registers[reg1], label);
+        emit("Less than", "bge", "%s, %s, .LB%d", registers[reg1], registers[reg2], label);
         break;
     case AstGreaterThanOrEqual:
-        emit("Greater than or equal", "bge", "%s, %s, .LB%d", registers[reg2], registers[reg1], label);
+        emit("Greater than or equal", "blt", "%s, %s, .LB%d", registers[reg1], registers[reg2], label);
         break;
 
     case AstLessThanOrEqual:
-        emit("Less than or equal", "bge", "%s, %s, .LB%d", registers[reg1], registers[reg2], label);
+        emit("Less than or equal", "blt", "%s, %s, .LB%d", registers[reg2], registers[reg1], label);
         break;
     case AstGreaterThan:
-        emit("Greater than", "blt", "%s, %s, .LB%d", registers[reg1], registers[reg2], label);
+        emit("Greater than", "bge", "%s, %s, .LB%d", registers[reg2], registers[reg1], label);
         break;
 
     default:
