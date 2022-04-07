@@ -76,8 +76,8 @@ simple_identifier
 
 identifier
     : simple_identifier { $$ == $1; }
-    | MUL identifier { $$ = ast_new(AstDereference); ast_add_child($$, $2); } 
-    | REF identifier { $$ = ast_new(AstReference); ast_add_child($$, $2); } 
+    | MUL identifier { $$ = $2; ast_add_child($$, ast_new(AstReference)); }
+    | REF identifier { $$ = $2; ast_add_child($$, ast_new(AstDereference)); }
     ;
 
 simple_expression
@@ -86,7 +86,7 @@ simple_expression
     | BOOL_LIT { $$ = yylval; }
     | func_call { $$ = $1; }
     | identifier { $$ = $1; } 
-    | identifier SQUARE_BRACKET_L expression SQUARE_BRACKET_R { $$ = ast_new(AstOffset); ast_add_child($$, $1); ast_add_child($$, $3); } /* a[x+1] */
+    | identifier SQUARE_BRACKET_L expression SQUARE_BRACKET_R { ast_node* offset_node = ast_new(AstOffset); ast_add_child(offset_node, $3); ast_add_child($$, offset_node); } /* a[x+1] */
     | BRACKET_L conditional_expression BRACKET_R { $$ = $2; }
     | NOT simple_expression { $$ = ast_new(AstNot); ast_add_child($$, $2); }
     ;

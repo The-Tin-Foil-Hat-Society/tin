@@ -69,12 +69,6 @@ void process_nodes(preproc_state* state, ast_node* node)
             preprocess_string_lit(state, node);
             break;
 
-        case AstOffset:
-        case AstReference:
-        case AstDereference:
-            preprocess_pointer_operation(state, node);
-            break;
-
         case AstAlloc:
             preprocess_alloc(state, node);
             break;
