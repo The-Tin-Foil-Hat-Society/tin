@@ -101,6 +101,8 @@ module* module_parse(char* path, module* parent)
         module_free(mod);
 		return 0;
     }
+
+    //return mod;
     
     if (!preprocessor_process(mod))
     {

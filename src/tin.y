@@ -27,7 +27,7 @@ void yyerror (yyscan_t* locp, module* mod, const char* msg);
 %parse-param {void* scanner}{module* mod}
 
 %token IDENTIFIER INTEGER STRING
-%token ALLOC ASM BREAK CONT FREE FUNC IF ELSE INCLUDE INPUT PRINT RETURN WHILE
+%token ALLOC ASM BREAK CONT FOR FREE FUNC IF ELSE INCLUDE INPUT PRINT RETURN WHILE
 %token I8 U8 I16 U16 I32 U32 VOID PTR BOOL BOOL_LIT
 %token IS ADD SUB MUL DIV POW MOD LT GT LE GE EQ NE AND NOT OR REF
 %token SEMI_COLON COLON DOUBLE_COLON COMMA BRACKET_L BRACKET_R BRACE_L BRACE_R SQUARE_BRACKET_L SQUARE_BRACKET_R 
@@ -96,8 +96,18 @@ expression
     | expression SUB expression { $$ = ast_new(AstSub); ast_add_child($$, $1); ast_add_child($$, $3); }
     ;
 
+operator_assignment
+    : identifier MOD IS expression { $$ = ast_new(AstAssignment); ast_add_child($$, $1); ast_node* expression = ast_new(AstMod); ast_add_child(expression, ast_copy($1)); ast_add_child(expression, $4); ast_add_child($$, expression); }
+    | identifier POW IS expression { $$ = ast_new(AstAssignment); ast_add_child($$, $1); ast_node* expression = ast_new(AstPow); ast_add_child(expression, ast_copy($1)); ast_add_child(expression, $4); ast_add_child($$, expression); }
+    | identifier DIV IS expression { $$ = ast_new(AstAssignment); ast_add_child($$, $1); ast_node* expression = ast_new(AstDiv); ast_add_child(expression, ast_copy($1)); ast_add_child(expression, $4); ast_add_child($$, expression); }
+    | identifier MUL IS expression { $$ = ast_new(AstAssignment); ast_add_child($$, $1); ast_node* expression = ast_new(AstMul); ast_add_child(expression, ast_copy($1)); ast_add_child(expression, $4); ast_add_child($$, expression); }
+    | identifier ADD IS expression { $$ = ast_new(AstAssignment); ast_add_child($$, $1); ast_node* expression = ast_new(AstAdd); ast_add_child(expression, ast_copy($1)); ast_add_child(expression, $4); ast_add_child($$, expression); }
+    | identifier SUB IS expression { $$ = ast_new(AstAssignment); ast_add_child($$, $1); ast_node* expression = ast_new(AstSub); ast_add_child(expression, ast_copy($1)); ast_add_child(expression, $4); ast_add_child($$, expression); }
+    ;
+
 assignment
-    : identifier IS expression { $$ = ast_new(AstAssignment); ast_add_child($$, $1); ast_add_child($$, $3); }
+    : operator_assignment      { $$ = $1; }
+    | identifier IS expression { $$ = ast_new(AstAssignment); ast_add_child($$, $1); ast_add_child($$, $3); }
     | definition IS expression { $$ = ast_new(AstAssignment); ast_add_child($$, $1); ast_add_child($$, $3); }
     ;
 
@@ -142,6 +152,14 @@ if_statement
 	| if BRACKET_L conditional_expression BRACKET_R statement %prec FAKE_ELSE { $$ = $1; ast_add_child($1, $3); ast_add_child($$, $5); }
     ;
 
+for
+    : FOR { $$ = ast_new(AstFor); $$->src_line = module_get_src_line(mod, yyget_lineno(scanner)); }
+    ;
+
+for_statement
+    : for BRACKET_L assignment SEMI_COLON conditional_expression SEMI_COLON assignment BRACKET_R scope { $$ = $1; ast_add_child($$, $3); ast_add_child($$, $5); ast_add_child($$, $7); ast_add_child($$, $9); }
+    ;
+
 while
     : WHILE { $$ = ast_new(AstWhile); $$->src_line = module_get_src_line(mod, yyget_lineno(scanner)); }
     ;
@@ -163,6 +181,7 @@ statement
     | definition SEMI_COLON     { $$ = $1; }
     | func_call SEMI_COLON      { $$ = $1; }
     | if_statement              { $$ = $1; }
+    | for_statement             { $$ = $1; }
     | while_statement           { $$ = $1; }
     | jump_statement            { $$ = $1; }
     | scope                     { $$ = $1; }
