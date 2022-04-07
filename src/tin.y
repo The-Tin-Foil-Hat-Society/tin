@@ -28,11 +28,16 @@ void yyerror (yyscan_t* locp, module* mod, const char* msg);
 
 %token IDENTIFIER INTEGER STRING
 %token ALLOC ASM BREAK CONT FOR FREE FUNC IF ELSE INCLUDE INPUT PRINT RETURN WHILE
-%token I8 U8 I16 U16 I32 U32 VOID PTR BOOL BOOL_LIT
-%token IS ADD SUB MUL DIV POW MOD LT GT LE GE EQ NE AND NOT OR REF
+%token I8 U8 I16 U16 I32 U32 VOID PTR REF BOOL BOOL_LIT
+%token IS ADD SUB MUL DIV POW MOD ROTL ROTR SHIFTL SHIFTR LT GT LE GE EQ NE AND NOT OR BAND BOR BXOR
 %token SEMI_COLON COLON DOUBLE_COLON COMMA BRACKET_L BRACKET_R BRACE_L BRACE_R SQUARE_BRACKET_L SQUARE_BRACKET_R 
 
 /* operator precedence */
+%left BOR
+%left BXOR
+%left BAND
+%left SHIFTL SHIFTR
+%left ROTL ROTR
 %left ADD SUB
 %left DIV MUL MOD
 %left POW
@@ -94,8 +99,14 @@ expression
     | expression MUL expression { $$ = ast_new(AstMul); ast_add_child($$, $1); ast_add_child($$, $3); }
     | expression ADD expression { $$ = ast_new(AstAdd); ast_add_child($$, $1); ast_add_child($$, $3); }
     | expression SUB expression { $$ = ast_new(AstSub); ast_add_child($$, $1); ast_add_child($$, $3); }
+    | expression BAND expression   { $$ = ast_new(AstBitwiseAnd);  ast_add_child($$, $1); ast_add_child($$, $3); }
+    | expression BOR expression    { $$ = ast_new(AstBitwiseOr);   ast_add_child($$, $1); ast_add_child($$, $3); }
+    | expression BXOR expression   { $$ = ast_new(AstBitwiseXor);  ast_add_child($$, $1); ast_add_child($$, $3); }
+    | expression SHIFTL expression { $$ = ast_new(AstShiftLeft);   ast_add_child($$, $1); ast_add_child($$, $3); }
+    | expression SHIFTR expression { $$ = ast_new(AstShiftRight);  ast_add_child($$, $1); ast_add_child($$, $3); }
     ;
 
+/* TODO: these and other complex rules and abstractions (i.e. circular shifts, for loops) could be written using macros once those are implemented */
 operator_assignment
     : identifier MOD IS expression { $$ = ast_new(AstAssignment); ast_add_child($$, $1); ast_node* expression = ast_new(AstMod); ast_add_child(expression, ast_copy($1)); ast_add_child(expression, $4); ast_add_child($$, expression); }
     | identifier POW IS expression { $$ = ast_new(AstAssignment); ast_add_child($$, $1); ast_node* expression = ast_new(AstPow); ast_add_child(expression, ast_copy($1)); ast_add_child(expression, $4); ast_add_child($$, expression); }
@@ -103,6 +114,11 @@ operator_assignment
     | identifier MUL IS expression { $$ = ast_new(AstAssignment); ast_add_child($$, $1); ast_node* expression = ast_new(AstMul); ast_add_child(expression, ast_copy($1)); ast_add_child(expression, $4); ast_add_child($$, expression); }
     | identifier ADD IS expression { $$ = ast_new(AstAssignment); ast_add_child($$, $1); ast_node* expression = ast_new(AstAdd); ast_add_child(expression, ast_copy($1)); ast_add_child(expression, $4); ast_add_child($$, expression); }
     | identifier SUB IS expression { $$ = ast_new(AstAssignment); ast_add_child($$, $1); ast_node* expression = ast_new(AstSub); ast_add_child(expression, ast_copy($1)); ast_add_child(expression, $4); ast_add_child($$, expression); }
+    | identifier BAND IS expression   { $$ = ast_new(AstAssignment); ast_add_child($$, $1); ast_node* expression = ast_new(AstBitwiseAnd);  ast_add_child(expression, ast_copy($1)); ast_add_child(expression, $4); ast_add_child($$, expression); }
+    | identifier BOR IS expression    { $$ = ast_new(AstAssignment); ast_add_child($$, $1); ast_node* expression = ast_new(AstBitwiseOr);   ast_add_child(expression, ast_copy($1)); ast_add_child(expression, $4); ast_add_child($$, expression); }
+    | identifier BXOR IS expression   { $$ = ast_new(AstAssignment); ast_add_child($$, $1); ast_node* expression = ast_new(AstBitwiseXor);  ast_add_child(expression, ast_copy($1)); ast_add_child(expression, $4); ast_add_child($$, expression); }
+    | identifier SHIFTL IS expression { $$ = ast_new(AstAssignment); ast_add_child($$, $1); ast_node* expression = ast_new(AstShiftLeft);   ast_add_child(expression, ast_copy($1)); ast_add_child(expression, $4); ast_add_child($$, expression); }
+    | identifier SHIFTR IS expression { $$ = ast_new(AstAssignment); ast_add_child($$, $1); ast_node* expression = ast_new(AstShiftRight);  ast_add_child(expression, ast_copy($1)); ast_add_child(expression, $4); ast_add_child($$, expression); }
     ;
 
 assignment

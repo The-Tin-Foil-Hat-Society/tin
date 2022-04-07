@@ -4,7 +4,7 @@
 
 bool has_dtype(enum ast_node_type type)
 {
-    return type == AstDataType || type == AstAdd || type == AstDiv || type == AstMod || type == AstMul || type == AstPow || type == AstSub || type == AstGreaterThan || type == AstGreaterThanOrEqual  || type == AstLessThan || type == AstLessThanOrEqual  || type == AstEqual || type == AstNotEqual || type == AstAnd || type == AstNot || type == AstOr;
+    return type == AstDataType || type == AstAdd || type == AstDiv || type == AstMod || type == AstMul || type == AstPow || type == AstSub || type == AstBitwiseAnd || type == AstBitwiseOr || type == AstBitwiseXor || type == AstShiftLeft || type == AstShiftRight || type == AstGreaterThan || type == AstGreaterThanOrEqual  || type == AstLessThan || type == AstLessThanOrEqual  || type == AstEqual || type == AstNotEqual || type == AstAnd || type == AstNot || type == AstOr;
 }
 
 ast_node* ast_new(enum ast_node_type type)
@@ -150,6 +150,7 @@ void ast_set_child(ast_node* node, size_t index, ast_node* new_child)
 void ast_insert_child(ast_node* node, size_t index, ast_node* new_child)
 {
     vector_insert_item(node->children, index, new_child);
+    new_child->parent = node;
 }
 ast_node* ast_get_child(ast_node* node, size_t index)
 {

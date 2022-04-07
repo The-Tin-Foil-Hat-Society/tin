@@ -29,6 +29,7 @@ comment		[/][*][^*]*[*]+([^*/][^*]*[*]+)*[/]
 "bool"                  { return BOOL;  }
 "void"                  { return VOID;  }
 "ptr"                   { return PTR;   }
+"ref"                   { return REF;   }
 
 "false"                 { 
     ast_node* node = ast_new(AstBoolLit);
@@ -65,6 +66,10 @@ comment		[/][*][^*]*[*]+([^*/][^*]*[*]+)*[/]
 "/"                     { return DIV; }
 "**"                    { return POW; }
 "%"                     { return MOD; }
+"<<<"                   { return ROTL; }
+">>>"                   { return ROTR; }
+"<<"                    { return SHIFTL; }
+">>"                    { return SHIFTR; }
 "<"                     { return LT;  }
 ">"                     { return GT;  }
 "<="                    { return LE;  }
@@ -74,7 +79,9 @@ comment		[/][*][^*]*[*]+([^*/][^*]*[*]+)*[/]
 "&&"                    { return AND; }
 "!"                     { return NOT; }
 "||"                    { return OR;  }
-"&"                    	{ return REF; }
+"&"                     { return BAND; }
+"|"                     { return BOR;  }
+"^"                     { return BXOR; }
 
 ";"                     { return SEMI_COLON;    }
 "::"                    { return DOUBLE_COLON;  }
@@ -84,8 +91,8 @@ comment		[/][*][^*]*[*]+([^*/][^*]*[*]+)*[/]
 ")"                     { return BRACKET_R;     }
 "{"                     { return BRACE_L;       }
 "}"                     { return BRACE_R;       }
-"["                     { return SQUARE_BRACKET_L;     }
-"]"                     { return SQUARE_BRACKET_R;     }
+"["                     { return SQUARE_BRACKET_L; }
+"]"                     { return SQUARE_BRACKET_R; }
 
 {string} { 
     ast_node* node = ast_new(AstStringLit);

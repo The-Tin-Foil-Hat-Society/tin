@@ -7,7 +7,9 @@
 
 void preprocess_pointer_operation(preproc_state* state, ast_node* node)
 {
-    if (ast_get_child(node, 0)->value.dtype->pointer_level == 0)
+    ast_node* symbol_node = ast_get_child(node, 0);
+
+    if (symbol_node->type != AstSymbol || symbol_node->value.symbol->dtype->pointer_level == 0)
     {
         preproc_error(state, node, "%svariable must be a pointer\n", "");
     }
