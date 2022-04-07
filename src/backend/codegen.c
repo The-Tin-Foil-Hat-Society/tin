@@ -1,3 +1,5 @@
+#include <math.h>
+
 #include "codegen.h"
 #include "ast.h"
 
@@ -95,20 +97,22 @@ static int codegen_generate_while_ast(FILE *file, ast_node *node)
     return 0;
 }
 
-int *codegen_alloc_registers(size_t count)
+#define MAX_REGISTERS 32
+
+int *codegen_alloc_registers()
 {
     /*
      * This is a pretty hacky way to ensure that
      * memory gets freed here - regs is actually used
      * on a per-node basis
      */
-    trace("\tAllocating %ld registers", count);
+    trace("\tAllocating %d registers", MAX_REGISTERS);
     static int *regs;
 
-    if (regs != NULL)
-        free(regs);
-
-    regs = malloc(sizeof(int) * count);
+    if (regs == NULL)
+        regs = calloc(MAX_REGISTERS, sizeof(int));
+    else
+        memset(regs, 0, MAX_REGISTERS * sizeof(int));
 
     return regs;
 }
@@ -120,7 +124,7 @@ int codegen_traverse_ast(FILE *file, ast_node *node, int reg)
 {
     trace("\n-- AST traversal - node: %s\n-- Log:", ast_type_names[node->type]);
 
-    int *regs = codegen_alloc_registers(node->children->size);
+    int *regs = codegen_alloc_registers();
 
     switch (node->type)
     {
@@ -217,7 +221,9 @@ int codegen_traverse_ast(FILE *file, ast_node *node, int reg)
     case AstStringLit:
     {
         char *name = "Lstr";
-        name = malloc(sizeof(char) * (strlen(name) + 1));
+        int max_digits = 32;
+        name = malloc(sizeof(char) * (strlen(name) + max_digits + 1));
+
         sprintf(name, "Lstr%d", rodata_count++);
         return gen_rodata_string(file, name, node->value.string);
     }

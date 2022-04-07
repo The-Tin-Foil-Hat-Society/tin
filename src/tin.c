@@ -85,7 +85,7 @@ int main(int argc, char **argv)
 		char *asm_args[4] = {"/usr/bin/riscv64-linux-gnu-as", asm_input_name, "-o", asm_output_name};
 
 		// Concatenate assembler arguments
-		char *asm_args_str = malloc(strlen(asm_args[0]) + strlen(asm_args[1]) + strlen(asm_args[2]) + strlen(asm_args[3]) + 1);
+		char *asm_args_str = malloc(strlen(asm_args[0]) + strlen(asm_args[1]) + strlen(asm_args[2]) + strlen(asm_args[3]) + 6);
 		strcpy(asm_args_str, asm_args[0]);
 		strcat(asm_args_str, " ");
 		for (int i = 1; i < 4; i++)
@@ -120,7 +120,7 @@ int main(int argc, char **argv)
 		char *linker_args[4] = {"/usr/bin/riscv64-linux-gnu-ld", linker_input_name, "-o", linker_output_name};
 
 		// Concatenate linker arguments
-		char *linker_args_str = malloc(strlen(linker_args[0]) + strlen(linker_args[1]) + strlen(linker_args[2]) + strlen(linker_args[3]) + 1);
+		char *linker_args_str = malloc(strlen(linker_args[0]) + strlen(linker_args[1]) + strlen(linker_args[2]) + strlen(linker_args[3]) + 6);
 		strcpy(linker_args_str, linker_args[0]);
 		strcat(linker_args_str, " ");
 		for (int i = 1; i < 4; i++)
