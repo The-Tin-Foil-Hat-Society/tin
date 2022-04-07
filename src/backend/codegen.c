@@ -55,10 +55,28 @@ static int codegen_generate_if_ast(FILE *file, ast_node *node)
         register_freeall();
         gen_label(file, else_label);
     }
+
     return 0;
 }
 
-int *regs;
+int *codegen_alloc_registers(size_t count)
+{
+    /*
+     * This is a pretty hacky way to ensure that
+     * memory gets freed here - regs is actually used
+     * on a per-node basis
+     */
+    trace("\tAllocating %ld registers", count);
+    static int *regs;
+
+    if (regs != NULL)
+        free(regs);
+
+    regs = malloc(sizeof(int) * count);
+
+    return regs;
+}
+
 /*
  * Depth-first recursive tree traversal
  */
@@ -66,10 +84,7 @@ int codegen_traverse_ast(FILE *file, ast_node *node, int reg)
 {
     trace("\n-- AST traversal - node: %s\n-- Log:", ast_type_names[node->type]);
 
-    trace("\tAllocating %ld registers", node->children->size);
-    if (regs != NULL)
-        free(regs);
-    regs = malloc(sizeof(int) * node->children->size + 1);
+    int *regs = codegen_alloc_registers(node->children->size);
 
     switch (node->type)
     {
@@ -231,14 +246,14 @@ void codegen_init()
     rodata_init();
 }
 
-void write_preamble(FILE *file)
+void codegen_write_preamble(FILE *file)
 {
     trace("Writing preamble");
 
     write_to_file(".globl _start\n");
 }
 
-void write_postamble(FILE *file)
+void codegen_write_postamble(FILE *file)
 {
     trace("Writing postamble");
 
@@ -248,7 +263,7 @@ void write_postamble(FILE *file)
 bool codegen_generate(module *mod, ast_node *node, FILE *file)
 {
     codegen_init();
-    write_preamble(file);
+    codegen_write_preamble(file);
 
     // Text section
     write_to_file(".text\n\n");
@@ -280,5 +295,5 @@ bool codegen_generate(module *mod, ast_node *node, FILE *file)
     write_to_file("\tli\ta7, 93\n");
     write_to_file("\tecall\n");
 
-    write_postamble(file);
+    codegen_write_postamble(file);
 }

@@ -9,8 +9,8 @@
 // Registers
 //
 // https://en.wikichip.org/wiki/risc-v/registers
-#define REGISTER_COUNT 4
-static char *registers[REGISTER_COUNT] = {"t0", "t1", "t2", "t3"};
+#define REGISTER_COUNT 7
+static char *registers[REGISTER_COUNT] = {"t0", "t1", "t2", "t3", "t4", "t5", "t6"};
 static int free_registers[REGISTER_COUNT];
 
 void register_freeall();
