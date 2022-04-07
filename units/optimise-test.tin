@@ -1,3 +1,11 @@
+i32 test = 0;
+
+fn i32 add(i32 x, i32 y)
+{
+    i32 result = x + y;
+    return result;
+}
+
 fn i32 main
 {
     i32 num1 = 2;
@@ -9,6 +17,9 @@ fn i32 main
     num4 = num2 * 2 * 3 + 1;
 
     num2 = 10;
+
+    i32 num5;
+    //num5 = add(num2, num4);
 
     print num4 + num2;
 

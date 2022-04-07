@@ -309,7 +309,23 @@ ast_node* find_expressions(ast_node* node)
 
 void optimize(module* mod, ast_node* node)
 {
-    find_expressions(node);
+    // only optimises main function for now
+    // support for other functions and modules coming next
+    for (size_t i = 0; i < node->children->size; i++)
+    {
+        ast_node* child = ast_get_child(node, i);
+        if (child->type == AstFunction)
+        {
+            ast_node* declaration = ast_get_child(child, 0);
+            if (declaration->value.string == "main")
+            {
+                printf("%s\n", "test");
+                ast_node* new_child = find_expressions(child);
+                ast_set_child(node, i, new_child);
+            }
+        }
+    }
+   
     //remove_variables(node);
     
     //used_vars = hashtable_new();
