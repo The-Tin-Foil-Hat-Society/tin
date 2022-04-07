@@ -23,27 +23,50 @@ int codegen_traverse_ast(FILE *file, ast_node *node, int reg);
  */
 static int codegen_generate_if_ast(FILE *file, ast_node *node)
 {
-    int false_label;
+    int false_label, else_label;
+    ast_node *left, *right, *mid;
 
-    ast_node *left, *right;
-    left = (ast_node *)ast_get_child(node, 0);
-    right = (ast_node *)ast_get_child(node, 1);
+    left = (ast_node *)ast_get_child(node, 0); // Comparison
+    mid = (ast_node *)ast_get_child(node, 1);  // Condition
+
+    right = (ast_node *)ast_get_child(node, 2); // Else
+    bool has_else = (right != NULL);
 
     trace("\tProcessing if statement");
-    trace("\t\t* Left node type: %s", ast_type_names[left->type]);
-    trace("\t\t* Mid node type: %s", ast_type_names[right->type]);
+    trace("\t\t* Comparison node type: %s", ast_type_names[left->type]);
+    trace("\t\t* Condition node type: %s", ast_type_names[mid->type]);
+
+    if (has_else)
+        trace("\t\t* Else node type: %s", ast_type_names[right->type]);
 
     false_label = codegen_label();
-
     trace("\t\t* False label: %d", false_label);
+
+    if (has_else)
+    {
+        else_label = codegen_label();
+        trace("\t\t* End label: %d", else_label);
+    }
 
     codegen_traverse_ast(file, left, false_label);
     register_freeall();
 
-    codegen_traverse_ast(file, right, 0);
+    codegen_traverse_ast(file, mid, 0);
     register_freeall();
 
+    if (has_else)
+    {
+        gen_jump(file, else_label);
+    }
+
     gen_label(file, false_label);
+
+    if (has_else)
+    {
+        codegen_traverse_ast(file, right, 0);
+        register_freeall();
+        gen_label(file, else_label);
+    }
     return 0;
 }
 
