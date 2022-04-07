@@ -123,7 +123,7 @@ int gen_print_string(FILE *file, int index, int reg)
         "Syscall args: string length",
         "li",
         "a2, %d",
-        strlen(string_entry->string) - 1);
+        strlen(string_entry->string) + 1);
 
     emit(
         "Syscall args: write system call",
@@ -285,7 +285,7 @@ void gen_rodata(FILE *file)
     {
         trace("\tWriting rodata string %s ('%s')", rodata[i]->identifier, rodata[i]->string);
         write_to_file("%s:\n", rodata[i]->identifier);
-        write_to_file("\t.ascii\t\"%s\"\n", rodata[i]->string);
+        write_to_file("\t.ascii\t\"%s\\0\"\n", rodata[i]->string);
     }
 }
 
