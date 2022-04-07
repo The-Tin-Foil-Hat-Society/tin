@@ -339,3 +339,51 @@ int gen_asm(FILE *file, char *string, int reg)
 
     return reg;
 }
+
+void gen_label(FILE *file, int label)
+{
+    emit_comment("Generated label %d\n", label);
+    write_to_file("label__%d:\n", label);
+}
+
+void gen_jump(FILE *file, int label)
+{
+    emit_comment("Jump to label %d\n", label);
+    write_to_file("\tjal label__%d\n", label);
+}
+
+int gen_comparison_jump(FILE *file, int operation, int reg1, int reg2, int label)
+{
+    trace("\tComparing %d and %d (operation: %s)\n", reg1, reg2, ast_type_names[operation]);
+    /*
+     * We actually do the opposite of the operation here, because we want to jump
+     * to a 'false' label if the condition is false.
+     */
+    switch (operation)
+    {
+    case AstEqual:
+        emit("Equal", "bne", "%s, %s, label__%d", registers[reg1], registers[reg2], label);
+        break;
+    case AstNotEqual:
+        emit("Not equal", "beq", "%s, %s, label__%d", registers[reg1], registers[reg2], label);
+        break;
+
+    case AstLessThan:
+        emit("Less than", "blt", "%s, %s, label__%d", registers[reg2], registers[reg1], label);
+        break;
+    case AstGreaterThanOrEqual:
+        emit("Greater than or equal", "bge", "%s, %s, label__%d", registers[reg2], registers[reg1], label);
+        break;
+
+    case AstLessThanOrEqual:
+        emit("Less than or equal", "bge", "%s, %s, label__%d", registers[reg1], registers[reg2], label);
+        break;
+    case AstGreaterThan:
+        emit("Greater than", "blt", "%s, %s, label__%d", registers[reg1], registers[reg2], label);
+        break;
+
+    default:
+        compiler_error("Unsupported comparison operation %s", ast_type_names[operation]);
+        break;
+    }
+}

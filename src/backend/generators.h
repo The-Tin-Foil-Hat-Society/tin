@@ -73,3 +73,6 @@ int gen_function(FILE *file, int reg, char *identifier);
 int gen_function_epilogue(FILE *file, int reg);
 int gen_function_call(FILE *file, int reg, char *identifier);
 int gen_return(FILE *file, int reg);
+int gen_comparison_jump(FILE *file, int operation, int reg1, int reg2, int label);
+void gen_jump(FILE *file, int label);
+void gen_label(FILE *file, int label);

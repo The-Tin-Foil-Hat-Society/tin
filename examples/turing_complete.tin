@@ -1,0 +1,42 @@
+fn void fizz
+{
+    print "fizz";
+}
+
+fn void buzz
+{
+    print "buzz";
+}
+
+fn i32 main
+{
+    print "Turing completeness test\n";
+    print "========================\n";
+
+    // In general, for a language to be Turing-complete, it needs:
+    // - A form of conditional repetition or conditional jump (e.g. while, if + goto)
+    // - A way to read and write some form of storage
+    
+    i32 i = 0;
+    while ( i < 10 )
+    {
+        if ( i % 3 == 0 )
+        {
+            fizz();
+        }
+        
+        if ( i % 5 == 0 )
+        {
+            buzz();
+        }
+
+        if ( i % 3 == 0 || i % 5 == 0 )
+        {
+            print "\n";
+        }
+
+        i = i + 1;
+    }
+
+    return 0;
+}
