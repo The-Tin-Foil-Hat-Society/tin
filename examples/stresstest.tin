@@ -1,0 +1,37 @@
+fn i32 main
+{
+    i32 a = 1;
+    i32 ab = 2;
+    i32 abc = 3;
+    i32 abcd = 4;
+    i32 abcde = 5;
+    i32 abcdef = 6;
+    i32 abcdefg = 7;
+    i32 abcdefgh = 8;
+    i32 abcdefghi = 9;
+    i32 abcdefghij = 10;
+    i32 abcdefghijk = 11;
+    i32 abcdefghijkl = 12;
+    i32 abcdefghijklm = 13;
+    i32 abcdefghijklmn = 14;
+    i32 abcdefghijklmno = 15;
+    i32 abcdefghijklmnop = 16;
+    i32 abcdefghijklmnopq = 17;
+    i32 abcdefghijklmnopqr = 18;
+    i32 abcdefghijklmnopqrs = 19;
+    i32 abcdefghijklmnopqrst = 20;
+    i32 abcdefghijklmnopqrstu = 21;
+    i32 abcdefghijklmnopqrstuv = 22;
+    i32 abcdefghijklmnopqrstuvw = 23;
+    i32 abcdefghijklmnopqrstuvwx = 24;
+    i32 abcdefghijklmnopqrstuvwxy = 25;
+    i32 abcdefghijklmnopqrstuvwxyz = 26;
+    i32 qwertyuiop = 27;
+    i32 asdfghjkl = 28;
+    i32 zxcvbnm = 29;
+    i32 asd = 30;
+    i32 fgh = 31;
+    i32 jkl = 32;
+
+    return 0;
+}
