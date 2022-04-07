@@ -16,7 +16,6 @@
 #include "logical_expression.h"
 #include "not.h"
 #include "operation.h"
-#include "pointer_operation.h"
 #include "return.h"
 #include "root.h"
 #include "relational_expression.h"
