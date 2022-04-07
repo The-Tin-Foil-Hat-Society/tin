@@ -342,7 +342,7 @@ int gen_asm(FILE *file, char *string, int reg)
 
 void gen_label(FILE *file, int label)
 {
-    emit_comment("Generated label %d\n", label);
+    emit_comment("Declare label %d\n", label);
     write_to_file("__L%d:\n", label);
 }
 
@@ -386,4 +386,10 @@ int gen_comparison_jump(FILE *file, int operation, int reg1, int reg2, int label
         compiler_error("Unsupported comparison operation %s", ast_type_names[operation]);
         break;
     }
+}
+
+int label_add()
+{
+    static int current_label = 0;
+    return current_label++;
 }

@@ -3,18 +3,6 @@
 
 #include "backend/generators.h"
 
-/*
- * We should probably use this for everything that
- * needs a label, and then store a "label table"
- * for functions.
- */
-static int codegen_label()
-{
-    static int current_label = 0;
-
-    return current_label++;
-}
-
 int codegen_traverse_ast(FILE *file, ast_node *node, int reg);
 
 /*
@@ -39,12 +27,12 @@ static int codegen_generate_if_ast(FILE *file, ast_node *node)
     if (has_else)
         trace("\t\t* Else node type: %s", ast_type_names[right->type]);
 
-    false_label = codegen_label();
+    false_label = label_add();
     trace("\t\t* False label: %d", false_label);
 
     if (has_else)
     {
-        else_label = codegen_label();
+        else_label = label_add();
         trace("\t\t* End label: %d", else_label);
     }
 
