@@ -1,6 +1,6 @@
 #include "module.h"
 #include "preprocessor.h"
-#include "path.h"
+#include "utils/path.h"
 #include "parser.tab.h"
 #include "lex.yy.h"
 #include <stdlib.h>
@@ -101,6 +101,8 @@ module* module_parse(char* path, module* parent)
         module_free(mod);
 		return 0;
     }
+
+    //return mod;
     
     if (!preprocessor_process(mod))
     {

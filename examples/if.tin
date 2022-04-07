@@ -1,0 +1,16 @@
+fn i32 main 
+{
+    i32 a = 27584;
+
+    if ( a == 2 )
+    {
+        print "a is 2\n";
+    }
+
+    if ( a != 2 )
+    {
+        print "a is not 2\n";
+    }
+    
+    return 0;
+}

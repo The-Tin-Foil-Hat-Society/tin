@@ -1,0 +1,7 @@
+fn i32 main
+{
+    i32 four = 4;
+    i32 eight = 8;
+
+    return four * eight;
+}

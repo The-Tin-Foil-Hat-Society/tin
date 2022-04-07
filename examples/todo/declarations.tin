@@ -1,0 +1,14 @@
+fn i32 main 
+{
+    ptr void void_pointer;
+
+    i32 integer;
+    i16 short;
+    i8 byte;
+
+    u32 unsigned_integer;
+    u16 unsigned_short;
+    u8 unsigned_byte;
+
+    i32 initialised_integer = 0;
+}

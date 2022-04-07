@@ -47,6 +47,7 @@ comment		[/][*][^*]*[*]+([^*/][^*]*[*]+)*[/]
 "asm"                   { return ASM;     }
 "break"                 { return BREAK;   }
 "continue"              { return CONT;    }
+"for"                   { return FOR;     }
 "free"                  { return FREE;    }
 "fn"                    { return FUNC;    }
 "if"                    { return IF;      }

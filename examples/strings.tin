@@ -1,0 +1,28 @@
+fn i32 main
+{
+    print "Hello\n";
+    print "Hello\n";
+    print "Hello\n";
+    print "Hello\n";
+    print "Hello\n";
+    print "Hello\n";
+    print "Hello\n";
+    print "Hello\n";
+    print "Hello\n";
+    print "Hello\n";
+    print "Hello\n";
+    print "Hello\n";
+    print "Hello\n";
+    print "Hello\n";
+    print "Hello\n";
+    print "Hello\n";
+    print "Hello\n";
+    print "Hello\n";
+    print "Hello\n";
+    print "Hello\n";
+    print "Hello\n";
+    print "Hello\n";
+    print "Hello\n";
+
+    return 0;
+}

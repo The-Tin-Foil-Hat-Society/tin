@@ -114,7 +114,7 @@ Follow the [prerequisites](#prerequisites) and [installation](#installation) gui
 Run the following command to fetch all of the required packages in order to build the toolchain:
 
   ```sh
-  $ sudo apt-get install build-essential flex bison
+  $ sudo apt-get install build-essential flex bison binutils-riscv64-linux-gnu qemu qemu-system-misc qemu-user
   ```
 
 ### Installation
@@ -131,6 +131,11 @@ Run the following command to fetch all of the required packages in order to buil
    ```sh
    $ ./build/tin file-name.tin
    ```
+4. Run the executable through QEMU
+   ```sh
+   $ qemu-riscv64 ./file-name
+   ```
+
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -152,7 +157,7 @@ _For more examples, please refer to the [documentation](https://github.com/aaf6a
 
 - [ ] Standard Libraries
 - [ ] Optimisation
-- [ ] Implementing #include
+- [x] Implementing #include
 - [ ] Memory Tools
 - [ ] Non-RISC-V Interpreter
 

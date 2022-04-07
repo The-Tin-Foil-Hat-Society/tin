@@ -6,14 +6,14 @@
 #include <stdio.h>
 
 #include "data_type.h"
-#include "hashtable.h"
-#include "vector.h"
+#include "utils/hashtable.h"
+#include "utils/vector.h"
 
 typedef struct
 {
-    char* name;
+    char *name;
 
-    data_type* dtype;
+    data_type *dtype;
 
     bool is_initialised;
     bool is_function;
@@ -29,11 +29,11 @@ typedef struct
     } value;  // for the optimiser to simplify expressions
 } symbol;
 
-symbol* symbol_new(void);
-void symbol_free(symbol* sym);
+symbol *symbol_new(void);
+void symbol_free(symbol *sym);
 
 // prints a json representation of the symbol to the given file (can be stdout)
-void symbol_print_to_file(symbol* sym, FILE* file);
+void symbol_print_to_file(symbol *sym, FILE *file);
 
 // prints a json representation of the symbol table to the given file (can be stdout)
-void symtable_print_to_file(hashtable* table, FILE* file);
+void symtable_print_to_file(hashtable *table, FILE *file);
