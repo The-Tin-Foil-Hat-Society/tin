@@ -323,11 +323,18 @@ int gen_function_call(FILE *file, int reg, char *identifier)
     return reg;
 }
 
-int gen_return(FILE *file, int reg)
+int gen_return(FILE *file, int reg, bool is_at_end)
 {
     emit_comment("Return\n");
 
-    gen_function_epilogue(file, reg);
+    if (is_at_end)
+    {
+        emit_comment("Omitted epilogue - return is at end of function\n");
+    }
+    else
+    {
+        gen_function_epilogue(file, reg);
+    }
 
     return reg;
 }
@@ -342,14 +349,12 @@ int gen_asm(FILE *file, char *string, int reg)
 
 void gen_label(FILE *file, int label)
 {
-    emit_comment("Declare label %d\n", label);
     write_to_file(".LB%d:\n", label);
 }
 
 void gen_jump(FILE *file, int label)
 {
-    emit_comment("Jump to label %d\n", label);
-    write_to_file("\tjal .LB%d\n", label);
+    emit("Jump to label", "jal", ".LB%d", label);
 }
 
 int gen_comparison_jump(FILE *file, int operation, int reg1, int reg2, int label)

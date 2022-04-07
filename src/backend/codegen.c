@@ -77,7 +77,7 @@ static int codegen_generate_while_ast(FILE *file, ast_node *node)
     trace("\t\t* Start label: %d", start_label);
     trace("\t\t* End label: %d", end_label);
 
-    emit_comment("While loop start");
+    emit_comment("While loop start\n");
     gen_label(file, start_label);
 
     codegen_traverse_ast(file, left, end_label);
@@ -86,10 +86,10 @@ static int codegen_generate_while_ast(FILE *file, ast_node *node)
     codegen_traverse_ast(file, right, 0);
     register_freeall();
 
-    emit_comment("Jump to while loop start");
+    emit_comment("Jump to while loop start\n");
     gen_jump(file, start_label);
 
-    emit_comment("While loop end");
+    emit_comment("While loop end\n");
     gen_label(file, end_label);
 
     return 0;
@@ -236,7 +236,10 @@ int codegen_traverse_ast(FILE *file, ast_node *node, int reg)
     case AstFunction:
         return gen_function_epilogue(file, reg);
     case AstReturn:
-        return gen_return(file, regs[0]);
+    {
+        bool is_at_end = ast_get_child_index(node->parent, node) == node->parent->children->size - 1;
+        return gen_return(file, regs[0], is_at_end);
+    }
 
     //
     // Variables
