@@ -119,11 +119,20 @@ int gen_print_string(FILE *file, int index, int reg)
 
     rodata_entry *string_entry = rodata[index];
 
+    // Get string length with carriage returns stripped
+    int len = 0;
+    for (int i = 0; i < strlen(string_entry->string); i++)
+    {
+        if (string_entry->string[i] == '\r')
+            continue;
+        len += 1;
+    }
+
     emit(
         "Syscall args: string length",
         "li",
         "a2, %d",
-        strlen(string_entry->string) + 1);
+        len + 1);
 
     emit(
         "Syscall args: write system call",

@@ -1,7 +1,7 @@
 #pragma once
 
 //
-// https://jupitersim.gitbook.io/jupiter/assembler/ecalls
+// https://filippo.io/linux-syscall-table/
 //
 enum sys_calls
 {
