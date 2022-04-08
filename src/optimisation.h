@@ -4,7 +4,7 @@
 #include "module.h"
 
 ast_node* evaluate_expression(ast_node* node, bool determinable);//, ast_node* node1, ast_node* node2);
-
+ast_node* assign_variable(ast_node* node, bool determinable);
 ast_node* simplify_expression(ast_node* node, bool determinable);
 ast_node* initial_iteration(ast_node* node, hashtable* symbols);
 ast_node* find_conditions(ast_node* node);
