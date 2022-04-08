@@ -225,7 +225,9 @@ int codegen_traverse_ast(FILE *file, ast_node *node, int reg)
         name = malloc(sizeof(char) * (strlen(name) + max_digits + 1));
 
         sprintf(name, "Lstr%d", rodata_count++);
-        return gen_rodata_string(file, name, node->value.string);
+        int ret = gen_rodata_string(file, name, node->value.string);
+        free(name);
+        return ret;
     }
 
     //

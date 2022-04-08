@@ -20,7 +20,7 @@ int gen_store_global(FILE *file, int reg, char *identifier, int size)
         offset = variable_set(identifier, current_variable_offset, size);
     }
 
-    char *instruction = malloc(sizeof(char) * 3);
+    char *instruction;
     switch (size)
     {
     case 8:
@@ -60,7 +60,7 @@ int gen_load_global(FILE *file, char *identifier, int size)
 
     emit_comment("Load global %s from offset %d into register %s (size: %d)\n", identifier, offset, registers[reg], size);
 
-    char *instruction = malloc(sizeof(char) * 3);
+    char *instruction;
     switch (size)
     {
     case 8:
@@ -88,6 +88,7 @@ int gen_load_global(FILE *file, char *identifier, int size)
         "%s, -%d(s0)",
         registers[reg],
         offset);
+
     return reg;
 }
 
