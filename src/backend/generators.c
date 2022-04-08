@@ -100,16 +100,15 @@ int gen_print_string(FILE *file, int index, int reg)
 {
     emit_comment("Print string constant %d\n", index);
 
-    emit(
-        "Syscall type: stdout / sys_write",
-        "li",
-        "a0, %d",
-        Sys_Write);
-
     // Sys_Write parameters:
+    // a0 - file descriptor (stdout is 1)
     // a1 - address of string
     // a2 - length of string
-    // a7 - linux write system call
+
+    emit(
+        "Syscall args: file descriptor (stdout = 1)",
+        "li",
+        "a0, 1");
 
     emit(
         "Syscall args: string address",
@@ -135,9 +134,15 @@ int gen_print_string(FILE *file, int index, int reg)
         len + 1);
 
     emit(
-        "Syscall args: write system call",
+        "Syscall type: write",
         "li",
         "a7, 64");
+
+    emit(
+        "Syscall type",
+        "li",
+        "a7, %d",
+        Sys_Write);
 
     emit("Syscall", "ecall", "");
 

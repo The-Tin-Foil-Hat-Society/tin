@@ -340,8 +340,9 @@ bool codegen_generate(module *mod, ast_node *node, FILE *file)
 #ifdef TIN_DEBUG_VERBOSE
     write_to_file("\t# Exit program cleanly\n");
 #endif
-    write_to_file("\tli\ta0, 0\n");
-    write_to_file("\tli\ta7, 93\n");
+    // exit syscall
+    write_to_file("\tli\ta0, 0\n");  // Exit code
+    write_to_file("\tli\ta7, 93\n"); // Syscall number
     write_to_file("\tecall\n");
 
     codegen_write_postamble(file);
