@@ -43,5 +43,5 @@ clean:
 	-@rm -f examples/*.out
 	-@rm -f examples/*.mod.json
 
-check_leaks: tin
-	@valgrind ./build/tin $(file) --leak-check=full
+memcheck: tin
+	@valgrind --leak-check=full --track-origins=yes ./build/tin $(file)

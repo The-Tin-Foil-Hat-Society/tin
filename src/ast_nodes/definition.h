@@ -27,4 +27,6 @@ void preprocess_definition(preproc_state* state, ast_node* node)
         ast_set_child(node->parent, ast_get_child_index(node->parent, node), symbol_node);
         ast_free(node);
     }
+
+    state->index_offset = -1;
 }

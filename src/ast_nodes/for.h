@@ -7,7 +7,7 @@
 
 void preprocess_for(preproc_state* state, ast_node* node)
 {
-    // conver the for loop to a while loop
+    // convert the for loop to a while loop
     node->type = AstWhile;
 
     data_type* condition_dtype = ast_find_data_type(ast_get_child(node, 1));
@@ -27,4 +27,6 @@ void preprocess_for(preproc_state* state, ast_node* node)
     // delete the original nodes
     ast_delete_child(node, init_node);
     ast_delete_child(node, assignment_node);
+
+    state->index_offset = 1; // skip once to avoid double parsing this once, since we added a new node beforehand
 }

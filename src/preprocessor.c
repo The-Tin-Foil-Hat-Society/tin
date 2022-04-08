@@ -7,6 +7,7 @@ preproc_state* preproc_state_new()
     preproc_state* state = malloc(sizeof(preproc_state));
     
     state->error_counter = 0;
+    state->index_offset = 0;
 
     return state;
 }
@@ -20,13 +21,9 @@ void build_symbols(preproc_state* state, ast_node* node)
 {
     for (int i = 0; i < node->children->size; i++)
     {
-        int old_size = node->children->size;
+        state->index_offset = 0;
         build_symbols(state, ast_get_child(node, i));
-
-        if (old_size > node->children->size) // a child was removed, do this to avoid skipping over the items that follow
-        {
-            i -= old_size - node->children->size;
-        }
+        i += state->index_offset;
     }
 
     if (node->type == AstIdentifier)
@@ -44,13 +41,9 @@ void process_nodes(preproc_state* state, ast_node* node)
 {
     for (int i = 0; i < node->children->size; i++)
     {
-        int old_size = node->children->size;
+        state->index_offset = 0;
         process_nodes(state, ast_get_child(node, i));
-
-        if (old_size > node->children->size) // a child was removed, do this to avoid skipping over the items that follow
-        {
-            i -= old_size - node->children->size;
-        }
+        i += state->index_offset;
     }
 
     switch(node->type)
