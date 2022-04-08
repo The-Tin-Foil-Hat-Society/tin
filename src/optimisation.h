@@ -10,5 +10,5 @@ ast_node* initial_iteration(ast_node* node, hashtable* symbols);
 ast_node* find_conditions(ast_node* node);
 ast_node* remove_variables(ast_node* node);
 ast_node* find_expressions(ast_node* node, bool determinable);
-
+bool compare_value(ast_node* node1, ast_node* node2);
 void optimize(module* mod, ast_node* node);

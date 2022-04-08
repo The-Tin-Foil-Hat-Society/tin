@@ -9,6 +9,7 @@ fn i32 add(i32 x, i32 y)
 fn i32 main
 {
     i32 num1 = 2;
+    bool t = true;
 
     i32 num2;
     num2 = 2;
@@ -23,7 +24,7 @@ fn i32 main
     if (num1 + 2 == 2) {
         num2 = 1;
     }
-    else if (num3 * 3 == 2){
+    else if (num3 * 3 == 3){
         num2 = 4;
     }
     else{

@@ -120,7 +120,7 @@ ast_node* find_conditions(ast_node* node)
     }
 
     return NULL;
-}
+}*/
 
 ast_node* remove_variables(ast_node* node)
 {
@@ -150,11 +150,6 @@ ast_node* remove_variables(ast_node* node)
 
         remove_variables(ast_get_child(node, i));
     }
-}*/
-
-ast_node* remove_variables(ast_node* node)
-{
-
 }
 
 bool check_children(ast_node* node, int array[], size_t size)
@@ -166,6 +161,29 @@ bool check_children(ast_node* node, int array[], size_t size)
             return true;
         }
     }
+    return false;
+}
+
+bool compare_value(ast_node* node1, ast_node* node2)
+{
+    if (node1->value.dtype != node2->value.dtype)
+    {
+        return false;
+    }
+
+    if (is_int(node1->value.dtype))
+    {
+        return node1->value.integer == node2->value.integer;
+    }
+    else if (is_bool(node1->value.dtype))
+    {
+        return node1->value.boolean == node2->value.boolean;
+    }
+    else if (is_string(node1->value.dtype))
+    {
+        return node1->value.string == node2->value.string;
+    }
+
     return false;
 }
 
@@ -214,14 +232,60 @@ ast_node* evaluate_expression(ast_node* node, bool determinable)
 
         if (node->type == AstAdd)
         {
+            ast_node* new_node = ast_new(AstIntegerLit);
             node->type = AstIntegerLit;
             node->value.integer = node1->value.integer + node2->value.integer;
+            node->value.dtype = new_node->value.dtype;
+            node->children = new_node->children;
+            ast_get_child(node, 0)->parent = node;
         }
-
+        else if (node->type == AstSub)
+        {
+            ast_node* new_node = ast_new(AstIntegerLit);
+            node->type = AstIntegerLit;
+            node->value.integer = node1->value.integer - node2->value.integer;
+            node->value.dtype = new_node->value.dtype;
+            node->children = new_node->children;
+            ast_get_child(node, 0)->parent = node;
+        }
         else if (node->type == AstMul)
         {
+            ast_node* new_node = ast_new(AstIntegerLit);
             node->type = AstIntegerLit;
             node->value.integer = node1->value.integer * node2->value.integer;
+            node->value.dtype = new_node->value.dtype;
+            node->children = new_node->children;
+            ast_get_child(node, 0)->parent = node;
+        }
+        else if (node->type == AstDiv)
+        {
+            ast_node* new_node = ast_new(AstIntegerLit);
+            node->type = AstIntegerLit;
+            node->value.integer = node1->value.integer / node2->value.integer;
+            node->value.dtype = new_node->value.dtype;
+            node->children = new_node->children;
+            ast_get_child(node, 0)->parent = node;
+        }
+        else if (node->type == AstMod)
+        {
+            ast_node* new_node = ast_new(AstIntegerLit);
+            node->type = AstIntegerLit;
+            node->value.integer = node1->value.integer % node2->value.integer;
+            node->value.dtype = new_node->value.dtype;
+            node->children = new_node->children;
+            ast_get_child(node, 0)->parent = node;
+        }
+        
+        else if (node->type == AstEqual)
+        {
+            ast_node* new_node = ast_new(AstBoolLit);
+            node->type = AstBoolLit;
+            bool comparison = compare_value(node1, node2);
+            printf("\nRESPONSE: %i \n", (int)comparison);
+            node->value.boolean = comparison;
+            node->value.dtype = new_node->value.dtype;
+            node->children = new_node->children;
+            ast_get_child(node, 0)->parent = node;
         }
 
         //printf("%lld\n", node->value.integer);
@@ -412,6 +476,7 @@ void optimize(module* mod, ast_node* node)
             if (strcmp(declaration->value.symbol->name, "main") == 0)
             {
                 ast_node* new_child = find_expressions(child, true);
+                //new_child = remove_variables(new_child);
                 //ast_set_child(node, i, new_child);
                 child = new_child;
                 break;

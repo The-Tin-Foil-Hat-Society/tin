@@ -273,6 +273,10 @@ void ast_print_to_file(ast_node* node, FILE* file)
     {
         fprintf(file, ",\"int_value\": %ld", node->value.integer);
     }
+    else if (node->type == AstBoolLit)
+    {
+        fprintf(file, ",\"bool_value\": %i", (int)node->value.boolean);
+    }
     else if (node->type == AstSymbol)
     {
         fprintf(file, ",\"symbol_id\":\"%p\",\"str_value\": \"%s\"", node->value.symbol, node->value.symbol->name);
