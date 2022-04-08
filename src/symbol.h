@@ -17,7 +17,7 @@ typedef struct
 
     bool is_initialised;
     bool is_function;
-    bool is_const; // for the optimiser to determine if values are never changed
+    bool is_literal; // for the optimiser to determine if values are determinable literals
 
     void* function_node;  // for the interpreter to follow function symbols
     //void* value; // for the optimiser to simplify expressions

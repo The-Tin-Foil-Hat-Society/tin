@@ -11,17 +11,20 @@ fn i32 main
     i32 num1 = 2;
 
     i32 num2;
-    num2 = num1 + 1;
+    num2 = 2;
 
-    i32 num4;
-    num4 = num2 * 2 * 3 + 1;
+    i32 num3;
+    num3 = 1 + add(1, 2);
 
-    num2 = 10;
+    num2 = num2 * 3 + 1;
+    num2 = num2 + num3;
+    num2 = num2 + 1;
 
-    i32 num5;
-    //num5 = add(num2, num4);
+    if (num2 == 2) {
+        num2 = 1;
+    }
 
-    print num4 + num2;
+    print num2;
 
     return 0;
 }

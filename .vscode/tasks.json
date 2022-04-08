@@ -4,17 +4,20 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "Build and run",
+            "label": "build windows",
             "type": "shell",
-            "command": "make run",
+            "command": "${workspaceFolder}//build.bat",
             "options": {
                 "cwd": "${workspaceFolder}"
             },
-            "problemMatcher": [],
-            "group": {
-                "kind": "build",
-                "isDefault": true
-            }
+        },
+        {
+            "label": "build linux",
+            "type": "shell",
+            "command": "${workspaceFolder}//build.sh",
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
         }
     ]
 }

@@ -169,14 +169,48 @@ bool check_children(ast_node* node, int array[], size_t size)
     return false;
 }
 
-ast_node* evaluate_expression(ast_node* node)
+ast_node* evaluate_expression(ast_node* node, bool determinable)
 {
     size_t size = node->children->size;
 
-    if (size == 2)
+    if (size == 2 && determinable)
     {
         ast_node* node1 = ast_get_child(node, 0);
         ast_node* node2 = ast_get_child(node, 1);
+
+        if (node1->type == AstSymbol)
+        {
+            symbol* symbol1 = ast_find_symbol(node1, node1->value.symbol->name);
+            if (symbol1 != 0)
+            {
+                if (!symbol1->is_literal)
+                {
+                    return node;
+                }
+            }
+        }
+        else if (node1->type == AstFunctionCall)
+        {
+            // replace in future version
+            return node;
+        }
+        
+        if (node2->type == AstSymbol)
+        {
+            symbol* symbol2 = ast_find_symbol(node2, node2->value.symbol->name);
+            if (symbol2 != 0)
+            {
+                if (!symbol2->is_literal)
+                {
+                    return node;
+                }
+            }
+        }
+        else if (node2->type == AstFunctionCall)
+        {
+            // replace in future version
+            return node;
+        }
 
         if (node->type == AstAdd)
         {
@@ -192,16 +226,11 @@ ast_node* evaluate_expression(ast_node* node)
 
         //printf("%lld\n", node->value.integer);
     }
-    else
-    {
-        ast_node* child = ast_get_child(node, 0);
-
-    }
 
     return node;
 }
 
-ast_node* simplify_expression(ast_node* node)
+ast_node* simplify_expression(ast_node* node, bool determinable)
 {
     size_t size = node->children->size;
 
@@ -209,13 +238,13 @@ ast_node* simplify_expression(ast_node* node)
     {
         for (int i = 0; i < size; i++)
         {
-            ast_node* child = simplify_expression(ast_get_child(node, i));
+            ast_node* child = simplify_expression(ast_get_child(node, i), determinable);
 
-            if (child->type == AstSymbol)
+            if (child->type == AstSymbol && determinable)
             {
                 symbol* variable = ast_find_symbol(node, child->value.symbol->name);
 
-                if (is_int(variable->dtype))
+                if (is_int(variable->dtype) && variable->is_literal)
                 {
                     ast_node* new_child = ast_new(AstIntegerLit);
                     new_child->value.integer = variable->value.integer;
@@ -227,14 +256,14 @@ ast_node* simplify_expression(ast_node* node)
             }
         }
 
-        node = evaluate_expression(node);
+        node = evaluate_expression(node, determinable);
         //printf("%lld\n", node->value.integer);
     }
-    else if (node->type == AstSymbol)
+    else if (node->type == AstSymbol && determinable)
     {
         symbol* variable = ast_find_symbol(node, node->value.symbol->name);
 
-        if (is_int(variable->dtype))
+        if (is_int(variable->dtype) && variable->is_literal)
         {
             node->type = AstIntegerLit;
             node->value.integer = variable->value.integer;
@@ -246,7 +275,7 @@ ast_node* simplify_expression(ast_node* node)
     return node;
 }
 
-ast_node* find_expressions(ast_node* node)
+ast_node* find_expressions(ast_node* node, bool determinable)
 {
     if (check_children(node, comparitive_nodes, sizeof(comparitive_nodes)))
     {
@@ -257,47 +286,68 @@ ast_node* find_expressions(ast_node* node)
     if (node->type == AstAssignment)
     {
         symbol* variable = ast_get_child(node, 0)->value.symbol;
-        ast_node* child = ast_get_child(node, 1);
-        child = simplify_expression(child);
-
-        if (child->type == AstIntegerLit)
+        if (determinable)
         {
-            ast_node* new_child = ast_new(AstIntegerLit);
-            new_child->value.integer = child->value.integer;
-            ast_set_child(node, 1, new_child);
+            ast_node* child = ast_get_child(node, 1);
+            child = simplify_expression(child, determinable);
+
+            if (child->type == AstIntegerLit)
+            {
+                ast_node* new_child = ast_new(AstIntegerLit);
+                new_child->value.integer = child->value.integer;
+                ast_set_child(node, 1, new_child);
+            }
+            else
+            {
+                variable->is_literal = false;
+            }
+
+            printf("%s, %lld; ", variable->name, (int)child->value.integer);
+
+            if (check_children(child, literals, sizeof(literals)) && variable->is_literal)
+            {
+                //symbol* variable = ast_find_symbol(child, name);
+                
+                if (is_int(variable->dtype))
+                {
+                    variable->value.integer = child->value.integer;
+                    //printf("%i", *((int*)variable->value));
+                }
+                else if (is_string(variable->dtype))
+                {
+                    variable->value.string = child->value.string;
+                    //printf("%s", variable->value);
+                }
+                else if (is_bool(variable->dtype))
+                {
+                    variable->value.boolean = child->value.boolean;
+                    //printf("%i", *((bool*)variable->value));
+                }
+            }
         }
-
-        printf("%s, %lld; ", variable->name, (int)child->value.integer);
-
-        if (check_children(child, literals, sizeof(literals)))
+        else
         {
-            //symbol* variable = ast_find_symbol(child, name);
-            
-            if (is_int(variable->dtype))
-            {
-                variable->value.integer = child->value.integer;
-                //printf("%i", *((int*)variable->value));
-            }
-            else if (is_string(variable->dtype))
-            {
-                variable->value.string = child->value.string;
-                //printf("%s", variable->value);
-            }
-            else if (is_bool(variable->dtype))
-            {
-                variable->value.boolean = child->value.boolean;
-                //printf("%i", *((bool*)variable->value));
-            }
+            variable->is_literal = false;
         }
+    }
+    else if (node->type == AstIf || node->type == AstFor || node->type == AstWhile)
+    {
+        determinable = false;
+    }
+    else if (node->type == AstInput)
+    {
+        symbol* variable = ast_get_child(node, 0)->value.symbol;
+        variable->is_literal = false;
+        determinable = false;
     }
     else if (check_children(node, comparitive_nodes, sizeof(comparitive_nodes)))
     {
-        node = simplify_expression(node);
+        node = simplify_expression(node, determinable);
     }
 
     for (size_t i = 0; i < node->children->size; i++)
     {
-        ast_node* child = find_expressions(ast_get_child(node, i));
+        ast_node* child = find_expressions(ast_get_child(node, i), determinable);
         if (child)
         {
             ast_set_child(node, i, child);
@@ -317,11 +367,13 @@ void optimize(module* mod, ast_node* node)
         if (child->type == AstFunction)
         {
             ast_node* declaration = ast_get_child(child, 0);
-            if (declaration->value.string == "main")
+
+            if (strcmp(declaration->value.symbol->name, "main") == 0)
             {
-                printf("%s\n", "test");
-                ast_node* new_child = find_expressions(child);
-                ast_set_child(node, i, new_child);
+                ast_node* new_child = find_expressions(child, true);
+                //ast_set_child(node, i, new_child);
+                child = new_child;
+                break;
             }
         }
     }
