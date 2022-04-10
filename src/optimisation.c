@@ -144,7 +144,7 @@ ast_node* remove_variables(ast_node* node)
 
             if (!item)
             {
-                printf(name);
+                //printf(name);
             }
         }
 
@@ -173,15 +173,15 @@ bool compare_value(ast_node* node1, ast_node* node2)
 
     if (is_int(node1->value.dtype))
     {
-        return node1->value.integer == node2->value.integer;
+        return (node1->value.integer == node2->value.integer);
     }
     else if (is_bool(node1->value.dtype))
     {
-        return node1->value.boolean == node2->value.boolean;
+        return (node1->value.boolean == node2->value.boolean);
     }
     else if (is_string(node1->value.dtype))
     {
-        return node1->value.string == node2->value.string;
+        return (node1->value.string == node2->value.string);
     }
 
     return false;
@@ -235,16 +235,15 @@ ast_node* evaluate_expression(ast_node* node, bool determinable)
             ast_node* new_node = ast_new(AstIntegerLit);
             node->type = AstIntegerLit;
             node->value.integer = node1->value.integer + node2->value.integer;
-            node->value.dtype = new_node->value.dtype;
             node->children = new_node->children;
             ast_get_child(node, 0)->parent = node;
+            //printf("%d\n", node->value);
         }
         else if (node->type == AstSub)
         {
             ast_node* new_node = ast_new(AstIntegerLit);
             node->type = AstIntegerLit;
             node->value.integer = node1->value.integer - node2->value.integer;
-            node->value.dtype = new_node->value.dtype;
             node->children = new_node->children;
             ast_get_child(node, 0)->parent = node;
         }
@@ -253,7 +252,6 @@ ast_node* evaluate_expression(ast_node* node, bool determinable)
             ast_node* new_node = ast_new(AstIntegerLit);
             node->type = AstIntegerLit;
             node->value.integer = node1->value.integer * node2->value.integer;
-            node->value.dtype = new_node->value.dtype;
             node->children = new_node->children;
             ast_get_child(node, 0)->parent = node;
         }
@@ -262,7 +260,6 @@ ast_node* evaluate_expression(ast_node* node, bool determinable)
             ast_node* new_node = ast_new(AstIntegerLit);
             node->type = AstIntegerLit;
             node->value.integer = node1->value.integer / node2->value.integer;
-            node->value.dtype = new_node->value.dtype;
             node->children = new_node->children;
             ast_get_child(node, 0)->parent = node;
         }
@@ -271,21 +268,19 @@ ast_node* evaluate_expression(ast_node* node, bool determinable)
             ast_node* new_node = ast_new(AstIntegerLit);
             node->type = AstIntegerLit;
             node->value.integer = node1->value.integer % node2->value.integer;
-            node->value.dtype = new_node->value.dtype;
             node->children = new_node->children;
             ast_get_child(node, 0)->parent = node;
         }
         
         else if (node->type == AstEqual)
         {
-            ast_node* new_node = ast_new(AstBoolLit);
-            node->type = AstBoolLit;
-            bool comparison = compare_value(node1, node2);
-            printf("\nRESPONSE: %i \n", (int)comparison);
-            node->value.boolean = comparison;
-            node->value.dtype = new_node->value.dtype;
-            node->children = new_node->children;
-            ast_get_child(node, 0)->parent = node;
+            //ast_node* new_node = ast_new(AstBoolLit);
+            //node->type = AstBoolLit;
+            //bool comparison = compare_value(node1, node2);
+            //node->value.boolean = comparison;
+            //node->children = new_node->children;
+            //ast_get_child(node, 0)->parent = node;
+            //printf("TEST");
         }
 
         //printf("%lld\n", node->value.integer);
@@ -303,8 +298,9 @@ ast_node* simplify_expression(ast_node* node, bool determinable)
         for (int i = 0; i < size; i++)
         {
             ast_node* child = simplify_expression(ast_get_child(node, i), determinable);
+            ast_set_child(node, i, child);
 
-            if (child->type == AstSymbol && determinable)
+            /*if (child->type == AstSymbol && determinable)
             {
                 symbol* variable = ast_find_symbol(node, child->value.symbol->name);
 
@@ -317,7 +313,7 @@ ast_node* simplify_expression(ast_node* node, bool determinable)
 
                     //printf("%lld, %lld\n", child->value.integer, variable->value.integer);
                 }
-            }
+            }*/
         }
 
         node = evaluate_expression(node, determinable);
@@ -326,11 +322,13 @@ ast_node* simplify_expression(ast_node* node, bool determinable)
     else if (node->type == AstSymbol && determinable)
     {
         symbol* variable = ast_find_symbol(node, node->value.symbol->name);
+        //printf("%s: %d\n", variable->name, variable->value.integer);
 
         if (is_int(variable->dtype) && variable->is_literal)
         {
             node->type = AstIntegerLit;
             node->value.integer = variable->value.integer;
+            //printf("%s: %lld\n", variable->name, node->value.integer);
 
             //printf("%lld, %lld\n", child->value.integer, variable->value.integer);
         }
@@ -347,7 +345,7 @@ ast_node* assign_variable(ast_node* node, bool determinable)
         ast_node* child = ast_get_child(node, 1);
         child = simplify_expression(child, determinable);
 
-        printf("%d", (int)child->type);
+        //printf("%d", (int)child->type);
 
         if (child->type == AstIntegerLit)
         {
@@ -360,7 +358,7 @@ ast_node* assign_variable(ast_node* node, bool determinable)
             variable->is_literal = false;
         }
 
-        printf("%s, %lld; ", variable->name, (int)child->value.integer);
+        //("%s, %lld; ", variable->name, (int)child->value.integer);
 
         if (check_children(child, literals, sizeof(literals)) && variable->is_literal)
         {
@@ -369,7 +367,7 @@ ast_node* assign_variable(ast_node* node, bool determinable)
             if (is_int(variable->dtype))
             {
                 variable->value.integer = child->value.integer;
-                //printf("%i", *((int*)variable->value));
+                ////printf("%i", *((int*)variable->value));
             }
             else if (is_string(variable->dtype))
             {
@@ -439,7 +437,7 @@ ast_node* find_expressions(ast_node* node, bool determinable)
             }
             else
             {
-                printf("%d\n", (int)child->type);
+                //printf("%d\n", (int)child->type);
                 new_child = find_expressions(child, true);
             }
         }
