@@ -267,6 +267,10 @@ void ast_print_to_file(ast_node* node, FILE* file)
     {
         fprintf(file, ",\"bool_value\": %s", node->value.boolean ? "true" : "false");
     }
+    else if (node->type == AstFloatLit)
+    {
+        fprintf(file, ",\"float_value\": %f", node->value.floating);
+    }
     else if (node->type == AstIntegerLit)
     {
         fprintf(file, ",\"int_value\": %ld", node->value.integer);

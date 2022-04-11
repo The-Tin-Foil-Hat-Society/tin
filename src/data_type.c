@@ -1,5 +1,6 @@
 #include "data_type.h"
 #include <stdlib.h>
+#include <float.h>
 
 data_type* data_type_new(char* name)
 {
@@ -70,6 +71,34 @@ bool is_bool(data_type* dtype)
     }
 
     return strcmp(dtype->name, "bool") == 0;
+}
+
+bool is_float(data_type* dtype)
+{
+    if (dtype->pointer_level > 0)
+    {
+        return false;
+    }
+
+    return strcmp(dtype->name, "f32") == 0 || strcmp(dtype->name, "f64") == 0;
+}
+
+bool is_valid_float(data_type* dtype, double value)
+{
+    if (dtype->pointer_level > 0)
+    {
+        return false;
+    }
+
+    if (strcmp(dtype->name, "f64") == 0 && ( value < DBL_MIN || value > DBL_MAX))
+    {
+        return false;
+    }
+    else if (strcmp(dtype->name, "f32") == 0 && ( value < FLT_MIN || value > FLT_MAX))
+    {
+        return false;
+    }
+    return true;
 }
 
 bool is_int(data_type* dtype)

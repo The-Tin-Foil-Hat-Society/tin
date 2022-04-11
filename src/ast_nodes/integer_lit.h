@@ -15,7 +15,7 @@ void preprocess_integer_lit(preproc_state* state, ast_node* node)
         }
         else if (node->value.integer > UINT64_MAX)
         {
-            preproc_error(state, node, "cannot allocate more than u32 max bytes\n");
+            preproc_error(state, node, "cannot allocate more than u64 max bytes\n");
         }  
     }
     else if (node->parent->type == AstAssignment)

@@ -5,6 +5,7 @@
 #include "bool_lit.h"
 #include "definition.h"
 #include "for.h"
+#include "float_lit.h"
 #include "free.h"
 #include "func_call.h"
 #include "func.h"

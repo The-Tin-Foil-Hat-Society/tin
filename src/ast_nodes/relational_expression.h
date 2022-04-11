@@ -19,11 +19,15 @@ void preprocess_relational_expression(preproc_state* state, ast_node* node)
     {
         preproc_verb(state, node, "comparison between different integer types\n");
     }
+    else if (is_float(left_dtype) && is_float(right_dtype) && !data_type_compare(left_dtype, right_dtype))
+    {
+        preproc_verb(state, node, "comparison between different float types\n");
+    }
     else if (!data_type_compare(left_dtype, right_dtype) && (left_dtype->pointer_level ^ right_dtype->pointer_level))
     {
         preproc_verb(state, node, "comparison between different pointer types\n");
     }
-    else if (!data_type_compare(left_dtype, right_dtype) && (is_int(left_dtype) ^ is_int(right_dtype)))
+    else if (!data_type_compare(left_dtype, right_dtype) && (is_int(left_dtype) ^ is_int(right_dtype) || is_float(left_dtype) ^ is_float(right_dtype)))
     {
         preproc_error(state, node, "comparison: the left hand data type does not match the right hand data type\n");
     }

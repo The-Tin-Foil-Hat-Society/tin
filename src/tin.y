@@ -26,7 +26,7 @@ void yyerror (yyscan_t* locp, module* mod, const char* msg);
 %lex-param {void* scanner}
 %parse-param {void* scanner}{module* mod}
 
-%token IDENTIFIER INTEGER STRING
+%token IDENTIFIER FLOAT INTEGER STRING
 %token ALLOC ASM BREAK CONT FOR FREE FUNC IF ELSE INCLUDE INPUT PRINT RETURN WHILE
 %token I8 U8 I16 U16 I32 U32 I64 U64 F32 F64 VOID PTR REF BOOL BOOL_LIT
 %token IS ADD SUB MUL DIV POW MOD ROTL ROTR SHIFTL SHIFTR LT GT LE GE EQ NE AND NOT OR BAND BOR BXOR
@@ -86,6 +86,7 @@ identifier
 
 simple_expression
     : INTEGER { $$ = yylval; }
+    | FLOAT { $$ = yylval; }
     | STRING { $$ = yylval; } 
     | BOOL_LIT { $$ = yylval; }
     | func_call { $$ = $1; }

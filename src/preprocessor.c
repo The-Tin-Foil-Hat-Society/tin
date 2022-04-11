@@ -55,6 +55,9 @@ void process_nodes(preproc_state* state, ast_node* node)
         case AstBoolLit:
             preprocess_bool_lit(state, node);
             break;
+        case AstFloatLit:
+            preprocess_float_lit(state, node);
+            break;
         case AstIntegerLit:
             preprocess_integer_lit(state, node);
             break;

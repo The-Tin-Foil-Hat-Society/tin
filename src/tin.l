@@ -11,6 +11,8 @@
 string      \"[^\"\n]*\"
 /* match identifiers */
 identifier  [a-zA-Z_][a-zA-Z0-9_]*
+/* match floats */
+float       [-]?[0-9]+\.[0-9]+
 /* match integers */
 integer     [-]?[0-9]+
 /* match multiline comments */
@@ -110,6 +112,19 @@ comment		[/][*][^*]*[*]+([^*/][^*]*[*]+)*[/]
     node->value.string = strdup(yytext);
     *yylval = node;
     return IDENTIFIER;
+}
+{float} {
+    ast_node* node = ast_new(AstFloatLit);
+    ast_node* data_type_node = ast_new(AstDataType);
+
+    node->value.floating = strtod(yytext, 0);
+    data_type_node->value.dtype = data_type_new("f64");
+
+    data_type_node->value.dtype->pointer_level = 0;
+    ast_add_child(node, data_type_node);
+
+    *yylval = node;
+    return FLOAT;
 }
 {integer} {
     ast_node* node = ast_new(AstIntegerLit);
