@@ -26,6 +26,10 @@ comment		[/][*][^*]*[*]+([^*/][^*]*[*]+)*[/]
 "u16"                   { return U16;   }
 "i32"                   { return I32;   }
 "u32"                   { return U32;   }
+"i64"                   { return I64;   }
+"u64"                   { return U64;   }
+"f32"                   { return F32;   }
+"f64"                   { return F64;   }
 "bool"                  { return BOOL;  }
 "void"                  { return VOID;  }
 "ptr"                   { return PTR;   }

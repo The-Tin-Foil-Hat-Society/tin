@@ -28,7 +28,7 @@ void yyerror (yyscan_t* locp, module* mod, const char* msg);
 
 %token IDENTIFIER INTEGER STRING
 %token ALLOC ASM BREAK CONT FOR FREE FUNC IF ELSE INCLUDE INPUT PRINT RETURN WHILE
-%token I8 U8 I16 U16 I32 U32 VOID PTR REF BOOL BOOL_LIT
+%token I8 U8 I16 U16 I32 U32 I64 U64 F32 F64 VOID PTR REF BOOL BOOL_LIT
 %token IS ADD SUB MUL DIV POW MOD ROTL ROTR SHIFTL SHIFTR LT GT LE GE EQ NE AND NOT OR BAND BOR BXOR
 %token SEMI_COLON COLON DOUBLE_COLON COMMA BRACKET_L BRACKET_R BRACE_L BRACE_R SQUARE_BRACKET_L SQUARE_BRACKET_R 
 
@@ -64,6 +64,10 @@ data_type
     | U16   { $$ = ast_new(AstDataType); $$->value.dtype = data_type_new("u16"); }
     | I32   { $$ = ast_new(AstDataType); $$->value.dtype = data_type_new("i32"); }
     | U32   { $$ = ast_new(AstDataType); $$->value.dtype = data_type_new("u32"); }
+    | I64   { $$ = ast_new(AstDataType); $$->value.dtype = data_type_new("i64"); }
+    | U64   { $$ = ast_new(AstDataType); $$->value.dtype = data_type_new("u64"); }
+    | F32   { $$ = ast_new(AstDataType); $$->value.dtype = data_type_new("f32"); }
+    | F64   { $$ = ast_new(AstDataType); $$->value.dtype = data_type_new("f64"); }
     | BOOL  { $$ = ast_new(AstDataType); $$->value.dtype = data_type_new("bool"); }
     | VOID  { $$ = ast_new(AstDataType); $$->value.dtype = data_type_new("void"); }
     | PTR data_type { $$ = $2; $$->value.dtype->pointer_level += 1; } 

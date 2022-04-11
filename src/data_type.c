@@ -68,9 +68,11 @@ bool is_int(data_type* dtype)
         return false;
     }
 
-    return strcmp(dtype->name, "i32") == 0
+    return strcmp(dtype->name, "i64") == 0
+        || strcmp(dtype->name, "i32") == 0
         || strcmp(dtype->name, "i16") == 0
         || strcmp(dtype->name, "i8") == 0
+        || strcmp(dtype->name, "u64") == 0
         || strcmp(dtype->name, "u32") == 0
         || strcmp(dtype->name, "u16") == 0
         || strcmp(dtype->name, "u8") == 0;
@@ -83,7 +85,11 @@ bool is_valid_int(data_type* dtype, int64_t value)
         return false;
     }
 
-    if (strcmp(dtype->name, "i32") == 0 && ( value < INT32_MIN || value > INT32_MAX))
+    if (strcmp(dtype->name, "i64") == 0 && ( value < INT64_MIN || value > INT64_MAX))
+    {
+        return false;
+    }
+    else if (strcmp(dtype->name, "i32") == 0 && ( value < INT32_MIN || value > INT32_MAX))
     {
         return false;
     }
@@ -92,6 +98,10 @@ bool is_valid_int(data_type* dtype, int64_t value)
         return false;
     }
     else if (strcmp(dtype->name, "i8") == 0 && ( value < INT8_MIN || value > INT8_MAX))
+    {
+        return false;
+    }
+    else if (strcmp(dtype->name, "u64") == 0 && ( value < 0 || value > UINT32_MAX))
     {
         return false;
     }
