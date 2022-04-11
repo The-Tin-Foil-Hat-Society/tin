@@ -270,6 +270,10 @@ void ast_print_to_file(ast_node* node, FILE* file)
     {
         fprintf(file, ",\"str_value\": \"%s\"", node->value.string);
     }
+    else if (node->type == AstBoolLit)
+    {
+        fprintf(file, ",\"bool_value\": %s", node->value.boolean ? "true" : "false");
+    }
     else if (node->type == AstIntegerLit)
     {
         fprintf(file, ",\"int_value\": %ld", node->value.integer);

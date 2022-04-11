@@ -19,7 +19,7 @@ debug_assembly:
 
 #Builds and runs tin with just the preprocessor
 preproc: tin
-	@./build/tin example.tin
+	@./build/tin $(file)
 
 run: tin
 	@./build/tin $(file)
