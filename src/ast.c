@@ -107,7 +107,7 @@ ast_node* ast_copy(ast_node* node)
     {
         copy->value.string = strdup(node->value.string);
     }
-    else if (node->type == AstDataType)
+    else if (has_dtype(node->type))
     {
         copy->value.dtype = data_type_copy(node->value.dtype);
     }

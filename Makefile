@@ -1,7 +1,7 @@
 #This is the make file for the tin compiler
 
 #File to compile:
-file = examples/if.tin
+file = examples/for.tin
 flags = -D TIN_COMPILER -D TIN_DEBUG_VERBOSE
 
 preproc: flags = -D TIN_DEBUG_VERBOSE
@@ -48,5 +48,5 @@ clean:
 	-@rm -f examples/*.out
 	-@rm -f examples/*.mod.json
 
-check_leaks: tin
-	@valgrind ./build/tin $(file) --leak-check=full
+memcheck: tin
+	@valgrind --leak-check=full --track-origins=yes ./build/tin $(file)

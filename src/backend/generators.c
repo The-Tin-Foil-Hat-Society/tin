@@ -20,7 +20,7 @@ int gen_store_global(FILE *file, int reg, char *identifier, int size)
         offset = variable_set(identifier, current_variable_offset, size);
     }
 
-    char *instruction = malloc(sizeof(char) * 3);
+    char *instruction;
     switch (size)
     {
     case 8:
@@ -60,7 +60,7 @@ int gen_load_global(FILE *file, char *identifier, int size)
 
     emit_comment("Load global %s from offset %d into register %s (size: %d)\n", identifier, offset, registers[reg], size);
 
-    char *instruction = malloc(sizeof(char) * 3);
+    char *instruction;
     switch (size)
     {
     case 8:
@@ -88,6 +88,7 @@ int gen_load_global(FILE *file, char *identifier, int size)
         "%s, -%d(s0)",
         registers[reg],
         offset);
+
     return reg;
 }
 
@@ -119,11 +120,20 @@ int gen_print_string(FILE *file, int index, int reg)
 
     rodata_entry *string_entry = rodata[index];
 
+    // Get string length with carriage returns stripped
+    int len = 0;
+    for (int i = 0; i < strlen(string_entry->string); i++)
+    {
+        if (string_entry->string[i] == '\r')
+            continue;
+        len += 1;
+    }
+
     emit(
         "Syscall args: string length",
         "li",
         "a2, %d",
-        strlen(string_entry->string) - 1);
+        len);
 
     emit(
         "Syscall args: write system call",
@@ -285,7 +295,7 @@ void gen_rodata(FILE *file)
     {
         trace("\tWriting rodata string %s ('%s')", rodata[i]->identifier, rodata[i]->string);
         write_to_file("%s:\n", rodata[i]->identifier);
-        write_to_file("\t.ascii\t\"%s\"\n", rodata[i]->string);
+        write_to_file("\t.ascii\t\"%s\\0\"\n", rodata[i]->string);
     }
 }
 
@@ -323,11 +333,18 @@ int gen_function_call(FILE *file, int reg, char *identifier)
     return reg;
 }
 
-int gen_return(FILE *file, int reg)
+int gen_return(FILE *file, int reg, bool is_at_end)
 {
     emit_comment("Return\n");
 
-    gen_function_epilogue(file, reg);
+    if (is_at_end)
+    {
+        emit_comment("Omitted epilogue - return is at end of function\n");
+    }
+    else
+    {
+        gen_function_epilogue(file, reg);
+    }
 
     return reg;
 }
@@ -342,14 +359,12 @@ int gen_asm(FILE *file, char *string, int reg)
 
 void gen_label(FILE *file, int label)
 {
-    emit_comment("Generated label %d\n", label);
-    write_to_file("label__%d:\n", label);
+    write_to_file(".LB%d:\n", label);
 }
 
 void gen_jump(FILE *file, int label)
 {
-    emit_comment("Jump to label %d\n", label);
-    write_to_file("\tjal label__%d\n", label);
+    emit("Jump to label", "jal", ".LB%d", label);
 }
 
 int gen_comparison_jump(FILE *file, int operation, int reg1, int reg2, int label)
@@ -362,28 +377,34 @@ int gen_comparison_jump(FILE *file, int operation, int reg1, int reg2, int label
     switch (operation)
     {
     case AstEqual:
-        emit("Equal", "bne", "%s, %s, label__%d", registers[reg1], registers[reg2], label);
+        emit("Equal", "bne", "%s, %s, .LB%d", registers[reg1], registers[reg2], label);
         break;
     case AstNotEqual:
-        emit("Not equal", "beq", "%s, %s, label__%d", registers[reg1], registers[reg2], label);
+        emit("Not equal", "beq", "%s, %s, .LB%d", registers[reg1], registers[reg2], label);
         break;
 
     case AstLessThan:
-        emit("Less than", "blt", "%s, %s, label__%d", registers[reg2], registers[reg1], label);
+        emit("Less than", "bge", "%s, %s, .LB%d", registers[reg1], registers[reg2], label);
         break;
     case AstGreaterThanOrEqual:
-        emit("Greater than or equal", "bge", "%s, %s, label__%d", registers[reg2], registers[reg1], label);
+        emit("Greater than or equal", "blt", "%s, %s, .LB%d", registers[reg1], registers[reg2], label);
         break;
 
     case AstLessThanOrEqual:
-        emit("Less than or equal", "bge", "%s, %s, label__%d", registers[reg1], registers[reg2], label);
+        emit("Less than or equal", "blt", "%s, %s, .LB%d", registers[reg2], registers[reg1], label);
         break;
     case AstGreaterThan:
-        emit("Greater than", "blt", "%s, %s, label__%d", registers[reg1], registers[reg2], label);
+        emit("Greater than", "bge", "%s, %s, .LB%d", registers[reg2], registers[reg1], label);
         break;
 
     default:
         compiler_error("Unsupported comparison operation %s", ast_type_names[operation]);
         break;
     }
+}
+
+int label_add()
+{
+    static int current_label = 0;
+    return current_label++;
 }

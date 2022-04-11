@@ -9,6 +9,7 @@ struct preproc_state
 {
     module* mod;
     size_t error_counter;
+    int32_t index_offset;
 };
 
 preproc_state* preproc_state_new();

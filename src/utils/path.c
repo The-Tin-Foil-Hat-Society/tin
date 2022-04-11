@@ -13,6 +13,8 @@ char* path_trunc(char* path)
 
 char* path_join(int count, ...)
 {
+    // TODO: ensure there are delimiter between elements
+
     int len = 0;
     char* path = malloc(PATH_MAX_LENGTH);
     path[0] = '\0';
