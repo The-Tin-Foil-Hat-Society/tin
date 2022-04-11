@@ -29,13 +29,6 @@ ast_node* ast_new(enum ast_node_type type)
         data_type_node->value.dtype->pointer_level = 0;
         ast_add_child(node, data_type_node);
     }
-    else if (node->type == AstIntegerLit)
-    {
-        ast_node* data_type_node = ast_new(AstDataType);
-        data_type_node->value.dtype = data_type_new("i32");
-        data_type_node->value.dtype->pointer_level = 0;
-        ast_add_child(node, data_type_node);
-    }
     else if (node->type == AstStringLit)
     {
         ast_node* data_type_node = ast_new(AstDataType);
@@ -269,6 +262,14 @@ void ast_print_to_file(ast_node* node, FILE* file)
     if (node->type == AstAsm || node->type == AstIdentifier || node->type == AstInclude || node->type == AstNamespace || node->type == AstStringLit)
     {
         fprintf(file, ",\"str_value\": \"%s\"", node->value.string);
+    }
+    else if (node->type == AstBoolLit)
+    {
+        fprintf(file, ",\"bool_value\": %s", node->value.boolean ? "true" : "false");
+    }
+    else if (node->type == AstFloatLit)
+    {
+        fprintf(file, ",\"float_value\": %f", node->value.floating);
     }
     else if (node->type == AstIntegerLit)
     {

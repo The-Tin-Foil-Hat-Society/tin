@@ -23,6 +23,10 @@ void preprocess_assignment(preproc_state* state, ast_node* node)
     {
         preproc_verb(state, node, "%s, implicit integer conversion\n", left_sym->name);
     }
+    else if (is_float(left_sym->dtype) && is_float(found_dtype) && !data_type_compare(left_sym->dtype, found_dtype))
+    {
+        preproc_verb(state, node, "%s, implicit float conversion\n", left_sym->name);
+    }
     else if (!data_type_compare(left_sym->dtype, found_dtype))
     {
         preproc_error(state, node, "%s has type %s while the right hand value has type %s\n", left_sym->name, left_sym->dtype->name, found_dtype->name);
