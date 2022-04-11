@@ -113,7 +113,23 @@ comment		[/][*][^*]*[*]+([^*/][^*]*[*]+)*[/]
 }
 {integer} {
     ast_node* node = ast_new(AstIntegerLit);
-    node->value.integer = atol(yytext);
+    ast_node* data_type_node = ast_new(AstDataType);
+
+    bool _signed = yytext[0] == '-';
+    if (_signed)
+    {
+        node->value.integer = strtoll(yytext, 0, 10);
+        data_type_node->value.dtype = data_type_new("i64");
+    }
+    else
+    {
+        node->value.integer = strtoull(yytext, 0, 10);
+        data_type_node->value.dtype = data_type_new("u64");
+    }
+
+    data_type_node->value.dtype->pointer_level = 0;
+    ast_add_child(node, data_type_node);
+
     *yylval = node;
     return INTEGER;
 }

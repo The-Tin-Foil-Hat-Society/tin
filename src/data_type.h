@@ -10,6 +10,7 @@ struct data_type
     char* name;
     size_t pointer_level;
     size_t size;
+    bool _signed;
 };
 
 data_type* data_type_new(char* name);
