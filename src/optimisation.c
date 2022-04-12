@@ -264,6 +264,13 @@ ast_node* evaluate_expression(ast_node* node, bool determinable)
             // replace in future version
             return node;
         }
+        
+        // if nodes aren't literals, don't continue
+        if (!(check_children(node1, literals, sizeof(literals))
+            && check_children(node2, literals, sizeof(literals))))
+        {
+            return node;
+        }
 
         if (node->type == AstAdd)
         {
