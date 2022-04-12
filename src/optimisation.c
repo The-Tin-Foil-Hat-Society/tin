@@ -123,6 +123,72 @@ ast_node* find_conditions(ast_node* node)
     return NULL;
 }*/
 
+ast_node* replace_if_statements(ast_node* node, bool determinable)
+{
+    for (size_t i = 0; i < node->children->size; i++)
+    {
+        ast_node* child = ast_get_child(node, i);
+
+        if (child->type == AstIf)
+        {
+            ast_node* condition = ast_get_child(child, 0);
+            ast_node* scope = ast_get_child(child, 1);
+
+            if (condition->type == AstBoolLit)
+            {
+                if (condition->value.boolean)
+                {
+                    scope->parent = child->parent;
+                    ast_set_child(node, i, scope);
+                    child = ast_get_child(node, i);
+                    replace_if_statements(child, true);
+                }
+                else
+                {
+                    if (child->children->size > 2)
+                    {
+                        ast_node* else_scope = ast_get_child(child, 2);
+                        else_scope->parent = child->parent;
+                        ast_set_child(node, i, else_scope);
+                        child = ast_get_child(node, i);
+                        replace_if_statements(child, true);
+                    }
+                    else
+                    {
+                        ast_delete_child(node, child);
+                        /*ast_node* empty_scope = ast_new(AstScope);
+                        empty_scope->parent = child->parent;
+                        ast_set_child(node, i, empty_scope);
+                        child = ast_get_child(node, i);*/
+                    }
+                }
+            }
+            else
+            {
+                replace_if_statements(scope, true);
+                
+                if (child->children->size > 2)
+                {
+                    ast_node* else_scope = ast_get_child(child, 2);
+                    if (else_scope->type == AstIf)
+                    {
+                        replace_if_statements(else_scope, false);
+                    }
+                    else
+                    {
+                        replace_if_statements(else_scope, true);
+                    }
+                }
+            }
+        }
+        else
+        {
+            replace_if_statements(child, true);
+        }
+    }
+    return node;
+}
+
 ast_node* remove_variables(ast_node* node)
 {
     for (size_t i = 0; i < node->children->size; i++)
@@ -632,6 +698,7 @@ void optimize(module* mod, ast_node* node)
             if (strcmp(declaration->value.symbol->name, "main") == 0)
             {
                 ast_node* new_child = find_expressions(child, true);
+                replace_if_statements(child, true);
                 //new_child = remove_variables(new_child);
                 //ast_set_child(node, i, new_child);
                 child = new_child;
