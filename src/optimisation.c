@@ -684,29 +684,38 @@ void optimize(module* mod, ast_node* node)
 {
     // only optimises main function for now
     // support for other functions and modules coming next
-    for (size_t i = 0; i < node->children->size; i++)
-    {
-        ast_node* child = ast_get_child(node, i);
-        if (child->type == AstAssignment)
-        {
-            assign_variable(child, true);
-        }
-        else if (child->type == AstFunction)
-        {
-            ast_node* declaration = ast_get_child(child, 0);
 
-            if (strcmp(declaration->value.symbol->name, "main") == 0)
+    int count = 0;
+    vector* children;
+
+    while (children != node->children && count < 10)
+    {
+        count++;
+        children = vector_copy(node->children);
+        
+        for (size_t i = 0; i < node->children->size; i++)
+        {
+            ast_node* child = ast_get_child(node, i);
+            if (child->type == AstAssignment)
             {
-                ast_node* new_child = find_expressions(child, true);
-                replace_if_statements(child, true);
-                //new_child = remove_variables(new_child);
-                //ast_set_child(node, i, new_child);
-                child = new_child;
-                break;
+                assign_variable(child, true);
+            }
+            else if (child->type == AstFunction)
+            {
+                ast_node* declaration = ast_get_child(child, 0);
+
+                if (strcmp(declaration->value.symbol->name, "main") == 0)
+                {
+                    ast_node* new_child = find_expressions(child, true);
+                    replace_if_statements(child, true);
+                    //new_child = remove_variables(new_child);
+                    //ast_set_child(node, i, new_child);
+                    child = new_child;
+                    break;
+                }
             }
         }
     }
-   
     //remove_variables(node);
     
     //used_vars = hashtable_new();
