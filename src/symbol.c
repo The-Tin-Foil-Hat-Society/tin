@@ -13,6 +13,7 @@ symbol* symbol_new(void)
     sym->is_initialised = false;
     sym->is_function = false;
     sym->is_literal = true;
+    sym->is_assigned = false;
     sym->function_node = 0;
 }
 
