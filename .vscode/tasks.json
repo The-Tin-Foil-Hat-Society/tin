@@ -15,6 +15,14 @@
                 "kind": "build",
                 "isDefault": true
             }
-        }
+        },
+        {   // needed for debugging on windows
+            "label": "build windows",
+            "type": "shell",
+            "command": "${workspaceFolder}//build.bat",
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+        },
     ]
 }

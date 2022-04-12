@@ -1,5 +1,6 @@
 #include "data_type.h"
 #include <stdlib.h>
+#include <float.h>
 
 data_type* data_type_new(char* name)
 {
@@ -8,6 +9,12 @@ data_type* data_type_new(char* name)
     dtype->name = strdup(name);
     dtype->pointer_level = 0;
     dtype->size = get_size(dtype);
+    dtype->_signed = false;
+
+    if (strcmp(name, "i8") == 0 || strcmp(name, "i16") == 0 || strcmp(name, "i32") == 0 || strcmp(name, "i64") == 0)
+    {
+        dtype->_signed = true;
+    }
 
     return dtype;
 }
@@ -23,6 +30,7 @@ data_type* data_type_copy(data_type* dtype)
     data_type* copy = data_type_new(dtype->name);
 
     copy->pointer_level = dtype->pointer_level;
+    copy->_signed = dtype->_signed;
 
     return copy;
 }
@@ -35,7 +43,7 @@ size_t get_size(data_type* dtype)
     }
     else if (strcmp(dtype->name, "void") == 0)
     {
-        return 0;
+        return 8;
     }
     else if (strcmp(dtype->name, "i8") == 0 || strcmp(dtype->name, "u8") == 0 || strcmp(dtype->name, "bool") == 0)
     {
@@ -45,9 +53,13 @@ size_t get_size(data_type* dtype)
     {
         return 2;
     }
-    else if (strcmp(dtype->name, "i32") == 0 || strcmp(dtype->name, "u32") == 0)
+    else if (strcmp(dtype->name, "i32") == 0 || strcmp(dtype->name, "u32") == 0 || strcmp(dtype->name, "f32") == 0)
     {
         return 4;
+    }
+    else if (strcmp(dtype->name, "i64") == 0 || strcmp(dtype->name, "u64") == 0 || strcmp(dtype->name, "f64") == 0)
+    {
+        return 8;
     }
 }
 
@@ -61,6 +73,34 @@ bool is_bool(data_type* dtype)
     return strcmp(dtype->name, "bool") == 0;
 }
 
+bool is_float(data_type* dtype)
+{
+    if (dtype->pointer_level > 0)
+    {
+        return false;
+    }
+
+    return strcmp(dtype->name, "f32") == 0 || strcmp(dtype->name, "f64") == 0;
+}
+
+bool is_valid_float(data_type* dtype, double value)
+{
+    if (dtype->pointer_level > 0)
+    {
+        return false;
+    }
+
+    if (strcmp(dtype->name, "f64") == 0 && ( value < DBL_MIN || value > DBL_MAX))
+    {
+        return false;
+    }
+    else if (strcmp(dtype->name, "f32") == 0 && ( value < FLT_MIN || value > FLT_MAX))
+    {
+        return false;
+    }
+    return true;
+}
+
 bool is_int(data_type* dtype)
 {
     if (dtype->pointer_level > 0)
@@ -68,9 +108,11 @@ bool is_int(data_type* dtype)
         return false;
     }
 
-    return strcmp(dtype->name, "i32") == 0
+    return strcmp(dtype->name, "i64") == 0
+        || strcmp(dtype->name, "i32") == 0
         || strcmp(dtype->name, "i16") == 0
         || strcmp(dtype->name, "i8") == 0
+        || strcmp(dtype->name, "u64") == 0
         || strcmp(dtype->name, "u32") == 0
         || strcmp(dtype->name, "u16") == 0
         || strcmp(dtype->name, "u8") == 0;
@@ -83,7 +125,11 @@ bool is_valid_int(data_type* dtype, int64_t value)
         return false;
     }
 
-    if (strcmp(dtype->name, "i32") == 0 && ( value < INT32_MIN || value > INT32_MAX))
+    if (strcmp(dtype->name, "i64") == 0 && ( value < INT64_MIN || value > INT64_MAX))
+    {
+        return false;
+    }
+    else if (strcmp(dtype->name, "i32") == 0 && ( value < INT32_MIN || value > INT32_MAX))
     {
         return false;
     }
@@ -95,15 +141,19 @@ bool is_valid_int(data_type* dtype, int64_t value)
     {
         return false;
     }
-    else if (strcmp(dtype->name, "u32") == 0 && ( value < 0 || value > UINT32_MAX))
+    else if (strcmp(dtype->name, "u64") == 0 && ( (uint64_t)value < 0 || (uint64_t)value > UINT64_MAX))
     {
         return false;
     }
-    else if (strcmp(dtype->name, "u16") == 0 && ( value < 0 || value > UINT16_MAX))
+    else if (strcmp(dtype->name, "u32") == 0 && ( (uint64_t)value < 0 || (uint64_t)value > UINT32_MAX))
     {
         return false;
     }
-    else if (strcmp(dtype->name, "u8") == 0 && ( value < 0 || value > UINT8_MAX))
+    else if (strcmp(dtype->name, "u16") == 0 && ( (uint64_t)value < 0 || (uint64_t)value > UINT16_MAX))
+    {
+        return false;
+    }
+    else if (strcmp(dtype->name, "u8") == 0 && ( (uint64_t)value < 0 || (uint64_t)value > UINT8_MAX))
     {
         return false;
     }
