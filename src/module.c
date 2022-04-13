@@ -68,18 +68,20 @@ module* module_parse(char* path, module* parent)
     {
         parent_dir = parent->dir;
     }
+    
+    char* src_path;
+    if (!(src_path = path_locate_file(path, parent_dir)))
+    {
+        printf("error: could not find file %s\n", path);
+        free(src_path);
+        return false;
+    }
 
-    char* relative_path = path_join(2, parent_dir, path); 
-    mod->dir = path_get_directory(relative_path);
+    FILE* src_file = fopen(src_path, "rb");
+
+    mod->dir = path_get_directory(src_path);
     mod->filename = path_get_filename(path);
     mod->name = path_get_filename_wo_ext(path);
-
-    FILE* src_file;
-	if (!(src_file = fopen(relative_path, "rb")))
-	{
-		printf("error: could not find file %s\n", path);
-		return false;
-	}
 
 	module_set_src_file(mod, src_file);
 
@@ -93,7 +95,7 @@ module* module_parse(char* path, module* parent)
 	yylex_destroy(scanner);
 
 	fclose(src_file);
-    free(relative_path);
+    free(src_path);
 
     if (parser_status != 0)
     {
@@ -101,8 +103,6 @@ module* module_parse(char* path, module* parent)
         module_free(mod);
 		return 0;
     }
-
-    //return mod;
     
     if (!preprocessor_process(mod))
     {
