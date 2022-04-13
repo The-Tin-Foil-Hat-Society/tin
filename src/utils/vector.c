@@ -16,6 +16,11 @@ vector* vector_new()
 }
 void vector_free(vector* vec)
 {
+    if (vec == 0)
+    {
+        return;
+    }
+
     free(vec->items);
     free(vec);
 }

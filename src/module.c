@@ -25,6 +25,11 @@ module* module_new()
 
 void module_free(module* mod)
 {
+    if (mod == 0)
+    {
+        return;
+    }
+
     if (mod->module_store != 0)
     {
         for (size_t i = 0; i < mod->module_store->capacity; i++)

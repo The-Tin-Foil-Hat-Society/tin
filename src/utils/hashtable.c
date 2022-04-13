@@ -42,6 +42,11 @@ hashtable* hashtable_new()
 }
 void hashtable_free(hashtable* table)
 {
+    if (table == 0)
+    {
+        return;
+    }
+
     for (int i = 0; i < table->capacity; i++)
     {
         if (table->keys[i] != 0)

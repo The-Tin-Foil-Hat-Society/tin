@@ -17,6 +17,11 @@ symbol* symbol_new(void)
 
 void symbol_free(symbol* sym)
 {   
+    if (sym == 0)
+    {
+        return;
+    }
+
     free(sym->name);
     data_type_free(sym->dtype);
     free(sym);
