@@ -30,13 +30,16 @@ int main(int argc, char **argv)
 		return 0;
 	}
 
+	print_step("Parsing main module\n");
 	module *mod = module_parse(argv[1], 0);
 
 	if (mod == 0) // parsing failed
 	{
+		print_step("Parsing and preprocessing failed\n");
 		goto end;
 	}
 	module_print_to_file(mod, 0);
+	print_step("Parsed and preprocessed the program successfully\n");
 
 #ifdef TIN_INTERPRETER
 	print_step("Running in interpreter mode\n");

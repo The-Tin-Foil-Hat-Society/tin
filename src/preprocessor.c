@@ -142,15 +142,23 @@ bool preprocessor_process(module* mod)
     state->mod = mod;
 
     build_symbols(state, mod->ast_root);
-    process_nodes(state, mod->ast_root);
+    if (state->error_counter > 0)
+	{
+        goto preproc_fail;
+	}
 
+    process_nodes(state, mod->ast_root);
 	if (state->error_counter > 0)
 	{
-		printf("total %ld preprocessor errors\n", state->error_counter);
-        preproc_state_free(state);
-		return false;
+        goto preproc_fail;
 	}
 
     preproc_state_free(state);
     return true;
+
+preproc_fail:
+	printf("total %ld preprocessor errors\n", state->error_counter);
+
+    preproc_state_free(state);
+    return false;
 }
