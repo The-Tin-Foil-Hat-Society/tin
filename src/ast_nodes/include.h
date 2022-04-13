@@ -31,4 +31,5 @@ void preprocess_include(preproc_state* state, ast_node* node)
     }
 
     ast_delete_child(node->parent, node);
+    state->index_offset -= 1;
 }
