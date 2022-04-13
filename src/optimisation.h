@@ -12,4 +12,5 @@ ast_node* replace_if_statements(ast_node* node, bool determinable);
 ast_node* remove_variables(ast_node* node);
 ast_node* find_expressions(ast_node* node, bool determinable);
 bool compare_value(ast_node* node1, ast_node* node2);
+void reset_variables(ast_node* node);
 void optimize(module* mod, ast_node* node);

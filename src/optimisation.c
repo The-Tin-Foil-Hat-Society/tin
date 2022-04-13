@@ -835,6 +835,29 @@ ast_node* find_expressions(ast_node* node, bool determinable)
     return NULL;
 }
 
+void reset_variables(ast_node* node)
+{
+    hashtable* symbols = node->value.symbol_table;
+
+    if ((node->type == AstRoot || node->type == AstScope) && symbols->size > 0)
+    {
+        vector* table_vec = hashtable_to_vector(symbols);
+        for (int i = 0; i < table_vec->size; i++)
+        {
+            symbol* variable = vector_get_item(table_vec, i);
+            variable->is_literal = true;
+            variable->is_assigned = false;
+        }
+        vector_free(table_vec);
+    }
+
+    for (size_t i = 0; i < node->children->size; i++)
+    {
+        ast_node* child = ast_get_child(node, i);
+        reset_variables(child);
+    }
+}
+
 void optimize(module* mod, ast_node* node)
 {
     // only optimises main function for now
@@ -864,6 +887,7 @@ void optimize(module* mod, ast_node* node)
                     //ast_node* new_child =
                     find_expressions(child, true);
                     replace_if_statements(child, true);
+                    reset_variables(child);
                     //new_child = remove_variables(new_child);
                     //ast_set_child(node, i, new_child);
                     //child = new_child;
