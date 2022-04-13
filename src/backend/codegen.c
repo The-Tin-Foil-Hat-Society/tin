@@ -1,19 +1,9 @@
+#include <math.h>
+
 #include "codegen.h"
 #include "ast.h"
 
 #include "backend/generators.h"
-
-/*
- * We should probably use this for everything that
- * needs a label, and then store a "label table"
- * for functions.
- */
-static int codegen_label()
-{
-    static int current_label = 0;
-
-    return current_label++;
-}
 
 int codegen_traverse_ast(FILE *file, ast_node *node, int reg);
 
@@ -23,31 +13,110 @@ int codegen_traverse_ast(FILE *file, ast_node *node, int reg);
  */
 static int codegen_generate_if_ast(FILE *file, ast_node *node)
 {
-    int false_label;
+    int false_label, else_label;
+    ast_node *left, *right, *mid;
 
-    ast_node *left, *right;
-    left = (ast_node *)ast_get_child(node, 0);
-    right = (ast_node *)ast_get_child(node, 1);
+    left = (ast_node *)ast_get_child(node, 0); // Comparison
+    mid = (ast_node *)ast_get_child(node, 1);  // Condition
+
+    right = (ast_node *)ast_get_child(node, 2); // Else
+    bool has_else = (right != NULL);
 
     trace("\tProcessing if statement");
-    trace("\t\t* Left node type: %s", ast_type_names[left->type]);
-    trace("\t\t* Mid node type: %s", ast_type_names[right->type]);
+    trace("\t\t* Comparison node type: %s", ast_type_names[left->type]);
+    trace("\t\t* Condition node type: %s", ast_type_names[mid->type]);
 
-    false_label = codegen_label();
+    if (has_else)
+        trace("\t\t* Else node type: %s", ast_type_names[right->type]);
 
+    false_label = label_add();
     trace("\t\t* False label: %d", false_label);
 
+    if (has_else)
+    {
+        else_label = label_add();
+        trace("\t\t* End label: %d", else_label);
+    }
+
     codegen_traverse_ast(file, left, false_label);
+    register_freeall();
+
+    codegen_traverse_ast(file, mid, 0);
+    register_freeall();
+
+    if (has_else)
+    {
+        gen_jump(file, else_label);
+    }
+
+    gen_label(file, false_label);
+
+    if (has_else)
+    {
+        codegen_traverse_ast(file, right, 0);
+        register_freeall();
+        gen_label(file, else_label);
+    }
+
+    return 0;
+}
+
+static int codegen_generate_while_ast(FILE *file, ast_node *node)
+{
+    int start_label, end_label;
+
+    ast_node *left, *right;
+
+    left = (ast_node *)ast_get_child(node, 0);  // Comparison
+    right = (ast_node *)ast_get_child(node, 1); // Block
+
+    start_label = label_add();
+    end_label = label_add();
+
+    trace("\tProcessing while statement");
+    trace("\t\t* Comparison node type: %s", ast_type_names[left->type]);
+    trace("\t\t* Block node type: %s", ast_type_names[right->type]);
+    trace("\t\t* Start label: %d", start_label);
+    trace("\t\t* End label: %d", end_label);
+
+    emit_comment("While loop start\n");
+    gen_label(file, start_label);
+
+    codegen_traverse_ast(file, left, end_label);
     register_freeall();
 
     codegen_traverse_ast(file, right, 0);
     register_freeall();
 
-    gen_label(file, false_label);
+    emit_comment("Jump to while loop start\n");
+    gen_jump(file, start_label);
+
+    emit_comment("While loop end\n");
+    gen_label(file, end_label);
+
     return 0;
 }
 
-int *regs;
+#define MAX_REGISTERS 32
+
+int *codegen_alloc_registers()
+{
+    /*
+     * This is a pretty hacky way to ensure that
+     * memory gets freed here - regs is actually used
+     * on a per-node basis
+     */
+    trace("\tAllocating %d registers", MAX_REGISTERS);
+    static int *regs;
+
+    if (regs == NULL)
+        regs = calloc(MAX_REGISTERS, sizeof(int));
+    else
+        memset(regs, 0, MAX_REGISTERS * sizeof(int));
+
+    return regs;
+}
+
 /*
  * Depth-first recursive tree traversal
  */
@@ -55,16 +124,17 @@ int codegen_traverse_ast(FILE *file, ast_node *node, int reg)
 {
     trace("\n-- AST traversal - node: %s\n-- Log:", ast_type_names[node->type]);
 
-    trace("\tAllocating %ld registers", node->children->size);
-    if (regs != NULL)
-        free(regs);
-    regs = malloc(sizeof(int) * node->children->size + 1);
+    int *regs = codegen_alloc_registers();
 
     switch (node->type)
     {
     case AstIf:
     {
         return codegen_generate_if_ast(file, node);
+    }
+    case AstWhile:
+    {
+        return codegen_generate_while_ast(file, node);
     }
     case AstFunction:
     {
@@ -132,7 +202,7 @@ int codegen_traverse_ast(FILE *file, ast_node *node, int reg)
     case AstLessThanOrEqual:
     case AstGreaterThan:
     {
-        if (node->parent->type == AstIf)
+        if (node->parent->type == AstIf || node->parent->type == AstWhile)
         {
             return gen_comparison_jump(file, node->type, regs[0], regs[1], reg);
         }
@@ -151,9 +221,13 @@ int codegen_traverse_ast(FILE *file, ast_node *node, int reg)
     case AstStringLit:
     {
         char *name = "Lstr";
-        name = malloc(sizeof(char) * (strlen(name) + 1));
+        int max_digits = 32;
+        name = malloc(sizeof(char) * (strlen(name) + max_digits + 1));
+
         sprintf(name, "Lstr%d", rodata_count++);
-        return gen_rodata_string(file, name, node->value.string);
+        int ret = gen_rodata_string(file, name, node->value.string);
+        free(name);
+        return ret;
     }
 
     //
@@ -170,7 +244,10 @@ int codegen_traverse_ast(FILE *file, ast_node *node, int reg)
     case AstFunction:
         return gen_function_epilogue(file, reg);
     case AstReturn:
-        return gen_return(file, regs[0]);
+    {
+        bool is_at_end = ast_get_child_index(node->parent, node) == node->parent->children->size - 1;
+        return gen_return(file, regs[0], is_at_end);
+    }
 
     //
     // Variables
@@ -220,14 +297,14 @@ void codegen_init()
     rodata_init();
 }
 
-void write_preamble(FILE *file)
+void codegen_write_preamble(FILE *file)
 {
     trace("Writing preamble");
 
     write_to_file(".globl _start\n");
 }
 
-void write_postamble(FILE *file)
+void codegen_write_postamble(FILE *file)
 {
     trace("Writing postamble");
 
@@ -237,7 +314,7 @@ void write_postamble(FILE *file)
 bool codegen_generate(module *mod, ast_node *node, FILE *file)
 {
     codegen_init();
-    write_preamble(file);
+    codegen_write_preamble(file);
 
     // Text section
     write_to_file(".text\n\n");
@@ -265,9 +342,10 @@ bool codegen_generate(module *mod, ast_node *node, FILE *file)
 #ifdef TIN_DEBUG_VERBOSE
     write_to_file("\t# Exit program cleanly\n");
 #endif
-    write_to_file("\tli\ta0, 0\n");
-    write_to_file("\tli\ta7, 93\n");
+    // exit syscall
+    write_to_file("\tli\ta0, 0\n");  // Exit code
+    write_to_file("\tli\ta7, 93\n"); // Syscall number
     write_to_file("\tecall\n");
 
-    write_postamble(file);
+    codegen_write_postamble(file);
 }

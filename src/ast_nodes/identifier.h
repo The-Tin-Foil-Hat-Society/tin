@@ -11,11 +11,15 @@ void preprocess_identifier(preproc_state* state, ast_node* node)
 
     // evaluate which module the referenced identifier belongs to if it has a namespace
     module* namespace = state->mod;
-    while (node->children->size > 0)
+    for (int i = node->children->size - 1; i >= 0; i--) // get namespaces in reverse
     {
-        ast_node* namespace_node = ast_get_child(node, node->children->size - 1); // start with the last child
+        ast_node* namespace_node = ast_get_child(node, i);
+        if (namespace_node->type != AstNamespace)
+        {
+            continue;
+        }
+
         namespace = module_get_dependency(namespace, namespace_node->value.string);
-        ast_delete_child(node, namespace_node);
     }
 
     hashtable* table = 0;
@@ -85,6 +89,16 @@ void preprocess_identifier(preproc_state* state, ast_node* node)
 
     ast_node* symbol_node = ast_new(AstSymbol);
     symbol_node->value.symbol = sym;
+
+    // copy children to the new symbol
+    for (int i = 0; i < node->children->size; i++)
+    {
+        ast_node* child = ast_get_child(node, i);
+        if (child->type != AstNamespace) // don't copy namespace nodes though
+        {
+            ast_add_child(symbol_node, ast_copy(child));
+        }
+    }
 
     // replace the indentifier node with a symbol node
     ast_set_child(node->parent, index_in_parent, symbol_node);

@@ -1,19 +1,5 @@
-fn void fizz
-{
-    print "fizz";
-}
-
-fn void buzz
-{
-    print "buzz";
-}
-
 fn i32 main
 {
-    // In general, for a language to be Turing-complete, it needs:
-    // - A form of conditional repetition or conditional jump (e.g. while, if + goto)
-    // - A way to read and write some form of storage
-
     for ( i32 i = 0; i < 10; i = i + 1 )
     {
         /*
@@ -33,22 +19,7 @@ fn i32 main
         else if ( i == 9 ) print "9";
         else if ( i == 10 ) print "10";
 
-        print ": ";
-
-        if ( i % 3 == 0 )
-        {
-            fizz();
-        }
-        
-        if ( i % 5 == 0 )
-        {
-            buzz();
-        }
-
-        if ( i % 3 == 0 || i % 5 == 0 )
-        {
-            print "\n";
-        }
+        print "\n";
     }
 
     return 0;

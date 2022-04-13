@@ -27,6 +27,10 @@ void preprocess_func_call(preproc_state* state, ast_node* node)
         {
             preproc_verb(state, node, "%s, implicit integer conversion\n", arg_def->name);
         }
+        else if (is_float(arg_def->dtype) && is_float(arg_dtype) && !data_type_compare(arg_def->dtype, arg_dtype))
+        {
+            preproc_verb(state, node, "%s, implicit float conversion\n", arg_def->name);
+        }
         else if (!data_type_compare(arg_def->dtype, arg_dtype))
         {
             preproc_error(state, node, "%s has type %s while the given value has type %s\n", arg_def->name, arg_def->dtype->name, arg_dtype->name);

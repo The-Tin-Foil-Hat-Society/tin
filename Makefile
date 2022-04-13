@@ -1,8 +1,10 @@
-#This is the make file for the tin interpreter
+#This is the make file for the tin compiler
 
 #File to compile:
-file = examples/if.tin
+file = examples/for.tin
 flags = -D TIN_COMPILER -D TIN_DEBUG_VERBOSE
+
+preproc: flags = -D TIN_DEBUG_VERBOSE
 
 sources = src/*.c src/backend/*.c src/utils/*.c
 sources_generated =generated/lex.yy.c generated/parser.tab.c
@@ -15,6 +17,9 @@ debug_assembly:
 	@riscv64-linux-gnu-ld -o ./examples/itoa.out ./examples/itoa.o
 	@qemu-riscv64 ./examples/itoa.out
 
+#Builds and runs tin with just the preprocessor
+preproc: tin
+	@./build/tin $(file)
 
 run: tin
 	@./build/tin $(file)
@@ -43,5 +48,5 @@ clean:
 	-@rm -f examples/*.out
 	-@rm -f examples/*.mod.json
 
-check_leaks: tin
-	@valgrind ./build/tin $(file) --leak-check=full
+memcheck: tin
+	@valgrind --leak-check=full --track-origins=yes ./build/tin $(file)

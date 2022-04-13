@@ -24,6 +24,10 @@ void preprocess_return(preproc_state* state, ast_node* node)
         {
             preproc_verb(state, node, "%s, implicit integer conversion\n", function->name);
         }
+        else if (is_float(function->dtype) && is_float(return_dtype) && !data_type_compare(function->dtype, return_dtype))
+        {
+            preproc_verb(state, node, "%s, implicit float conversion\n", function->name);
+        }
         else if (!data_type_compare(function->dtype, return_dtype))
         {
             preproc_error(state, node, "%s has type %s while the return value has type %s\n", function->name, function->dtype->name, return_dtype->name);

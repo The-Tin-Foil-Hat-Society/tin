@@ -19,6 +19,10 @@ void preprocess_operation(preproc_state* state, ast_node* node)
     {
         preproc_verb(state, node, "implicit integer conversion\n");
     }
+    else if (is_float(left_dtype) && is_float(right_dtype) && !data_type_compare(left_dtype, right_dtype))
+    {
+        preproc_verb(state, node, "implicit float conversion\n");
+    }
     else if (!data_type_compare(left_dtype, right_dtype) && (left_dtype->pointer_level ^ right_dtype->pointer_level))
     {
         preproc_verb(state, node, "implicit pointer conversion\n");
