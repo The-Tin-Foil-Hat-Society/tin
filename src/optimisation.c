@@ -887,7 +887,7 @@ void optimize(module* mod, ast_node* node)
                     //ast_node* new_child =
                     find_expressions(child, true);
                     replace_if_statements(child, true);
-                    reset_variables(child);
+                    reset_variables(node);
                     //new_child = remove_variables(new_child);
                     //ast_set_child(node, i, new_child);
                     //child = new_child;
