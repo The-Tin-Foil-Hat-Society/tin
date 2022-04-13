@@ -273,7 +273,15 @@ void ast_print_to_file(ast_node* node, FILE* file)
     }
     else if (node->type == AstIntegerLit)
     {
-        fprintf(file, ",\"int_value\": %ld", node->value.integer);
+        data_type* dtype = ast_find_data_type(node);
+        if (dtype->_signed) 
+        {
+            fprintf(file, ",\"int_value\": %ld", node->value.integer);
+        }
+        else
+        {
+            fprintf(file, ",\"int_value\": %lu", *(uint64_t*)&node->value.integer);
+        }
     }
     else if (node->type == AstSymbol)
     {
