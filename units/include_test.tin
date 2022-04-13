@@ -1,5 +1,6 @@
 include "include_test_example_1.tin"
 include "include_test_folder/include_test_example_3.tin"
+include "std_example.tin"
 
 fn i32 main
 {
@@ -7,6 +8,7 @@ fn i32 main
 
     print include_test_example_1::include_test_example_2::test_str;
     print include_test_example_3::test_str;
+    print std_example::get_str();
 
     return 0;
 }

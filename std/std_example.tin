@@ -1,0 +1,4 @@
+fn ptr i8 get_str
+{
+    return "hello from the tin standard library";
+}
