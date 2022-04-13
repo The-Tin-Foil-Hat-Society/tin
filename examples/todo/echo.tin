@@ -1,0 +1,13 @@
+fn i32 main
+{
+    ptr void echo;
+    alloc echo 256;
+
+    print "> ";
+    input echo;
+
+    print "Echo: ";
+    print echo;
+
+    return 0;
+}

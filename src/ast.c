@@ -4,7 +4,7 @@
 
 bool has_dtype(enum ast_node_type type)
 {
-    return type == AstDataType || type == AstAdd || type == AstDiv || type == AstMod || type == AstMul || type == AstPow || type == AstSub || type == AstGreaterThan || type == AstGreaterThanOrEqual  || type == AstLessThan || type == AstLessThanOrEqual  || type == AstEqual || type == AstNotEqual || type == AstAnd || type == AstNot || type == AstOr;
+    return type == AstDataType || type == AstAdd || type == AstDiv || type == AstMod || type == AstMul || type == AstPow || type == AstSub || type == AstBitwiseAnd || type == AstBitwiseOr || type == AstBitwiseXor || type == AstShiftLeft || type == AstShiftRight || type == AstGreaterThan || type == AstGreaterThanOrEqual  || type == AstLessThan || type == AstLessThanOrEqual  || type == AstEqual || type == AstNotEqual || type == AstAnd || type == AstNot || type == AstOr;
 }
 
 ast_node* ast_new(enum ast_node_type type)
@@ -26,13 +26,6 @@ ast_node* ast_new(enum ast_node_type type)
     {
         ast_node* data_type_node = ast_new(AstDataType);
         data_type_node->value.dtype = data_type_new("bool");
-        data_type_node->value.dtype->pointer_level = 0;
-        ast_add_child(node, data_type_node);
-    }
-    else if (node->type == AstIntegerLit)
-    {
-        ast_node* data_type_node = ast_new(AstDataType);
-        data_type_node->value.dtype = data_type_new("i32");
         data_type_node->value.dtype->pointer_level = 0;
         ast_add_child(node, data_type_node);
     }
@@ -107,7 +100,7 @@ ast_node* ast_copy(ast_node* node)
     {
         copy->value.string = strdup(node->value.string);
     }
-    else if (node->type == AstDataType)
+    else if (has_dtype(node->type))
     {
         copy->value.dtype = data_type_copy(node->value.dtype);
     }
@@ -150,6 +143,7 @@ void ast_set_child(ast_node* node, size_t index, ast_node* new_child)
 void ast_insert_child(ast_node* node, size_t index, ast_node* new_child)
 {
     vector_insert_item(node->children, index, new_child);
+    new_child->parent = node;
 }
 ast_node* ast_get_child(ast_node* node, size_t index)
 {
@@ -268,6 +262,14 @@ void ast_print_to_file(ast_node* node, FILE* file)
     if (node->type == AstAsm || node->type == AstIdentifier || node->type == AstInclude || node->type == AstNamespace || node->type == AstStringLit)
     {
         fprintf(file, ",\"str_value\": \"%s\"", node->value.string);
+    }
+    else if (node->type == AstBoolLit)
+    {
+        fprintf(file, ",\"bool_value\": %s", node->value.boolean ? "true" : "false");
+    }
+    else if (node->type == AstFloatLit)
+    {
+        fprintf(file, ",\"float_value\": %f", node->value.floating);
     }
     else if (node->type == AstIntegerLit)
     {

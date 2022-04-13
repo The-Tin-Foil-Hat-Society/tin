@@ -1,0 +1,5 @@
+fn i32 main
+{
+    print "Hello World!\n";
+    return 0;
+}

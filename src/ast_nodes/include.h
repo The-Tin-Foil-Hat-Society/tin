@@ -4,7 +4,7 @@
 #include "ast.h"
 #include "symbol.h"
 #include "data_type.h"
-#include "path.h"
+#include "utils/path.h"
 #include <string.h>
 
 void preprocess_include(preproc_state* state, ast_node* node)

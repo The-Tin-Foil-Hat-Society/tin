@@ -1,0 +1,11 @@
+fn i32 loop
+{
+    print "Ping!\n";
+    loop();
+}
+
+fn i32 main
+{
+    print "Entering loop\n";
+    loop();
+}

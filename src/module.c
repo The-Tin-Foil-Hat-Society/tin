@@ -1,6 +1,6 @@
 #include "module.h"
 #include "preprocessor.h"
-#include "path.h"
+#include "utils/path.h"
 #include "parser.tab.h"
 #include "lex.yy.h"
 #include <stdlib.h>
