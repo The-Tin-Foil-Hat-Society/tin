@@ -419,7 +419,9 @@ ast_node* evaluate_expression(ast_node* node, bool determinable)
         }
         else if (node->type == AstDiv)
         {
-            if (node1->type == AstIntegerLit && node2->type == AstIntegerLit)
+            int value1 = node1->value.integer;
+            int value2 = node2->value.integer;
+            if (node1->type == AstIntegerLit && node2->type == AstIntegerLit && value1 % value2 == 0)
             {
                 int result = node1->value.integer / node2->value.integer;
                 ast_node* data_type_node = ast_new(AstDataType);
