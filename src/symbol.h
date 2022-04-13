@@ -27,6 +27,7 @@ typedef struct
         bool boolean;            // AstBoolLit
         int64_t integer;         // AstIntegerLit
         char* string;            // AstAsm, AstIdentifier, AstInclude, AstNamespace, AstStringLit
+        double floating;         // AstFloatLit
     } value;  // for the optimiser to simplify expressions
 } symbol;
 
