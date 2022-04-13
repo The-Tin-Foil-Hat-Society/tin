@@ -1,6 +1,6 @@
 include "include_test_example_1.tin"
-include "include_test_folder/include_test_example_3.tin"
-include "std_example.tin"
+include "include_test_folder/include_test_example_3"
+include "std_example"
 
 fn i32 main
 {

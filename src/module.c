@@ -74,6 +74,17 @@ module* module_parse(char* path, module* parent)
         parent_dir = parent->dir;
     }
     
+    // if the include has no extension, add it back
+    char* ext = strstr(path, ".tin");
+    if (ext != 0 && (path + (int)strlen(path) - ext) == 4)
+    {
+        path = strdup(path);
+    }
+    else
+    {
+        path = path_join(2, path, ".tin");
+    }
+
     char* src_path;
     if (!(src_path = path_locate_file(path, parent_dir)))
     {
@@ -101,6 +112,7 @@ module* module_parse(char* path, module* parent)
 
 	fclose(src_file);
     free(src_path);
+    free(path);
 
     if (parser_status != 0)
     {
