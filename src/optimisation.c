@@ -319,51 +319,81 @@ ast_node* evaluate_expression(ast_node* node, bool determinable)
 
         if (node->type == AstAdd)
         {
-            ast_node* new_node = ast_new(AstIntegerLit);
+            int result = node1->value.integer + node2->value.integer;
+            ast_node* data_type_node = ast_new(AstDataType);
             node->type = AstIntegerLit;
-            node->value.integer = node1->value.integer + node2->value.integer;
-            node->children = new_node->children;
-            ast_get_child(node, 0)->parent = node;
+            node->value.integer = result;
+
+            data_type_node->value.dtype = data_type_new(
+                result < 0 ? "i64" : "u64");
+            data_type_node->value.dtype->pointer_level = 0;
+            ast_delete_children(node);
+            ast_add_child(node, data_type_node);
         }
         else if (node->type == AstSub)
         {
-            ast_node* new_node = ast_new(AstIntegerLit);
+            int result = node1->value.integer - node2->value.integer;
+            ast_node* data_type_node = ast_new(AstDataType);
             node->type = AstIntegerLit;
-            node->value.integer = node1->value.integer - node2->value.integer;
-            node->children = new_node->children;
-            ast_get_child(node, 0)->parent = node;
+            node->value.integer = result;
+
+            data_type_node->value.dtype = data_type_new(
+                result < 0 ? "i64" : "u64");
+            data_type_node->value.dtype->pointer_level = 0;
+            ast_delete_children(node);
+            ast_add_child(node, data_type_node);
         }
         else if (node->type == AstMul)
         {
-            ast_node* new_node = ast_new(AstIntegerLit);
+            int result = node1->value.integer * node2->value.integer;
+            ast_node* data_type_node = ast_new(AstDataType);
             node->type = AstIntegerLit;
-            node->value.integer = node1->value.integer * node2->value.integer;
-            node->children = new_node->children;
-            ast_get_child(node, 0)->parent = node;
+            node->value.integer = result;
+
+            data_type_node->value.dtype = data_type_new(
+                result < 0 ? "i64" : "u64");
+            data_type_node->value.dtype->pointer_level = 0;
+            ast_delete_children(node);
+            ast_add_child(node, data_type_node);
         }
         else if (node->type == AstDiv)
         {
-            ast_node* new_node = ast_new(AstIntegerLit);
+            int result = node1->value.integer / node2->value.integer;
+            ast_node* data_type_node = ast_new(AstDataType);
             node->type = AstIntegerLit;
-            node->value.integer = node1->value.integer / node2->value.integer;
-            node->children = new_node->children;
-            ast_get_child(node, 0)->parent = node;
+            node->value.integer = result;
+
+            data_type_node->value.dtype = data_type_new(
+                result < 0 ? "i64" : "u64");
+            data_type_node->value.dtype->pointer_level = 0;
+            ast_delete_children(node);
+            ast_add_child(node, data_type_node);
         }
         else if (node->type == AstMod)
         {
-            ast_node* new_node = ast_new(AstIntegerLit);
+            int result = node1->value.integer % node2->value.integer;
+            ast_node* data_type_node = ast_new(AstDataType);
             node->type = AstIntegerLit;
-            node->value.integer = node1->value.integer % node2->value.integer;
-            node->children = new_node->children;
-            ast_get_child(node, 0)->parent = node;
+            node->value.integer = result;
+
+            data_type_node->value.dtype = data_type_new(
+                result < 0 ? "i64" : "u64");
+            data_type_node->value.dtype->pointer_level = 0;
+            ast_delete_children(node);
+            ast_add_child(node, data_type_node);
         }
         else if (node->type == AstPow)
         {
-            ast_node* new_node = ast_new(AstIntegerLit);
+            int result = pow(node1->value.integer, node2->value.integer);
+            ast_node* data_type_node = ast_new(AstDataType);
             node->type = AstIntegerLit;
-            node->value.integer = pow(node1->value.integer, node2->value.integer);
-            node->children = new_node->children;
-            ast_get_child(node, 0)->parent = node;
+            node->value.integer = result;
+
+            data_type_node->value.dtype = data_type_new(
+                result < 0 ? "i64" : "u64");
+            data_type_node->value.dtype->pointer_level = 0;
+            ast_delete_children(node);
+            ast_add_child(node, data_type_node);
         }
         
         else if (node->type == AstEqual)
@@ -489,10 +519,14 @@ ast_node* simplify_expression(ast_node* node, bool determinable)
         if (is_int(variable->dtype) && variable->is_literal)
         {
             ast_node* new_node = ast_new(AstIntegerLit);
+            ast_node* data_type_node = ast_new(AstDataType);
             node->type = AstIntegerLit;
             node->value.integer = variable->value.integer;
-            node->children = new_node->children;
-            ast_get_child(node, 0)->parent = node;
+
+            data_type_node->value.dtype = data_type_new(
+                variable->value.integer < 0 ? "i64" : "u64");
+            data_type_node->value.dtype->pointer_level = 0;
+            ast_add_child(node, data_type_node);
         }
         else if (is_bool(variable->dtype) && variable->is_literal)
         {
@@ -667,7 +701,7 @@ void optimize(module* mod, ast_node* node)
     int count = 0;
     vector* children;
 
-    while (children != node->children && count < 10)
+    while (children != node->children && count < 1)
     {
         count++;
         children = vector_copy(node->children);

@@ -161,6 +161,15 @@ void ast_delete_child(ast_node* node, ast_node* child)
     ast_free(child);
 }
 
+void ast_delete_children(ast_node* node)
+{
+    while(node->children->size > 0)
+    {
+        ast_node* child = ast_get_child(node, 0);
+        ast_delete_child(node, child);
+    }
+}
+
 ast_node* ast_get_current_function(ast_node* node)
 {
     while (node != 0)
