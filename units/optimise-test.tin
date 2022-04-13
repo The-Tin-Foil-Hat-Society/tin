@@ -21,7 +21,13 @@ fn i32 main
 
     bool t = (num2 + 1 >= 2 - 1);
 
-    if (true == true) {
+    while (true == true) {
+        if (true == true) {
+            print "test";
+        }
+    }
+
+    if (true == false) {
         print "yep";
         if (true == false) {
             print "nope";
@@ -29,6 +35,9 @@ fn i32 main
         else {
             print "yep2";
         }
+    }
+    else {
+        print "yep3";
     }
 
     if ((num2 + 1 >= 2 - 1)) {

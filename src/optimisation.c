@@ -129,7 +129,11 @@ ast_node* replace_if_statements(ast_node* node, bool determinable)
     {
         ast_node* child = ast_get_child(node, i);
 
-        if (child->type == AstIf)
+        if (node->type == AstFor || node->type == AstWhile)
+        {
+            continue;
+        }
+        else if (child->type == AstIf)
         {
             ast_node* condition = ast_get_child(child, 0);
             ast_node* scope = ast_get_child(child, 1);
@@ -141,7 +145,6 @@ ast_node* replace_if_statements(ast_node* node, bool determinable)
                     scope->parent = child->parent;
                     ast_set_child(node, i, scope);
                     child = ast_get_child(node, i);
-                    replace_if_statements(child, true);
                 }
                 else
                 {
@@ -151,40 +154,16 @@ ast_node* replace_if_statements(ast_node* node, bool determinable)
                         else_scope->parent = child->parent;
                         ast_set_child(node, i, else_scope);
                         child = ast_get_child(node, i);
-                        replace_if_statements(child, true);
                     }
                     else
                     {
                         ast_delete_child(node, child);
-                        /*ast_node* empty_scope = ast_new(AstScope);
-                        empty_scope->parent = child->parent;
-                        ast_set_child(node, i, empty_scope);
-                        child = ast_get_child(node, i);*/
-                    }
-                }
-            }
-            else
-            {
-                replace_if_statements(scope, true);
-                
-                if (child->children->size > 2)
-                {
-                    ast_node* else_scope = ast_get_child(child, 2);
-                    if (else_scope->type == AstIf)
-                    {
-                        replace_if_statements(else_scope, false);
-                    }
-                    else
-                    {
-                        replace_if_statements(else_scope, true);
+                        continue;
                     }
                 }
             }
         }
-        else
-        {
-            replace_if_statements(child, true);
-        }
+        replace_if_statements(child, true);
     }
     return node;
 }
