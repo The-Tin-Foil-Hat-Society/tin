@@ -27,7 +27,7 @@ void preprocess_identifier(preproc_state* state, ast_node* node)
     {
         if (namespace == 0)
         {
-            preproc_error(state, node, "%scould not locate given namespace", "");
+            preproc_error(state, node, "%scould not locate given namespace\n", "");
         }
         else
         {
