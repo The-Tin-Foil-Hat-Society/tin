@@ -44,7 +44,7 @@ ast_node* ast_new(enum ast_node_type type)
     return node;
 }
 
-void ast_free(ast_node* node, bool keep_symbols)
+void ast_free(ast_node* node)
 {
     if (node == 0)
     {
@@ -53,7 +53,7 @@ void ast_free(ast_node* node, bool keep_symbols)
 
     for (size_t i = 0; i < node->children->size; i++)
     {
-        ast_free(vector_get_item(node->children, i), keep_symbols);
+        ast_free(vector_get_item(node->children, i));
     }
     vector_free(node->children);
     
@@ -61,16 +61,13 @@ void ast_free(ast_node* node, bool keep_symbols)
     {
         free(node->value.string);
     }
-    else if ((node->type == AstRoot || node->type == AstScope))
+    else if (node->type == AstRoot || node->type == AstScope)
     {
-        if (!keep_symbols)
+        for (size_t i = 0; i < node->value.symbol_table->capacity; i++)
         {
-            for (size_t i = 0; i < node->value.symbol_table->capacity; i++)
+            if (node->value.symbol_table->keys[i] != 0)
             {
-                if (node->value.symbol_table->keys[i] != 0)
-                {
-                    symbol_free(node->value.symbol_table->items[i]);
-                }
+                symbol_free(node->value.symbol_table->items[i]);
             }
         }
 
@@ -102,10 +99,6 @@ ast_node* ast_copy(ast_node* node)
     if (node->type == AstAsm || node->type == AstIdentifier || node->type == AstInclude || node->type == AstNamespace || node->type == AstStringLit)
     {
         copy->value.string = strdup(node->value.string);
-    }
-    else if (node->type == AstRoot || node->type == AstScope)
-    {
-        copy->value.symbol_table = hashtable_copy(node->value.symbol_table);
     }
     else if (has_dtype(node->type))
     {
@@ -165,7 +158,7 @@ size_t ast_get_child_index(ast_node* node, ast_node* child)
 void ast_delete_child(ast_node* node, ast_node* child)
 {
     vector_delete_item(node->children, child);
-    ast_free(child, 0);
+    ast_free(child);
 }
 
 void ast_delete_children(ast_node* node)
@@ -231,7 +224,7 @@ data_type* ast_find_data_type(ast_node* node)
     return 0;
 }
 
-symbol *ast_find_symbol(ast_node *node, char *symbol_key)
+symbol* ast_find_symbol(ast_node* node, char* name)
 {
     symbol* sym = 0;
 
@@ -240,7 +233,7 @@ symbol *ast_find_symbol(ast_node *node, char *symbol_key)
     {
         if (node->type == AstRoot || node->type == AstScope)
         {
-            sym = (symbol*)hashtable_get_item(node->value.symbol_table, symbol_key);
+            sym = (symbol*)hashtable_get_item(node->value.symbol_table, name);
         }
 
         node = node->parent;
@@ -305,7 +298,7 @@ void ast_print_to_file(ast_node* node, FILE* file)
     }
     else if (node->type == AstSymbol)
     {
-        fprintf(file, ",\"symbol_key\":\"%s\",\"str_value\": \"%s\"", node->value.symbol->key, node->value.symbol->name);
+        fprintf(file, ",\"symbol_id\":\"%p\",\"str_value\": \"%s\"", node->value.symbol, node->value.symbol->name);
     }
     else if ((node->type == AstRoot || node->type == AstScope) && node->value.symbol_table->size > 0)
     {

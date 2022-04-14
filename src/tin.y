@@ -52,7 +52,7 @@ void yyerror (yyscan_t* locp, module* mod, const char* msg);
 %%
 
 program
-    : { $$ = mod->ast_root; $$->src_line = module_get_src_line(mod, 0); } /* passed from main */
+    : { $$ = mod->ast_root; } /* passed from main */
     | program statement { ast_add_child($1, $2); if ($2->src_line == 0) { $2->src_line = module_get_src_line(mod, yyget_lineno(scanner)); } }
     | program function  { ast_add_child($1, $2); }
     ;
@@ -207,9 +207,9 @@ statement
     | jump_statement            { $$ = $1; }
     | scope                     { $$ = $1; }
     | ALLOC identifier expression SEMI_COLON    { $$ = ast_new(AstAlloc); ast_add_child($$, $2); ast_add_child($$, $3); }
-    | ASM STRING SEMI_COLON         { $$ = ast_new(AstAsm);  $$->value.string = strdup($2->value.string); ast_free($2, 0); }
+    | ASM STRING SEMI_COLON         { $$ = ast_new(AstAsm);  $$->value.string = strdup($2->value.string); ast_free($2); }
     | FREE expression SEMI_COLON    { $$ = ast_new(AstFree); ast_add_child($$, $2); }
-    | INCLUDE STRING                { $$ = ast_new(AstInclude); $$->value.string = strdup($2->value.string); ast_free($2, 0); }
+    | INCLUDE STRING                { $$ = ast_new(AstInclude); $$->value.string = strdup($2->value.string); ast_free($2); }
     | INPUT identifier SEMI_COLON   { $$ = ast_new(AstInput); ast_add_child($$, $2); }
     | PRINT expression SEMI_COLON   { $$ = ast_new(AstPrint); ast_add_child($$, $2); }
     ;

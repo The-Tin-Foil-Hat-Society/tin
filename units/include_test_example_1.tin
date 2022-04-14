@@ -1,6 +1,6 @@
 include "include_test_folder/include_test_example_2.tin"
 
-fn void print_str
+fn void test
 {
-    print "hello from include_test_example_1!\n";
+    include_test_example_2::test_str = "Hello world!";
 }

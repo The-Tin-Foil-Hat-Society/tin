@@ -6,4 +6,4 @@
 #include "module.h"
 #include "utils/vector.h"
 
-bool codegen_generate(module *mod, FILE *file);
+bool codegen_generate(module *mod, ast_node *node, FILE *file);

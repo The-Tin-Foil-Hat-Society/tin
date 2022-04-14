@@ -13,7 +13,6 @@ struct vector {
 
 vector* vector_new();
 void vector_free(vector* vec);
-// do not forget that values will not be deep-copied
 vector* vector_copy(vector* vec);
 
 void vector_resize(vector* vec);

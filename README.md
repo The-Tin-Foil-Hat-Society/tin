@@ -122,21 +122,16 @@ Run the following command to fetch all of the required packages in order to buil
 1. Clone the repo
    ```sh
    $ git clone https://github.com/aaf6aa/tin.git
-   $ cd tin
    ```
-2. Add the standard library to PATH
-   ```sh
-   $ PATH="$PATH:$(pwd)/std"
-   ```
-3. Make the project 
+2. Make the project 
    ```sh
    $ make tin
    ```
-4. Compile your .tin file
+3. Compile your .tin file
    ```sh
    $ ./build/tin file-name.tin
    ```
-5. Run the executable through QEMU
+4. Run the executable through QEMU
    ```sh
    $ qemu-riscv64 ./file-name
    ```

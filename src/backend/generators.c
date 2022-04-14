@@ -248,22 +248,9 @@ void variable_init()
     variables = hashtable_new();
 }
 
-void variable_freeall()
-{
-    for (int i = 0; i < variables->capacity; i++)
-    {
-        if (variables->keys[i] != NULL)
-        {
-            free(variables->items[i]);
-        }
-    }
-    hashtable_free(variables);
-}
-
 void variable_free(char *identifier)
 {
     trace("\tFreeing variable %s\n", identifier);
-    free(hashtable_get_item(variables, identifier));
     hashtable_delete_item(variables, identifier);
 }
 
@@ -304,20 +291,6 @@ void rodata_add(char *identifier, char *string)
 
     rodata[rodata_count] = entry;
     rodata_count++;
-}
-void rodata_free()
-{
-    for (int i = 0; i < rodata_count; i++)
-    {
-        rodata_entry *entry = (rodata_entry *)rodata[i];
-        if (entry == NULL)
-        {
-            continue;
-        }
-        free(entry->identifier);
-        free(entry->string);
-        free(entry);
-    }
 }
 
 void gen_rodata(FILE *file)

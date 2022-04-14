@@ -136,74 +136,21 @@ void process_nodes(preproc_state* state, ast_node* node)
     }
 }
 
-void combine_modules(preproc_state* state)
-{
-    if (state->mod->parent != 0 || state->mod->module_store == 0)
-    {
-        return;
-    }
-
-    // iterate over module store in reverse to insert the deepest dependencies into the ast first
-    vector* modules_vec = hashtable_to_vector(state->mod->module_store);
-    for (int i = modules_vec->size - 1; i >= 0; i--)
-    {
-        // copy child nodes
-        module* dependency = vector_get_item(modules_vec, i);
-        for (int j = 0; j < dependency->ast_root->children->size; j++)
-        {
-            ast_node* node_copy = ast_copy(ast_get_child(dependency->ast_root, j));
-            ast_insert_child(state->mod->ast_root, j, node_copy); // insert at the start of the main ast_root
-        }
-
-        // copy dependency's root symbol table
-        for (int j = 0; j < dependency->ast_root->value.symbol_table->capacity; j++)
-        {
-            if (dependency->ast_root->value.symbol_table->keys[j] != 0)
-            {
-                char* key = dependency->ast_root->value.symbol_table->keys[j];
-                symbol* sym = dependency->ast_root->value.symbol_table->items[j];
-
-                hashtable_set_item(state->mod->ast_root->value.symbol_table, key, sym);
-            }
-        }
-
-        // delete the dependency module
-        hashtable_delete_item(state->mod->dependencies, dependency->name);
-        hashtable_delete_item(state->mod->module_store, dependency->name);
-        module_free(dependency, true);
-    }
-    vector_free(modules_vec);
-}
-
 bool preprocessor_process(module* mod)
 {
     preproc_state* state = preproc_state_new();
     state->mod = mod;
 
     build_symbols(state, mod->ast_root);
-    if (state->error_counter > 0)
-	{
-        goto preproc_fail;
-	}
-
     process_nodes(state, mod->ast_root);
+
 	if (state->error_counter > 0)
 	{
-        goto preproc_fail;
+		printf("total %ld preprocessor errors\n", state->error_counter);
+        preproc_state_free(state);
+		return false;
 	}
-
-    // combines the main and dependency ast's into one
-    if (mod->parent == 0)
-    {
-        combine_modules(state);
-    }
 
     preproc_state_free(state);
     return true;
-
-preproc_fail:
-	printf("total %ld preprocessor errors\n", state->error_counter);
-
-    preproc_state_free(state);
-    return false;
 }

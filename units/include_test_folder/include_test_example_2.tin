@@ -1,4 +1,1 @@
-fn void print_str
-{
-    print "hello from include_test_example_2!\n";
-}
+ptr i8 test_str;

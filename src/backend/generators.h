@@ -23,7 +23,6 @@ void free_register(int reg);
 hashtable *variables;
 
 void variable_init();
-void variable_freeall();
 void variable_free(char *identifier);
 int variable_get(char *identifier);
 int variable_set(char *identifier, int value, int size);
@@ -46,7 +45,6 @@ static int rodata_count = 0;
 
 void rodata_init();
 void rodata_add(char *identifier, char *string);
-void rodata_free();
 void gen_rodata(FILE *file);
 
 //

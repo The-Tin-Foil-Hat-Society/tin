@@ -22,7 +22,7 @@ struct module
 module *module_new(void);
 // creates a new module from the given file, parent can be 0 but is required for include'd files
 module *module_parse(char *filename, module *parent);
-void module_free(module* mod, bool keep_symbols);
+void module_free(module *mod);
 
 void module_add_dependency(module *mod, module *dependency);
 // get the dependency from the specified module

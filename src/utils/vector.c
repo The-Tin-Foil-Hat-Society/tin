@@ -11,17 +11,11 @@ vector* vector_new()
 
     // allocate space for item pointers
     vec->items = malloc(sizeof(vector*) * vec->capacity);
-    memset(vec->items, 0, vec->capacity);
-
+    
     return vec;
 }
 void vector_free(vector* vec)
 {
-    if (vec == 0)
-    {
-        return;
-    }
-
     free(vec->items);
     free(vec);
 }
@@ -32,8 +26,6 @@ vector* vector_copy(vector* vec)
     copy->size = vec->size;
     copy->capacity = vec->capacity;
     copy->items = malloc(sizeof(vector*) * vec->capacity);
-
-    memset(copy->items, 0, copy->capacity);
 
     for (size_t i = 0; i < vec->size; i++)
     {
