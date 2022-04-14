@@ -1,4 +1,4 @@
-fn ptr i8 get_str
+fn void print_str
 {
-    return "hello from the tin standard library";
+    print "hello from the tin standard library!\n";
 }

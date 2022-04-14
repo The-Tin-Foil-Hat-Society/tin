@@ -4,11 +4,11 @@ include "std_example"
 
 fn i32 main
 {
-    include_test_example_1::test();
+    include_test_example_1::print_str();
+    include_test_example_1::include_test_example_2::print_str();
+    include_test_example_3::print_str();
 
-    print include_test_example_1::include_test_example_2::test_str;
-    print include_test_example_3::test_str;
-    print std_example::get_str();
+    std_example::print_str();
 
     return 0;
 }
