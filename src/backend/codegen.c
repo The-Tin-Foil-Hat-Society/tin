@@ -140,14 +140,14 @@ int codegen_traverse_ast(FILE *file, ast_node *node, int reg)
     {
         // Symbol is first child
         ast_node *child = vector_get_item(node->children, 0);
-        gen_function(file, reg, child->value.symbol->name);
+        gen_function(file, reg, child->value.symbol->key);
         break;
     }
     case AstFunctionCall:
     {
         // Symbol is first child
         ast_node *child = vector_get_item(node->children, 0);
-        gen_function_call(file, reg, child->value.symbol->name);
+        gen_function_call(file, reg, child->value.symbol->key);
         break;
     }
     }
@@ -256,7 +256,7 @@ int codegen_traverse_ast(FILE *file, ast_node *node, int reg)
     {
         if (node->parent->type == AstAssignment)
         {
-            return gen_store_global(file, reg, node->value.symbol->name, node->value.symbol->dtype->size);
+            return gen_store_global(file, reg, node->value.symbol->key, node->value.symbol->dtype->size);
         }
         else if (node->parent->type == AstFunction)
         {
@@ -276,7 +276,7 @@ int codegen_traverse_ast(FILE *file, ast_node *node, int reg)
         else
         {
             trace("\tLoading (parent type: %s)", ast_type_names[node->parent->type]);
-            return gen_load_global(file, node->value.symbol->name, node->value.symbol->dtype->size);
+            return gen_load_global(file, node->value.symbol->key, node->value.symbol->dtype->size);
         }
     }
     case AstAssignment:

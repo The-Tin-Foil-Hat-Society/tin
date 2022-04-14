@@ -12,6 +12,7 @@
 typedef struct
 {
     char *name;
+    char *key;
 
     data_type *dtype;
 
@@ -21,7 +22,7 @@ typedef struct
     void *function_node; // for the interperter to follow function symbols
 } symbol;
 
-symbol *symbol_new(void);
+symbol *symbol_new(char* name, void* mod_ptr);
 void symbol_free(symbol *sym);
 
 // generates a unique key for the given symbol name in the given module/namepsaec

@@ -292,7 +292,7 @@ void ast_print_to_file(ast_node* node, FILE* file)
     }
     else if (node->type == AstSymbol)
     {
-        fprintf(file, ",\"symbol_id\":\"%p\",\"str_value\": \"%s\"", node->value.symbol, node->value.symbol->name);
+        fprintf(file, ",\"symbol_key\":\"%s\",\"str_value\": \"%s\"", node->value.symbol->key, node->value.symbol->name);
     }
     else if ((node->type == AstRoot || node->type == AstScope) && node->value.symbol_table->size > 0)
     {

@@ -69,8 +69,7 @@ void preprocess_identifier(preproc_state* state, ast_node* node)
 
     if (sym == 0)
     {
-        sym = symbol_new();
-        sym->name = strdup(identifier_name);
+        sym = symbol_new(identifier_name, namespace);
 
         if (!is_being_assigned_to)
         {
