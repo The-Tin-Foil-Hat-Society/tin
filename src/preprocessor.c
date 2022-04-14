@@ -155,15 +155,17 @@ void combine_modules(preproc_state* state)
             ast_insert_child(state->mod->ast_root, j, node_copy); // insert at the start of the main ast_root
         }
 
-        // TODO: duplicate names across large codebases?
-        // copy root symbol table
-        vector* symbols_vec = hashtable_to_vector(dependency->ast_root->value.symbol_table);
-        for (int j = 0; j < symbols_vec->size; j++)
+        // copy dependency's root symbol table
+        for (int j = 0; j < dependency->ast_root->value.symbol_table->capacity; j++)
         {
-            symbol* sym = vector_get_item(symbols_vec, j);
-            hashtable_set_item(state->mod->ast_root->value.symbol_table, sym->name, sym);
+            if (dependency->ast_root->value.symbol_table->keys[j] != 0)
+            {
+                char* key = dependency->ast_root->value.symbol_table->keys[j];
+                symbol* sym = dependency->ast_root->value.symbol_table->items[j];
+
+                hashtable_set_item(state->mod->ast_root->value.symbol_table, key, sym);
+            }
         }
-        vector_free(symbols_vec);
 
         // delete the dependency module
         hashtable_delete_item(state->mod->dependencies, dependency->name);

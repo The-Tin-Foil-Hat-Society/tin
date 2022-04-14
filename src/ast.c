@@ -222,8 +222,20 @@ data_type* ast_find_data_type(ast_node* node)
     return 0;
 }
 
-symbol* ast_find_symbol(ast_node* node, char* name)
+symbol *ast_find_symbol(ast_node *node, char *name, void* mod_ptr)
 {
+    char* key;
+
+    if (mod_ptr != 0)
+    {
+        key = malloc(16 + strlen(name) + 1);
+        sprintf(key, "%p%s", mod_ptr, name);
+    }
+    else
+    {
+        key = strdup(name);
+    }
+
     symbol* sym = 0;
 
     // traverse up the tree and check each symbol table for the given symbol name
@@ -231,11 +243,13 @@ symbol* ast_find_symbol(ast_node* node, char* name)
     {
         if (node->type == AstRoot || node->type == AstScope)
         {
-            sym = (symbol*)hashtable_get_item(node->value.symbol_table, name);
+            sym = (symbol*)hashtable_get_item(node->value.symbol_table, key);
         }
 
         node = node->parent;
     }
+
+    free(key);
 
     return sym;
 }

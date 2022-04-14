@@ -52,7 +52,7 @@ void yyerror (yyscan_t* locp, module* mod, const char* msg);
 %%
 
 program
-    : { $$ = mod->ast_root; } /* passed from main */
+    : { $$ = mod->ast_root; $$->src_line = module_get_src_line(mod, 0); } /* passed from main */
     | program statement { ast_add_child($1, $2); if ($2->src_line == 0) { $2->src_line = module_get_src_line(mod, yyget_lineno(scanner)); } }
     | program function  { ast_add_child($1, $2); }
     ;
