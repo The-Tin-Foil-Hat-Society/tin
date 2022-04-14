@@ -49,4 +49,7 @@ clean:
 	-@rm -f examples/*.mod.json
 
 memcheck: tin
-	@valgrind --leak-check=full --track-origins=yes ./build/tin $(file)
+	@valgrind ./build/tin $(file)
+
+memcheck_full: tin
+	@valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes ./build/tin $(file)
