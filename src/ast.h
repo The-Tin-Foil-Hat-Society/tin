@@ -101,7 +101,6 @@ ast_node *ast_new(enum ast_node_type type);
 void ast_free(ast_node* node, bool keep_symbols);
 ast_node *ast_copy(ast_node *node);
 
-void ast_resize(ast_node* node);
 void ast_add_child(ast_node* node, ast_node* child);
 void ast_set_child(ast_node* node, size_t index, ast_node* new_child);
 void ast_insert_child(ast_node* node, size_t index, ast_node* new_child);
