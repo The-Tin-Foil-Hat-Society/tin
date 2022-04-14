@@ -10,7 +10,7 @@ sources = src/*.c src/backend/*.c src/utils/*.c
 sources_generated =generated/lex.yy.c generated/parser.tab.c
 
 tin: dir parser.o lex.o
-	@ gcc $(flags) -Isrc -Igenerated -Werror -g -O0 $(sources) $(sources_generated) -o build/tin -lm
+	@ gcc $(flags) -Isrc -Igenerated -Werror -fsanitize=address -g -O0 $(sources) $(sources_generated) -o build/tin -lm
 
 debug_assembly:
 	@riscv64-linux-gnu-as ./examples/itoa.s -o ./examples/itoa.o
