@@ -1,0 +1,4 @@
+fn void print_str
+{
+    print "hello from the tin standard library!\n";
+}

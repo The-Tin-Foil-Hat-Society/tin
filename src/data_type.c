@@ -21,6 +21,11 @@ data_type* data_type_new(char* name)
 
 void data_type_free(data_type* dtype)
 {
+    if (dtype == 0)
+    {
+        return;
+    }
+
     free(dtype->name);
     free(dtype);
 }
