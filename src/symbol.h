@@ -24,6 +24,9 @@ typedef struct
 symbol *symbol_new(void);
 void symbol_free(symbol *sym);
 
+// generates a unique key for the given symbol name in the given module/namepsaec
+char* symbol_generate_key(char* name, void* mod_ptr);
+
 // prints a json representation of the symbol to the given file (can be stdout)
 void symbol_print_to_file(symbol *sym, FILE *file);
 

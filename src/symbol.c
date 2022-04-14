@@ -27,6 +27,13 @@ void symbol_free(symbol* sym)
     free(sym);
 }
 
+char* symbol_generate_key(char* name, void* mod_ptr)
+{
+    char* key = malloc(16 + strlen(name) + 1); // max 16 hex characters for the pointer + name length + null terminator
+    sprintf(key, "%p%s", mod_ptr, name);
+    return key;
+}
+
 void symbol_print_to_file(symbol* sym, FILE* file)
 {
     fprintf(file, "{\"id\":\"%p\",\"name\":\"%s\",\"data_type\":\"%s\",\"data_type_pointer_level\":%ld,\"data_type_size\":%ld", sym, sym->name, sym->dtype->name, sym->dtype->pointer_level, sym->dtype->size);

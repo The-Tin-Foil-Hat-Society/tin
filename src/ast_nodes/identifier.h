@@ -36,8 +36,7 @@ void preprocess_identifier(preproc_state* state, ast_node* node)
     }
 
     char* identifier_name = node->value.string;
-    char* symbol_key = malloc(16 + strlen(identifier_name) + 1);
-    sprintf(symbol_key, "%p%s", namespace, identifier_name);
+    char* symbol_key = symbol_generate_key(identifier_name, namespace);
 
     if (table == 0)
     {
@@ -65,7 +64,7 @@ void preprocess_identifier(preproc_state* state, ast_node* node)
     else
     {
         // look for the symbol in all scopes above us
-        sym = ast_find_symbol(node, identifier_name, namespace);
+        sym = ast_find_symbol(node, symbol_key);
     }
 
     if (sym == 0)
