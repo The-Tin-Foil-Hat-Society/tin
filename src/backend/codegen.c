@@ -351,4 +351,10 @@ bool codegen_generate(module *mod, FILE *file)
     write_to_file("\tecall\n");
 
     codegen_write_postamble(file);
+
+    // cleanup
+    free(main_function_key);
+    free(codegen_alloc_registers()); // if regs are already allocated, free them
+    rodata_free();
+    variable_freeall();
 }
