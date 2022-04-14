@@ -32,13 +32,12 @@ void module_free(module* mod)
 
     if (mod->module_store != 0)
     {
-        for (size_t i = 0; i < mod->module_store->capacity; i++)
+        vector* modules_vec = hashtable_to_vector(mod->module_store);
+        for (int i = 0; i < modules_vec->size; i++)
         {
-            if (mod->module_store->keys[i] != 0)
-            {
-                module_free(mod->module_store->items[i]);
-            }
+            module_free(vector_get_item(modules_vec, i));
         }
+        vector_free(modules_vec);
         hashtable_free(mod->module_store);
     }
     if (mod->dependencies != 0)
@@ -89,7 +88,11 @@ module* module_parse(char* path, module* parent)
     if (!(src_path = path_locate_file(path, parent_dir)))
     {
         printf("error: could not find file %s\n", path);
+
         free(src_path);
+        free(path);
+        module_free(mod);
+        
         return false;
     }
 
@@ -262,16 +265,16 @@ void module_print_to_file(module* mod, FILE* file)
     {
         fprintf(file, ",\"modules\": [");
 
-        vector* module_vec = hashtable_to_vector(mod->module_store);
-        for (int i = 0; i < module_vec->size; i++)
+        vector* modules_vec = hashtable_to_vector(mod->module_store);
+        for (int i = 0; i < modules_vec->size; i++)
         {
-            module_print_to_file(vector_get_item(module_vec, i), file);
-            if (i < module_vec->size - 1) // don't print a comma after the last item
+            module_print_to_file(vector_get_item(modules_vec, i), file);
+            if (i < modules_vec->size - 1) // don't print a comma after the last item
             {
                 fprintf(file, ",");
             }
         }
-        vector_free(module_vec);
+        vector_free(modules_vec);
 
         fprintf(file, "]");
     }

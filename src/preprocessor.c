@@ -136,6 +136,27 @@ void process_nodes(preproc_state* state, ast_node* node)
     }
 }
 
+void combine_modules(preproc_state* state)
+{
+    if (state->mod->parent != 0 || state->mod->module_store == 0)
+    {
+        return;
+    }
+
+    // iterate over module store in reverse to insert the deepest dependencies into the ast first
+    vector* modules_vec = hashtable_to_vector(state->mod->module_store);
+    for (int i = modules_vec->size - 1; i >= 0; i--)
+    {
+        module* dependency = vector_get_item(modules_vec, i);
+        for (int j = 0; j < dependency->ast_root->children->size; j++)
+        {
+            ast_node* node_copy = ast_copy(ast_get_child(dependency->ast_root, j));
+            ast_insert_child(state->mod->ast_root, j, node_copy); // insert at the start of the main ast_root
+        }
+    }
+    vector_free(modules_vec);
+}
+
 bool preprocessor_process(module* mod)
 {
     preproc_state* state = preproc_state_new();
@@ -152,6 +173,12 @@ bool preprocessor_process(module* mod)
 	{
         goto preproc_fail;
 	}
+
+    // combines the main and dependency ast's into one
+    if (mod->parent == 0)
+    {
+        combine_modules(state);
+    }
 
     preproc_state_free(state);
     return true;
