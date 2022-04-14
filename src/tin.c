@@ -1,4 +1,3 @@
-#include "ast.h"
 #include "interpreter.h"
 #include "module.h"
 
@@ -59,7 +58,7 @@ int main(int argc, char **argv)
 		print_step("Compiling %s to %s\n", argv[1], codegen_output_name);
 
 		FILE *compiled_file = fopen(codegen_output_name, "wb");
-		codegen_generate(mod, mod->ast_root, compiled_file);
+		codegen_generate(mod, compiled_file);
 
 		fclose(compiled_file);
 		free(codegen_output_name);

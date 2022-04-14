@@ -311,7 +311,7 @@ void codegen_write_postamble(FILE *file)
     gen_rodata(file);
 }
 
-bool codegen_generate(module *mod, ast_node *node, FILE *file)
+bool codegen_generate(module *mod, FILE *file)
 {
     codegen_init();
     codegen_write_preamble(file);
@@ -320,7 +320,10 @@ bool codegen_generate(module *mod, ast_node *node, FILE *file)
     write_to_file(".text\n\n");
 
     int reg;
-    reg = codegen_traverse_ast(file, node, 0);
+    reg = codegen_traverse_ast(file, mod->ast_root, 0);
+
+    // get the unique key for main function
+    char* main_function_key = symbol_generate_key("main", mod);
 
     // TODO: Clean up
     // ASM
@@ -336,7 +339,7 @@ bool codegen_generate(module *mod, ast_node *node, FILE *file)
 #ifdef TIN_DEBUG_VERBOSE
     write_to_file("\t# Call main function\n");
 #endif
-    write_to_file("\tcall\tmain\n");
+    write_to_file("\tcall\t%s\n", main_function_key);
 
     // Exit cleanly
 #ifdef TIN_DEBUG_VERBOSE
