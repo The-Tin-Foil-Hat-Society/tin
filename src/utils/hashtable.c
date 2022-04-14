@@ -32,11 +32,8 @@ hashtable* hashtable_new()
     table->keys = malloc(sizeof(char*) * table->capacity);
     table->items = malloc(sizeof(void*) * table->capacity);
     
-    for (int i = 0; i < table->capacity; i++)
-    {
-        table->keys[i] = 0;
-        table->items[i] = 0;
-    }
+    memset(table->keys, 0, table->capacity);
+    memset(table->values, 0, table->capacity);
 
     return table;
 }
@@ -69,14 +66,12 @@ hashtable* hashtable_copy(hashtable* table)
     copy->keys = malloc(sizeof(char*) * table->capacity);
     copy->items = malloc(sizeof(void*) * table->capacity);
 
+    memset(copy->keys, 0, copy->capacity);
+    memset(copy->values, 0, copy->capacity);
+
     for (int i = 0; i < table->capacity; i++)
     {
-        if (table->keys[i] == 0)
-        {
-            copy->keys[i] = 0;
-            copy->items[i] = 0;
-        }
-        else
+        if (table->keys[i] != 0)
         {
             copy->keys[i] = strdup(table->keys[i]);
             copy->items[i] = table->items[i];
@@ -96,11 +91,8 @@ void hashtable_resize(hashtable* table)
     table->keys = malloc(sizeof(char*) * table->capacity);
     table->items = malloc(sizeof(void*) * table->capacity);
 
-    for (int i = 0; i < table->capacity; i++)
-    {
-        table->keys[i] = 0;
-        table->items[i] = 0;
-    }
+    memset(table->keys, 0, table->capacity);
+    memset(table->values, 0, table->capacity);
 
     for (int i = 0; i < old_capacity; i++)
     {
