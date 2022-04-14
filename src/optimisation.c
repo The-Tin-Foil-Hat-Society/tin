@@ -249,7 +249,7 @@ ast_node* evaluate_expression(ast_node* node, bool determinable)
             // fix size check when calling func
             if (child->type == AstSymbol)
             {
-                symbol* sym = ast_find_symbol(child, child->value.symbol->name);
+                symbol* sym = child->value.symbol;
                 if (sym != 0)
                 {
                     if (!sym->is_literal)
@@ -279,7 +279,7 @@ ast_node* evaluate_expression(ast_node* node, bool determinable)
 
         if (node1->type == AstSymbol)
         {
-            symbol* symbol1 = ast_find_symbol(node1, node1->value.symbol->name);
+            symbol* symbol1 = node1->value.symbol;
             if (symbol1 != 0)
             {
                 if (!symbol1->is_literal)
@@ -296,7 +296,7 @@ ast_node* evaluate_expression(ast_node* node, bool determinable)
         
         if (node2->type == AstSymbol)
         {
-            symbol* symbol2 = ast_find_symbol(node2, node2->value.symbol->name);
+            symbol* symbol2 = node2->value.symbol;
             if (symbol2 != 0)
             {
                 if (!symbol2->is_literal)
@@ -641,7 +641,7 @@ ast_node* simplify_expression(ast_node* node, bool determinable)
     }
     else if (node->type == AstSymbol && determinable)
     {
-        symbol* variable = ast_find_symbol(node, node->value.symbol->name);
+        symbol* variable = node->value.symbol;//ast_find_symbol(node, node->value.symbol->name);
         //printf("%s: %d\n", variable->name, variable->value.integer);
 
         if (is_int(variable->dtype) && variable->is_literal)
