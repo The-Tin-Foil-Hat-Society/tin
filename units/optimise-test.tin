@@ -1,25 +1,32 @@
 include "optimise_test_folder/opt_module_1.tin"
 i32 test = 0;
 
-fn i32 add(i32 x, i32 y)
+fn void x
 {
-    opt_module_1::test=0;
-    return x;
+    test = 4;
+}
+
+fn void t
+{
+    t();
 }
 
 fn i32 main
 {
-    test = test + 3;
-
-    if (test == 3) {
-        test = 0;
+    test = (test + 1) * 2;
+    t();
+    if (test < 1)
+    {
+        print "nope";
     }
-
-    //opt_module_1::test = opt_module_1::test + 3;
-    i32 b = 1;
-    //i32 a = (opt_module_1::test * 3) + add(1,2);
-    print b;
-    print test;
+    else if (test == 23)
+    {
+        print "still no";
+    }
+    else
+    {
+        print test;
+    }
 
     return 0;
 }

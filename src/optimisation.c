@@ -644,6 +644,8 @@ ast_node* simplify_expression(ast_node* node, bool determinable)
         symbol* variable = node->value.symbol;//ast_find_symbol(node, node->value.symbol->name);
         //printf("%s: %d\n", variable->name, variable->value.integer);
 
+        variable->variable_uses++;
+
         if (is_int(variable->dtype) && variable->is_literal)
         {
             ast_node* new_node = ast_new(AstIntegerLit);
@@ -866,6 +868,7 @@ void reset_variables(ast_node* node)
             variable->is_literal = true;
             variable->is_assigned = false;
             variable->is_called = false;
+            variable->variable_uses = 0;
         }
         vector_free(table_vec);
     }
@@ -877,11 +880,36 @@ void reset_variables(ast_node* node)
     }
 }
 
+void remove_assignments(ast_node* node)
+{
+    for (size_t i = 0; i < node->children->size; i++)
+    {
+        ast_node* child = ast_get_child(node, i);
+
+        if (child->type == AstAssignment)
+        {
+            symbol* variable = ast_get_child(child, 0)->value.symbol;
+            if (variable->variable_uses == 0 && variable->is_literal)
+            {
+                ast_delete_child(node, child);
+            }
+        }
+        else
+        {
+            remove_assignments(child);
+        }
+    }
+}
+
 void optimize(module* mod, ast_node* node)
 {
-    // only optimises main function for now
-    // support for other functions and modules coming next
-
+    /*
+    TODO: handle function optimisation better
+    currently the optimizer declares any variable assignments in functions as indeterminable
+    to prevent issues and weird edge cases
+    this should be ideally improved to a state where function calls can be replaced entirely
+    with literal values, if that's possible with the given source code
+    */
     int count = 0;
     vector* children;
 
@@ -889,6 +917,25 @@ void optimize(module* mod, ast_node* node)
     {
         count++;
         children = vector_copy(node->children);
+
+        if (mod->module_store != 0 && mod->module_store->size > 0)
+        {
+            vector* module_vec = hashtable_to_vector(mod->module_store);
+            for (int i = 0; i < module_vec->size; i++)
+            {
+                module* mod_vector = vector_get_item(module_vec, i);
+                ast_node* mod_node = mod_vector->ast_root;
+                
+                for (size_t i = 0; i < mod_node->children->size; i++)
+                {
+                    ast_node* child = ast_get_child(mod_node, i);
+                    if (child->type == AstAssignment)
+                    {
+                        assign_variable(child, true);
+                    }
+                }
+            }
+        }
         
         for (size_t i = 0; i < node->children->size; i++)
         {
@@ -906,7 +953,21 @@ void optimize(module* mod, ast_node* node)
                     //ast_node* new_child =
                     find_expressions(child, true);
                     replace_if_statements(child, true);
+                    remove_assignments(node);
                     reset_variables(node);
+
+                    if (mod->module_store != 0 && mod->module_store->size > 0)
+                    {
+                        vector* module_vec = hashtable_to_vector(mod->module_store);
+                        for (int i = 0; i < module_vec->size; i++)
+                        {
+                            module* mod_vector = vector_get_item(module_vec, i);
+                            ast_node* mod_node = mod_vector->ast_root;
+
+                            remove_assignments(mod_node);
+                            reset_variables(mod_node);
+                        }
+                    }
                     //new_child = remove_variables(new_child);
                     //ast_set_child(node, i, new_child);
                     //child = new_child;

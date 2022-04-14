@@ -15,6 +15,7 @@ symbol* symbol_new(void)
     sym->is_literal = true;
     sym->is_assigned = false;
     sym->function_node = 0;
+    sym->variable_uses = 0;
 }
 
 void symbol_free(symbol* sym)
