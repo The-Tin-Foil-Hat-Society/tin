@@ -1,4 +1,3 @@
-#include "ast.h"
 #include "interpreter.h"
 #include "module.h"
 
@@ -30,13 +29,16 @@ int main(int argc, char **argv)
 		return 0;
 	}
 
+	print_step("Parsing main module\n");
 	module *mod = module_parse(argv[1], 0);
 
 	if (mod == 0) // parsing failed
 	{
+		print_step("Parsing and preprocessing failed\n");
 		goto end;
 	}
 	module_print_to_file(mod, 0);
+	print_step("Parsed and preprocessed the program successfully\n");
 
 #ifdef TIN_INTERPRETER
 	print_step("Running in interpreter mode\n");
@@ -56,7 +58,7 @@ int main(int argc, char **argv)
 		print_step("Compiling %s to %s\n", argv[1], codegen_output_name);
 
 		FILE *compiled_file = fopen(codegen_output_name, "wb");
-		codegen_generate(mod, mod->ast_root, compiled_file);
+		codegen_generate(mod, compiled_file);
 
 		fclose(compiled_file);
 		free(codegen_output_name);
@@ -110,10 +112,11 @@ int main(int argc, char **argv)
 #endif
 
 end:
-	if (mod != 0)
+	if (mod == 0)
 	{
-		module_free(mod);
+		return 1; // failure
 	}
+	module_free(mod, 0);
 
 	return 0;
 }

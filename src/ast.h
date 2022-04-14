@@ -98,7 +98,7 @@ struct ast_node
 };
 
 ast_node *ast_new(enum ast_node_type type);
-void ast_free(ast_node *node);
+void ast_free(ast_node* node, bool keep_symbols);
 ast_node *ast_copy(ast_node *node);
 
 void ast_resize(ast_node* node);
@@ -113,7 +113,7 @@ ast_node *ast_get_current_function(ast_node *node);
 hashtable *ast_get_closest_symtable(ast_node *node);
 // searched for the closest data type in the children and their children (used for expressions)
 data_type *ast_find_data_type(ast_node *node);
-symbol *ast_find_symbol(ast_node *node, char *name);
+symbol *ast_find_symbol(ast_node *node, char *symbol_key);
 
 char *ast_find_closest_src_line(ast_node *node);
 
