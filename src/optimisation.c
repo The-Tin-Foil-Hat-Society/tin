@@ -694,6 +694,15 @@ ast_node* simplify_expression(ast_node* node, bool determinable)
 
         evaluate_expression(node, determinable);
     }
+    else if (node->type == AstFunctionCall)
+    {
+        symbol* func_call = ast_get_child(node, 0)->value.symbol;
+        if (!func_call->is_called)
+        {
+            func_call->is_called = true;
+            find_expressions(func_call->function_node, false);
+        }
+    }
 
     return node;
 }
@@ -701,6 +710,7 @@ ast_node* simplify_expression(ast_node* node, bool determinable)
 ast_node* assign_variable(ast_node* node, bool determinable)
 {
     symbol* variable = ast_get_child(node, 0)->value.symbol;
+
     if (determinable)
     {
         ast_node* child = ast_get_child(node, 1);
@@ -798,11 +808,17 @@ ast_node* find_expressions(ast_node* node, bool determinable)
         || (node->type == AstSymbol && node->value.symbol->is_assigned)
         || node->type == AstNot)
     {
+        
         node = simplify_expression(node, determinable);
     }
-    else if (node->type == AstSymbol)
+    else if (node->type == AstFunctionCall)
     {
-        //printf("%i", (int)node->value.symbol->is_assigned);
+        symbol* func_call = ast_get_child(node, 0)->value.symbol;
+        if (!func_call->is_called)
+        {
+            func_call->is_called = true;
+            find_expressions(func_call->function_node, false);
+        }
     }
 
     for (size_t i = 0; i < node->children->size; i++)
@@ -849,6 +865,7 @@ void reset_variables(ast_node* node)
             symbol* variable = vector_get_item(table_vec, i);
             variable->is_literal = true;
             variable->is_assigned = false;
+            variable->is_called = false;
         }
         vector_free(table_vec);
     }
