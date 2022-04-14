@@ -116,6 +116,8 @@ char* path_locate_file(char* path, char* parent_dir)
         fclose(file);
         return new_path;
 	}
+    free(new_path);
+    new_path = 0;
 
     // try to find the file in PATH
     char* env_path = getenv("PATH");
@@ -123,7 +125,7 @@ char* path_locate_file(char* path, char* parent_dir)
     {
         return 0;
     }
-    
+
     // split the PATH variable into seperate paths
     char* split_path = strtok(env_path, ENV_PATH_DELIM);
     while (split_path != 0)
@@ -132,8 +134,10 @@ char* path_locate_file(char* path, char* parent_dir)
         if (file = fopen(joined_path, "rb"))
         {
             new_path = joined_path;
+            fclose(file);
             break;
         }
+        free(joined_path);
         split_path = strtok(NULL, ENV_PATH_DELIM);
     }
 

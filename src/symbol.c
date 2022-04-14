@@ -8,7 +8,7 @@ symbol* symbol_new(void)
 
     sym->name = 0;
 
-    sym->dtype;
+    sym->dtype = 0;
 
     sym->is_initialised = false;
     sym->is_function = false;
