@@ -98,7 +98,7 @@ struct ast_node
 };
 
 ast_node *ast_new(enum ast_node_type type);
-void ast_free(ast_node *node);
+void ast_free(ast_node* node, bool keep_symbols);
 ast_node *ast_copy(ast_node *node);
 
 void ast_resize(ast_node* node);

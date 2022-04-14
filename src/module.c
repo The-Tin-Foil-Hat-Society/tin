@@ -23,7 +23,7 @@ module* module_new()
     return mod;
 }
 
-void module_free(module* mod)
+void module_free(module* mod, bool keep_symbols)
 {
     if (mod == 0)
     {
@@ -35,7 +35,7 @@ void module_free(module* mod)
         vector* modules_vec = hashtable_to_vector(mod->module_store);
         for (int i = 0; i < modules_vec->size; i++)
         {
-            module_free(vector_get_item(modules_vec, i));
+            module_free(vector_get_item(modules_vec, i), keep_symbols);
         }
         vector_free(modules_vec);
         hashtable_free(mod->module_store);
@@ -50,7 +50,7 @@ void module_free(module* mod)
     }
 
     free(mod->name);
-    ast_free(mod->ast_root);
+    ast_free(mod->ast_root, keep_symbols);
     free(mod->filename);
     free(mod->src_code);
     free(mod);
@@ -91,7 +91,7 @@ module* module_parse(char* path, module* parent)
 
         free(src_path);
         free(path);
-        module_free(mod);
+        module_free(mod, 0);
         
         return false;
     }
@@ -120,13 +120,13 @@ module* module_parse(char* path, module* parent)
     if (parser_status != 0)
     {
         printf("error: could not lex and/or parse %s\n", path);
-        module_free(mod);
+        module_free(mod, 0);
 		return 0;
     }
     
     if (!preprocessor_process(mod))
     {
-        module_free(mod);
+        module_free(mod, 0);
 		return 0;
     }
     

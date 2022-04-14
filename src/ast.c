@@ -44,7 +44,7 @@ ast_node* ast_new(enum ast_node_type type)
     return node;
 }
 
-void ast_free(ast_node* node)
+void ast_free(ast_node* node, bool keep_symbols)
 {
     if (node == 0)
     {
@@ -53,7 +53,7 @@ void ast_free(ast_node* node)
 
     for (size_t i = 0; i < node->children->size; i++)
     {
-        ast_free(vector_get_item(node->children, i));
+        ast_free(vector_get_item(node->children, i), keep_symbols);
     }
     vector_free(node->children);
     
@@ -61,13 +61,16 @@ void ast_free(ast_node* node)
     {
         free(node->value.string);
     }
-    else if (node->type == AstRoot || node->type == AstScope)
+    else if ((node->type == AstRoot || node->type == AstScope))
     {
-        for (size_t i = 0; i < node->value.symbol_table->capacity; i++)
+        if (!keep_symbols)
         {
-            if (node->value.symbol_table->keys[i] != 0)
+            for (size_t i = 0; i < node->value.symbol_table->capacity; i++)
             {
-                symbol_free(node->value.symbol_table->items[i]);
+                if (node->value.symbol_table->keys[i] != 0)
+                {
+                    symbol_free(node->value.symbol_table->items[i]);
+                }
             }
         }
 
@@ -162,7 +165,7 @@ size_t ast_get_child_index(ast_node* node, ast_node* child)
 void ast_delete_child(ast_node* node, ast_node* child)
 {
     vector_delete_item(node->children, child);
-    ast_free(child);
+    ast_free(child, 0);
 }
 
 ast_node* ast_get_current_function(ast_node* node)

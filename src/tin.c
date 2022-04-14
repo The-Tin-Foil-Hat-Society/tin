@@ -115,7 +115,7 @@ int main(int argc, char **argv)
 end:
 	if (mod != 0)
 	{
-		module_free(mod);
+		module_free(mod, 0);
 	}
 
 	return 0;

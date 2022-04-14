@@ -147,12 +147,28 @@ void combine_modules(preproc_state* state)
     vector* modules_vec = hashtable_to_vector(state->mod->module_store);
     for (int i = modules_vec->size - 1; i >= 0; i--)
     {
+        // copy child nodes
         module* dependency = vector_get_item(modules_vec, i);
         for (int j = 0; j < dependency->ast_root->children->size; j++)
         {
             ast_node* node_copy = ast_copy(ast_get_child(dependency->ast_root, j));
             ast_insert_child(state->mod->ast_root, j, node_copy); // insert at the start of the main ast_root
         }
+
+        // TODO: duplicate names across large codebases?
+        // copy root symbol table
+        vector* symbols_vec = hashtable_to_vector(dependency->ast_root->value.symbol_table);
+        for (int j = 0; j < symbols_vec->size; j++)
+        {
+            symbol* sym = vector_get_item(symbols_vec, j);
+            hashtable_set_item(state->mod->ast_root->value.symbol_table, sym->name, sym);
+        }
+        vector_free(symbols_vec);
+
+        // delete the dependency module
+        hashtable_delete_item(state->mod->dependencies, dependency->name);
+        hashtable_delete_item(state->mod->module_store, dependency->name);
+        module_free(dependency, true);
     }
     vector_free(modules_vec);
 }

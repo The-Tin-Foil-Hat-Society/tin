@@ -102,5 +102,5 @@ void preprocess_identifier(preproc_state* state, ast_node* node)
 
     // replace the indentifier node with a symbol node
     ast_set_child(node->parent, index_in_parent, symbol_node);
-    ast_free(node);
+    ast_free(node, 0);
 }
