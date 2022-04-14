@@ -11,7 +11,7 @@ vector* vector_new()
 
     // allocate space for item pointers
     vec->items = malloc(sizeof(vector*) * vec->capacity);
-    memset(vec->items, 0, vec->capacity);
+    memset(vec->items, 0, sizeof(void*) * vec->capacity);
 
     return vec;
 }
