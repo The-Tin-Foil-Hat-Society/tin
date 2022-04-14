@@ -112,10 +112,11 @@ int main(int argc, char **argv)
 #endif
 
 end:
-	if (mod != 0)
+	if (mod == 0)
 	{
-		module_free(mod, 0);
+		return 1; // failure
 	}
+	module_free(mod, 0);
 
 	return 0;
 }
