@@ -10,16 +10,15 @@ BUILD_VERSION := $(MAJOR).$(MINOR)
 
 #File to compile:
 file = examples/for.tin
-build = debug # or release
+# or debug 
+build = release 
 FLAGS = -D TIN_COMPILER -DBUILD="\"$(build)\"" -DBUILD_TIME="\"$(BUILD_TIME)\"" -DBUILD_VERSION="\"$(BUILD_VERSION)\"" -DGIT_VERSION="\"$(GIT_VERSION)\"" -DGIT_ORIGIN="\"$(GIT_ORIGIN)\""
 
-ifeq ($(build), release)
-	CCFLAGS = -g0 -O3 -s 
-else ifeq ($(build), release_debug)
-	CCFLAGS = -g -Og
-else
+ifeq ($(build),debug)
 	CCFLAGS = -g3 -Og
-	FLAGS += -D TIN_DEBUG_VERBOSE
+	FLAGS += -D TIN_DEBUG_VERBOSE 
+else
+	CCFLAGS = -g0 -O3 -s	
 endif
 
 preproc: flags += -D TIN_INTERPRETER
@@ -28,7 +27,7 @@ SOURCES = src/*.c src/backend/*.c src/utils/*.c
 SOURCES_GENERATED = generated/lex.yy.c generated/parser.tab.c
 
 tin: dir parser.o lex.o
-	@ gcc $(FLAGS) -Isrc -Igenerated -Werror $(CCFLAGS) $(SOURCES) $(SOURCES_GENERATED) -o build/tin -lm
+	@gcc $(FLAGS) -Isrc -Igenerated -Werror $(CCFLAGS) $(SOURCES) $(SOURCES_GENERATED) -o build/tin -lm
 
 debug_assembly:
 	@riscv64-linux-gnu-as ./examples/itoa.s -o ./examples/itoa.o

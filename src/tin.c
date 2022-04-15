@@ -36,6 +36,9 @@ void arg_help(void)
 
 void arg_version(void)
 {
+#ifdef TIN_DEBUG_VERBOSE
+	printf("-D TIN_DEBUG_VERBOSE\n");
+#endif
 #ifdef BUILD
 	printf("BUILD: %s\n", BUILD);
 #endif
