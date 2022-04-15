@@ -170,7 +170,7 @@ int register_alloc()
         }
     }
 
-    compiler_error("No free registers");
+    compiler_error("No free registers\n");
 }
 
 void free_register(int reg)
@@ -430,7 +430,7 @@ int gen_comparison_jump(FILE *file, int operation, int reg1, int reg2, int label
         break;
 
     default:
-        compiler_error("Unsupported comparison operation %s", ast_type_names[operation]);
+        compiler_error("Unsupported comparison operation %s\n", ast_type_names[operation]);
         break;
     }
 }

@@ -97,7 +97,7 @@ int main(int argc, char **argv)
 	if (input_file == 0)
 	{
 		printf("no input file given!\n");
-		return 0;
+		return 1;
 	}
 
 	print_step("Parsing %s\n", input_file);
@@ -106,7 +106,7 @@ int main(int argc, char **argv)
 	if (mod == 0) // parsing failed
 	{
 		print_step("Parsing and preprocessing failed\n");
-		goto end;
+		goto fail;
 	}
 	module_print_to_file(mod, 0);
 	print_step("Parsed and preprocessed the program successfully\n");
@@ -134,10 +134,15 @@ int main(int argc, char **argv)
 		print_step("Compiling %s to %s\n", argv[1], codegen_output_name);
 
 		FILE *compiled_file = fopen(codegen_output_name, "wb");
-		codegen_generate(mod, compiled_file);
+		bool codegen_res = codegen_generate(mod, compiled_file);
 
 		fclose(compiled_file);
 		free(codegen_output_name);
+
+		if (codegen_res == false)
+		{
+			goto fail;
+		}
 	}
 
 	// Run cross-assembler
@@ -185,12 +190,18 @@ int main(int argc, char **argv)
 	free(filename);
 #endif
 
-end:
-	if (mod == 0)
+	if (mod != 0)
 	{
-		return 1; // failure
+		module_free(mod, 0);
 	}
-	module_free(mod, 0);
 
 	return 0;
+
+fail:
+	if (mod != 0)
+	{
+		module_free(mod, 0);
+	}
+
+	return 1;
 }

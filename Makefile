@@ -17,7 +17,7 @@ else
 	CCFLAGS = -g0 -O3 -s	
 endif
 
-preproc: flags += -D TIN_INTERPRETER
+preproc: FLAGS += -D TIN_INTERPRETER
 
 SOURCES = src/*.c src/backend/*.c src/utils/*.c
 SOURCES_GENERATED = generated/lex.yy.c generated/parser.tab.c

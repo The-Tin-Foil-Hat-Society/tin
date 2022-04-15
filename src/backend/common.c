@@ -1,5 +1,7 @@
 #include "backend/common.h"
 
+bool codegen_success;
+
 void _emit_comment(FILE *file, const char *fmt, ...)
 {
 #ifdef TIN_DEBUG_VERBOSE
