@@ -1,5 +1,4 @@
 #include "optimisation.h"
-#include <math.h>
 
 int comparitive_nodes[15] = {
     AstAdd, AstAnd, AstDiv, AstEqual, AstGreaterThan,
