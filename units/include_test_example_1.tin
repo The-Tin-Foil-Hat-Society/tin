@@ -1,6 +1,0 @@
-include "include_test_folder/include_test_example_2.tin"
-
-fn void print_str
-{
-    print "hello from include_test_example_1!\n";
-}
