@@ -2,7 +2,8 @@ name: Makefile CI
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, actionsTesting ]
+    
   pull_request:
     branches: [ main ]
 
@@ -14,14 +15,23 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     
-    - name: configure
-      run: ./configure
+    - name: Install Prerequisites
+      run: sudo apt-get install build-essential flex bison binutils-riscv64-linux-gnu qemu qemu-system-misc qemu-user
       
-    - name: Install dependencies
-      run: make
+    - name: Get Tin
+      run: git clone https://github.com/aaf6aa/tin.git
+    
+    - name: Open Tin
+      run: cd tin
+    
+    - name: Set Library PATH
+      run: PATH="$PATH:$(pwd)/std"
       
-    - name: Run check
-      run: make check
+    - name: Make Tin
+      run: make tin
       
-    - name: Run distcheck
-      run: make distcheck
+    - name: Build Tin File
+      run: ./build/tin file-name.tin
+      
+    - name: Execute File
+      run: qemu-riscv64 ./file-name
