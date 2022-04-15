@@ -1,16 +1,34 @@
 #This is the make file for the tin compiler
 
+GIT_VERSION = $(shell git rev-parse --short HEAD)@$(shell git rev-parse --abbrev-ref HEAD)
+GIT_ORIGIN = $(shell git config --get remote.origin.url)
+BUILD_TIME = $(shell date -u --iso=seconds)
+#Don't forget to update the version when needed
+MAJOR = 0
+MINOR = 1
+BUILD_VERSION := $(MAJOR).$(MINOR)
+
 #File to compile:
 file = examples/for.tin
-flags = -D TIN_COMPILER -D TIN_DEBUG_VERBOSE
+build = debug # or release
+FLAGS = -D TIN_COMPILER -DBUILD="\"$(build)\"" -DBUILD_TIME="\"$(BUILD_TIME)\"" -DBUILD_VERSION="\"$(BUILD_VERSION)\"" -DGIT_VERSION="\"$(GIT_VERSION)\"" -DGIT_ORIGIN="\"$(GIT_ORIGIN)\""
 
-preproc: flags = -D TIN_DEBUG_VERBOSE
+ifeq ($(build), release)
+	CCFLAGS = -g0 -O3 -s 
+else ifeq ($(build), release_debug)
+	CCFLAGS = -g -Og
+else
+	CCFLAGS = -g3 -Og
+	FLAGS += -D TIN_DEBUG_VERBOSE
+endif
 
-sources = src/*.c src/backend/*.c src/utils/*.c
-sources_generated = generated/lex.yy.c generated/parser.tab.c
+preproc: flags += -D TIN_INTERPRETER
+
+SOURCES = src/*.c src/backend/*.c src/utils/*.c
+SOURCES_GENERATED = generated/lex.yy.c generated/parser.tab.c
 
 tin: dir parser.o lex.o
-	@ gcc $(flags) -Isrc -Igenerated -Werror -g -O0 $(sources) $(sources_generated) -o build/tin -lm
+	@ gcc $(FLAGS) -Isrc -Igenerated -Werror $(CCFLAGS) $(SOURCES) $(SOURCES_GENERATED) -o build/tin -lm
 
 debug_assembly:
 	@riscv64-linux-gnu-as ./examples/itoa.s -o ./examples/itoa.o
@@ -24,7 +42,7 @@ preproc: tin
 run: tin
 	@./build/tin $(file)
 	@echo "\nRunning result file"
-	@qemu-riscv64 $(basename $(file)).out
+	@qemu-riscv64 $(basename $(file))
 
 #Generates directories to store generated files and build
 dir:
@@ -51,6 +69,9 @@ clean:
 	-@rm -f units/*.o
 	-@rm -f units/*.out
 	-@rm -f units/*.mod.json
+#Delete files without extensions
+	-@find units/ -not -iname "*.*" -type f -exec rm '{}' \;
+	-@find examples/ -not -iname "*.*" -type f -exec rm '{}' \; 
 
 memcheck: tin
 	@valgrind ./build/tin $(file)
