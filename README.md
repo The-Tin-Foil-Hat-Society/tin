@@ -48,6 +48,7 @@
   [![Stargazers][stars-shield]][stars-url]
   [![Issues][issues-shield]][issues-url]
   [![MIT License][license-shield]][license-url]
+  [![Tests][testing-shield]][testing-url]
   
 </div>
 
@@ -233,3 +234,5 @@ Project Link: [https://github.com/aaf6aa/tin](https://github.com/aaf6aa/tin)
 [license-shield]: https://img.shields.io/github/license/aaf6aa/tin.svg?style=for-the-badge
 [license-url]: https://github.com/aaf6aa/tin/blob/master/LICENSE.txt
 [product-screenshot]: images/screenshot.png
+[testing-shield]: https://img.shields.io/github/workflow/status/aaf6aa/tin/READMEtest/main?style=for-the-badge
+[testing-url]: https://github.com/aaf6aa/tin/actions/workflows/READMEtest.yml
