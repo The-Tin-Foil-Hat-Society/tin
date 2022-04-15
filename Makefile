@@ -10,6 +10,7 @@ file = examples/for.tin
 build = release 
 FLAGS = -D TIN_COMPILER -DBUILD="\"$(build)\"" -DBUILD_TIME="\"$(BUILD_TIME)\"" -DGIT_VERSION="\"$(GIT_VERSION)\"" -DGIT_ORIGIN="\"$(GIT_ORIGIN)\""
 
+CC = gcc
 ifeq ($(build),debug)
 	CCFLAGS = -g3 -Og 
 	FLAGS += -D TIN_DEBUG_VERBOSE 
@@ -23,7 +24,7 @@ SOURCES = src/*.c src/backend/*.c src/utils/*.c
 SOURCES_GENERATED = generated/lex.yy.c generated/parser.tab.c
 
 tin: dir parser.o lex.o
-	@gcc $(FLAGS) -Isrc -Igenerated -Wall -Wextra -pedantic -Werror $(CCFLAGS) $(SOURCES) $(SOURCES_GENERATED) -o build/tin -lm
+	@$(CC) $(FLAGS) -Isrc -Igenerated -Wall -Wextra -pedantic -Werror $(CCFLAGS) $(SOURCES) $(SOURCES_GENERATED) -o build/tin -lm
 
 debug_assembly:
 	@riscv64-linux-gnu-as ./examples/itoa.s -o ./examples/itoa.o
