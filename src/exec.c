@@ -6,5 +6,5 @@
 int exec(char *command)
 {
     // TODO: Make this safer to call
-    system(command);
+    return system(command);
 }
