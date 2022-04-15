@@ -17,7 +17,7 @@ jobs:
     
     - name: Install Prerequisites
       run: sudo apt-get install build-essential flex bison binutils-riscv64-linux-gnu qemu qemu-system-misc qemu-user
-      
+
     - name: Get Tin
       run: git clone https://github.com/aaf6aa/tin.git
     
@@ -29,9 +29,9 @@ jobs:
       
     - name: Make Tin
       run: make tin
-      
+
     - name: Build Tin File
       run: ./build/tin examples/hello_world.tin
       
     - name: Execute File
-      run: qemu-riscv64 ./examples/hello_world.tin
+      run: qemu-riscv64 ./examples/hello_world.out
