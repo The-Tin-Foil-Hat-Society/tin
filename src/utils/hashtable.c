@@ -8,7 +8,7 @@
 #define DJB2_INITIAL_VALUE 5381
 
 // from http://www.cse.yorku.ca/~oz/hash.html
-size_t djb2_hash(uint8_t* str)
+size_t djb2_hash(char* str)
 {
     size_t hash = DJB2_INITIAL_VALUE;
 
@@ -44,7 +44,7 @@ void hashtable_free(hashtable* table)
         return;
     }
 
-    for (int i = 0; i < table->capacity; i++)
+    for (size_t i = 0; i < table->capacity; i++)
     {
         if (table->keys[i] != 0)
         {
@@ -69,7 +69,7 @@ hashtable* hashtable_copy(hashtable* table)
     memset(copy->keys, 0, sizeof(char*) * copy->capacity);
     memset(copy->items, 0, sizeof(void*) * copy->capacity);
 
-    for (int i = 0; i < table->capacity; i++)
+    for (size_t i = 0; i < table->capacity; i++)
     {
         if (table->keys[i] != 0)
         {
@@ -94,7 +94,7 @@ void hashtable_resize(hashtable* table)
     memset(table->keys, 0, sizeof(char*) * table->capacity);
     memset(table->items, 0, sizeof(void*) * table->capacity);
 
-    for (int i = 0; i < old_capacity; i++)
+    for (size_t i = 0; i < old_capacity; i++)
     {
         if (old_keys[i] != 0)
         {
@@ -163,7 +163,7 @@ void hashtable_delete_item(hashtable* table, char* key)
 vector* hashtable_to_vector(hashtable* table)
 {
     vector* vec = vector_new();
-    for (int i = 0; i < table->capacity; i++)
+    for (size_t i = 0; i < table->capacity; i++)
     {
         if (table->keys[i] != 0)
         {

@@ -1,4 +1,5 @@
 #pragma once
+#pragma GCC diagnostic ignored "-Wunused-variable"
 
 #include <stdio.h>
 #include "utils/hashtable.h"

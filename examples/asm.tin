@@ -14,5 +14,7 @@ fn i32 main
 	asm "mv a1, t3";
 	asm "ecall";
 
+	print "\n";
+
     return 0;
 }

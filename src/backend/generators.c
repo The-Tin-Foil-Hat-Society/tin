@@ -37,7 +37,7 @@ int gen_store_global(FILE *file, int reg, char *identifier, int size)
         break;
     default:
         compiler_error("Unknown size %d\n", size);
-        break;
+        return 0;
     }
 
     trace("\tSize %d has instruction %s", size, instruction);
@@ -77,7 +77,7 @@ int gen_load_global(FILE *file, char *identifier, int size)
         break;
     default:
         compiler_error("Unknown size %d\n", size);
-        break;
+        return 0; // shouldn't happen anyway, ideally
     }
 
     trace("\tSize %d has instruction %s", size, instruction);
@@ -92,9 +92,11 @@ int gen_load_global(FILE *file, char *identifier, int size)
     return reg;
 }
 
+#pragma GCC diagnostic ignored "-Wunused-parameter" // i don't know if file's actually needed here but i won't mess with it
 int gen_rodata_string(FILE *file, char *identifier, char *string)
 {
     rodata_add(identifier, string);
+    return 0;
 }
 
 int gen_print_string(FILE *file, int index, int reg)
@@ -121,7 +123,7 @@ int gen_print_string(FILE *file, int index, int reg)
 
     // Get string length with carriage returns stripped
     int len = 0;
-    for (int i = 0; i < strlen(string_entry->string); i++)
+    for (size_t i = 0; i < strlen(string_entry->string); i++)
     {
         if (string_entry->string[i] == '\r')
             continue;
@@ -171,6 +173,7 @@ int register_alloc()
     }
 
     compiler_error("No free registers\n");
+    return 0;
 }
 
 void free_register(int reg)
@@ -250,7 +253,7 @@ void variable_init()
 
 void variable_freeall()
 {
-    for (int i = 0; i < variables->capacity; i++)
+    for (size_t i = 0; i < variables->capacity; i++)
     {
         if (variables->keys[i] != NULL)
         {
@@ -433,6 +436,7 @@ int gen_comparison_jump(FILE *file, int operation, int reg1, int reg2, int label
         compiler_error("Unsupported comparison operation %s\n", ast_type_names[operation]);
         break;
     }
+    return 0;
 }
 
 int label_add()

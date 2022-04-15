@@ -33,7 +33,7 @@ void module_free(module* mod, bool keep_symbols)
     if (mod->module_store != 0)
     {
         vector* modules_vec = hashtable_to_vector(mod->module_store);
-        for (int i = 0; i < modules_vec->size; i++)
+        for (size_t i = 0; i < modules_vec->size; i++)
         {
             module_free(vector_get_item(modules_vec, i), keep_symbols);
         }
@@ -187,8 +187,16 @@ void module_set_src_file(module* mod, FILE* file)
     fseek(file, 0, SEEK_SET);
 
     mod->src_code = malloc(len + 1);
-    size_t _ = fread(mod->src_code, len, 1, file);
-    mod->src_code[len] = '\0';
+    if (!fread(mod->src_code, len, 1, file))
+    {
+        // could not read
+        free(mod->src_code);
+        mod->src_code = 0;
+    }
+    else
+    {
+        mod->src_code[len] = '\0';
+    }
 
     fseek(file, 0, SEEK_SET);
 }
@@ -266,7 +274,7 @@ void module_print_to_file(module* mod, FILE* file)
         fprintf(file, ",\"modules\": [");
 
         vector* modules_vec = hashtable_to_vector(mod->module_store);
-        for (int i = 0; i < modules_vec->size; i++)
+        for (size_t i = 0; i < modules_vec->size; i++)
         {
             module_print_to_file(vector_get_item(modules_vec, i), file);
             if (i < modules_vec->size - 1) // don't print a comma after the last item
