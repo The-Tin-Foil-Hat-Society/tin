@@ -8,14 +8,15 @@ BUILD_TIME = $(shell date -u --iso=seconds)
 file = examples/for.tin
 # or debug 
 build = release 
-FLAGS = -D TIN_COMPILER -DBUILD="\"$(build)\"" -DBUILD_TIME="\"$(BUILD_TIME)\"" -DGIT_VERSION="\"$(GIT_VERSION)\"" -DGIT_ORIGIN="\"$(GIT_ORIGIN)\""
+FLAGS = -D TIN_COMPILER -DBUILD_TIME="\"$(BUILD_TIME)\"" -DGIT_VERSION="\"$(GIT_VERSION)\"" -DGIT_ORIGIN="\"$(GIT_ORIGIN)\""
 
 CC = gcc
 ifeq ($(build),debug)
 	CCFLAGS = -g3 -Og 
-	FLAGS += -D TIN_DEBUG_VERBOSE 
+	FLAGS += -D TIN_DEBUG -D TIN_DEBUG_VERBOSE
 else
 	CCFLAGS = -g0 -O3 -s	
+	FLAGS += -D TIN_RELEASE
 endif
 
 preproc: FLAGS += -D TIN_INTERPRETER
