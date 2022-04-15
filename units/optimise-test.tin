@@ -1,4 +1,4 @@
-//include "optimise_test_folder/opt_module_1.tin"
+include "optimise_test_folder/opt_module_1.tin"
 i32 test = 0;
 
 fn i32 x
@@ -21,15 +21,17 @@ fn i32 func
 
 fn i32 main
 {
-    t();
+    i32 abc;
+    input abc;
+
     test = (test + 1) * 2;
-    input test;
     if (2 < 1)
     {
         print "nope";
     }
     else if (2 < (1 - 0))
     {
+        input test;
         print "nop2";
     }
     else
