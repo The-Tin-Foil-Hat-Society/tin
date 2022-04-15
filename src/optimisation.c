@@ -639,51 +639,54 @@ ast_node* simplify_expression(ast_node* node, bool determinable)
         evaluate_expression(node, determinable);
         //printf("%lld\n", node->value.integer);
     }
-    else if (node->type == AstSymbol && determinable)
+    else if (node->type == AstSymbol)
     {
         symbol* variable = node->value.symbol;//ast_find_symbol(node, node->value.symbol->name);
         //printf("%s: %d\n", variable->name, variable->value.integer);
 
         variable->variable_uses++;
 
-        if (is_int(variable->dtype) && variable->is_literal)
+        if (determinable)
         {
-            ast_node* new_node = ast_new(AstIntegerLit);
-            ast_node* data_type_node = ast_new(AstDataType);
-            node->type = AstIntegerLit;
-            node->value.integer = variable->value.integer;
+            if (is_int(variable->dtype) && variable->is_literal)
+            {
+                ast_node* new_node = ast_new(AstIntegerLit);
+                ast_node* data_type_node = ast_new(AstDataType);
+                node->type = AstIntegerLit;
+                node->value.integer = variable->value.integer;
 
-            data_type_node->value.dtype = data_type_new(
-                variable->value.integer < 0 ? "i64" : "u64");
-            data_type_node->value.dtype->pointer_level = 0;
-            ast_add_child(node, data_type_node);
-        }
-        else if (is_float(variable->dtype) && variable->is_literal)
-        {
-            ast_node* new_node = ast_new(AstFloatLit);
-            ast_node* data_type_node = ast_new(AstDataType);
-            node->type = AstFloatLit;
-            node->value.floating = variable->value.floating;
+                data_type_node->value.dtype = data_type_new(
+                    variable->value.integer < 0 ? "i64" : "u64");
+                data_type_node->value.dtype->pointer_level = 0;
+                ast_add_child(node, data_type_node);
+            }
+            else if (is_float(variable->dtype) && variable->is_literal)
+            {
+                ast_node* new_node = ast_new(AstFloatLit);
+                ast_node* data_type_node = ast_new(AstDataType);
+                node->type = AstFloatLit;
+                node->value.floating = variable->value.floating;
 
-            data_type_node->value.dtype = data_type_new("f64");
-            data_type_node->value.dtype->pointer_level = 0;
-            ast_add_child(node, data_type_node);
-        }
-        else if (is_bool(variable->dtype) && variable->is_literal)
-        {
-            ast_node* new_node = ast_new(AstBoolLit);
-            node->type = AstBoolLit;
-            node->value.boolean = variable->value.boolean;
-            node->children = new_node->children;
-            ast_get_child(node, 0)->parent = node;
-        }
-        else if (is_string(variable->dtype) && variable->is_literal)
-        {
-            ast_node* new_node = ast_new(AstStringLit);
-            node->type = AstStringLit;
-            node->value.string = variable->value.string;
-            node->children = new_node->children;
-            ast_get_child(node, 0)->parent = node;
+                data_type_node->value.dtype = data_type_new("f64");
+                data_type_node->value.dtype->pointer_level = 0;
+                ast_add_child(node, data_type_node);
+            }
+            else if (is_bool(variable->dtype) && variable->is_literal)
+            {
+                ast_node* new_node = ast_new(AstBoolLit);
+                node->type = AstBoolLit;
+                node->value.boolean = variable->value.boolean;
+                node->children = new_node->children;
+                ast_get_child(node, 0)->parent = node;
+            }
+            else if (is_string(variable->dtype) && variable->is_literal)
+            {
+                ast_node* new_node = ast_new(AstStringLit);
+                node->type = AstStringLit;
+                node->value.string = variable->value.string;
+                node->children = new_node->children;
+                ast_get_child(node, 0)->parent = node;
+            }
         }
     }
     else if (node->type == AstNot && determinable)
@@ -886,10 +889,20 @@ void remove_assignments(ast_node* node)
     {
         ast_node* child = ast_get_child(node, i);
 
+        if (child->type == AstFunction)
+        {
+            symbol* sym = ast_get_child(child, 0)->value.symbol;
+            if (!sym->is_called && strcmp(sym->name, "main") != 0)
+            {
+                ast_delete_child(node, child);
+                continue;
+            }
+        }
+
         if (child->type == AstAssignment)
         {
-            symbol* variable = ast_get_child(child, 0)->value.symbol;
-            if (variable->variable_uses == 0 && variable->is_literal)
+            symbol* sym = ast_get_child(child, 0)->value.symbol;
+            if (sym->variable_uses == 0 && sym->is_literal)
             {
                 ast_delete_child(node, child);
             }
@@ -951,12 +964,13 @@ void optimize(module* mod, ast_node* node)
                 if (strcmp(declaration->value.symbol->name, "main") == 0)
                 {
                     //ast_node* new_child =
+                    reset_variables(node);
                     find_expressions(child, true);
                     replace_if_statements(child, true);
                     remove_assignments(node);
-                    reset_variables(node);
+                    //remove_assignments(node);
 
-                    if (mod->module_store != 0 && mod->module_store->size > 0)
+                    /*if (mod->module_store != 0 && mod->module_store->size > 0)
                     {
                         vector* module_vec = hashtable_to_vector(mod->module_store);
                         for (int i = 0; i < module_vec->size; i++)
@@ -967,7 +981,7 @@ void optimize(module* mod, ast_node* node)
                             remove_assignments(mod_node);
                             reset_variables(mod_node);
                         }
-                    }
+                    }*/
                     //new_child = remove_variables(new_child);
                     //ast_set_child(node, i, new_child);
                     //child = new_child;
@@ -976,6 +990,8 @@ void optimize(module* mod, ast_node* node)
             }
         }
     }
+
+    //remove_assignments(node);
     //remove_variables(node);
     
     //used_vars = hashtable_new();

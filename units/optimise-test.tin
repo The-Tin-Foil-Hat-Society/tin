@@ -1,27 +1,36 @@
-include "optimise_test_folder/opt_module_1.tin"
+//include "optimise_test_folder/opt_module_1.tin"
 i32 test = 0;
 
-fn void x
+fn i32 x
 {
     test = 4;
+    return test;
 }
 
 fn void t
 {
+    
     t();
+    x();
+}
+
+fn i32 func
+{
+    return 23;
 }
 
 fn i32 main
 {
-    test = (test + 1) * 2;
     t();
-    if (test < 1)
+    test = (test + 1) * 2;
+    input test;
+    if (2 < 1)
     {
         print "nope";
     }
-    else if (test == 23)
+    else if (2 < (1 - 0))
     {
-        print "still no";
+        print "nop2";
     }
     else
     {
