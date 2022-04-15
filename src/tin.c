@@ -7,19 +7,21 @@
 #include "exec.h"
 #include "utils/path.h"
 
+#include "_globals.h"
+bool tin_verbose;
+
 #ifdef TIN_COMPILER
 #define ASM_PATH "/usr/bin/riscv64-linux-gnu-as"
 #define LD_PATH "/usr/bin/riscv64-linux-gnu-ld"
 #include "backend/codegen.h"
 #endif // TIN_COMPILER
 
-#ifdef TIN_DEBUG_VERBOSE
 #define print_step(...)     \
-	fprintf(stderr, "-- "); \
-	fprintf(stderr, __VA_ARGS__);
-#else
-#define print_step(...)
-#endif
+	if (tin_verbose) \
+	{ \
+		fprintf(stderr, "-- "); \
+		fprintf(stderr, __VA_ARGS__); \
+	}
 
 void arg_help(void)
 {
@@ -53,6 +55,8 @@ void arg_version(void)
 
 int main(int argc, char **argv)
 {	
+	tin_verbose = false;
+
 	if (argc < 2)
 	{
 		arg_help();
@@ -84,6 +88,10 @@ int main(int argc, char **argv)
 			arg_version();
 			return 0;
 		}
+		else if (strcmp(argv[i], "--verbose") == 0)
+		{
+			tin_verbose = true;
+		}
 	}
 
 	if (input_file == 0)
@@ -92,7 +100,7 @@ int main(int argc, char **argv)
 		return 0;
 	}
 
-	print_step("Parsing main module\n");
+	print_step("Parsing %s\n", input_file);
 	module *mod = module_parse(input_file, 0);
 
 	if (mod == 0) // parsing failed
@@ -173,6 +181,7 @@ int main(int argc, char **argv)
 		free(linker_input_name);
 	}
 	
+	print_step("%s compiled\n", output_file);
 	free(filename);
 #endif
 
