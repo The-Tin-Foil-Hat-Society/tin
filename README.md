@@ -48,6 +48,7 @@
   [![Stargazers][stars-shield]][stars-url]
   [![Issues][issues-shield]][issues-url]
   [![MIT License][license-shield]][license-url]
+  [![Tests][testing-shield]][testing-url]
   
 </div>
 
@@ -122,16 +123,21 @@ Run the following command to fetch all of the required packages in order to buil
 1. Clone the repo
    ```sh
    $ git clone https://github.com/aaf6aa/tin.git
+   $ cd tin
    ```
-2. Make the project 
+2. Add the standard library to PATH
+   ```sh
+   $ PATH="$PATH:$(pwd)/std"
+   ```
+3. Make the project 
    ```sh
    $ make tin
    ```
-3. Compile your .tin file
+4. Compile your .tin file
    ```sh
    $ ./build/tin file-name.tin
    ```
-4. Run the executable through QEMU
+5. Run the executable through QEMU
    ```sh
    $ qemu-riscv64 ./file-name
    ```
@@ -228,3 +234,5 @@ Project Link: [https://github.com/aaf6aa/tin](https://github.com/aaf6aa/tin)
 [license-shield]: https://img.shields.io/github/license/aaf6aa/tin.svg?style=for-the-badge
 [license-url]: https://github.com/aaf6aa/tin/blob/master/LICENSE.txt
 [product-screenshot]: images/screenshot.png
+[testing-shield]: https://img.shields.io/github/workflow/status/aaf6aa/tin/READMEtest/main?style=for-the-badge
+[testing-url]: https://github.com/aaf6aa/tin/actions/workflows/READMEtest.yml

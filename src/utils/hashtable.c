@@ -32,16 +32,18 @@ hashtable* hashtable_new()
     table->keys = malloc(sizeof(char*) * table->capacity);
     table->items = malloc(sizeof(void*) * table->capacity);
     
-    for (int i = 0; i < table->capacity; i++)
-    {
-        table->keys[i] = 0;
-        table->items[i] = 0;
-    }
+    memset(table->keys, 0, sizeof(char*) * table->capacity);
+    memset(table->items, 0, sizeof(void*) * table->capacity);
 
     return table;
 }
 void hashtable_free(hashtable* table)
 {
+    if (table == 0)
+    {
+        return;
+    }
+
     for (int i = 0; i < table->capacity; i++)
     {
         if (table->keys[i] != 0)
@@ -54,6 +56,30 @@ void hashtable_free(hashtable* table)
     free(table->items);
     free(table);
 }
+hashtable* hashtable_copy(hashtable* table)
+{
+    hashtable* copy = malloc(sizeof(hashtable));
+
+    copy->size = 0;
+    copy->capacity = table->capacity;
+    
+    copy->keys = malloc(sizeof(char*) * table->capacity);
+    copy->items = malloc(sizeof(void*) * table->capacity);
+
+    memset(copy->keys, 0, sizeof(char*) * copy->capacity);
+    memset(copy->items, 0, sizeof(void*) * copy->capacity);
+
+    for (int i = 0; i < table->capacity; i++)
+    {
+        if (table->keys[i] != 0)
+        {
+            copy->keys[i] = strdup(table->keys[i]);
+            copy->items[i] = table->items[i];
+        }
+    }
+
+    return copy;
+}
 
 void hashtable_resize(hashtable* table)
 {
@@ -65,11 +91,8 @@ void hashtable_resize(hashtable* table)
     table->keys = malloc(sizeof(char*) * table->capacity);
     table->items = malloc(sizeof(void*) * table->capacity);
 
-    for (int i = 0; i < table->capacity; i++)
-    {
-        table->keys[i] = 0;
-        table->items[i] = 0;
-    }
+    memset(table->keys, 0, sizeof(char*) * table->capacity);
+    memset(table->items, 0, sizeof(void*) * table->capacity);
 
     for (int i = 0; i < old_capacity; i++)
     {

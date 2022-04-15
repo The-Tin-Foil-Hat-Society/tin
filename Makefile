@@ -10,7 +10,7 @@ sources = src/*.c src/backend/*.c src/utils/*.c
 sources_generated =generated/lex.yy.c generated/parser.tab.c
 
 tin: dir parser.o lex.o
-	@ gcc $(flags) -Isrc -Igenerated -Werror -g -O0 $(sources) $(sources_generated) -o build/tin -lm
+	@ gcc $(flags) -Isrc -Igenerated -Werror -fsanitize=address -g -O0 $(sources) $(sources_generated) -o build/tin -lm
 
 debug_assembly:
 	@riscv64-linux-gnu-as ./examples/itoa.s -o ./examples/itoa.o
@@ -49,4 +49,7 @@ clean:
 	-@rm -f examples/*.mod.json
 
 memcheck: tin
-	@valgrind --leak-check=full --track-origins=yes ./build/tin $(file)
+	@valgrind ./build/tin $(file)
+
+memcheck_full: tin
+	@valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes ./build/tin $(file)

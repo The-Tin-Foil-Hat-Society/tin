@@ -140,14 +140,14 @@ int codegen_traverse_ast(FILE *file, ast_node *node, int reg)
     {
         // Symbol is first child
         ast_node *child = vector_get_item(node->children, 0);
-        gen_function(file, reg, child->value.symbol->name);
+        gen_function(file, reg, child->value.symbol->key);
         break;
     }
     case AstFunctionCall:
     {
         // Symbol is first child
         ast_node *child = vector_get_item(node->children, 0);
-        gen_function_call(file, reg, child->value.symbol->name);
+        gen_function_call(file, reg, child->value.symbol->key);
         break;
     }
     }
@@ -256,7 +256,7 @@ int codegen_traverse_ast(FILE *file, ast_node *node, int reg)
     {
         if (node->parent->type == AstAssignment)
         {
-            return gen_store_global(file, reg, node->value.symbol->name, node->value.symbol->dtype->size);
+            return gen_store_global(file, reg, node->value.symbol->key, node->value.symbol->dtype->size);
         }
         else if (node->parent->type == AstFunction)
         {
@@ -276,7 +276,7 @@ int codegen_traverse_ast(FILE *file, ast_node *node, int reg)
         else
         {
             trace("\tLoading (parent type: %s)", ast_type_names[node->parent->type]);
-            return gen_load_global(file, node->value.symbol->name, node->value.symbol->dtype->size);
+            return gen_load_global(file, node->value.symbol->key, node->value.symbol->dtype->size);
         }
     }
     case AstAssignment:
@@ -311,7 +311,7 @@ void codegen_write_postamble(FILE *file)
     gen_rodata(file);
 }
 
-bool codegen_generate(module *mod, ast_node *node, FILE *file)
+bool codegen_generate(module *mod, FILE *file)
 {
     codegen_init();
     codegen_write_preamble(file);
@@ -320,7 +320,10 @@ bool codegen_generate(module *mod, ast_node *node, FILE *file)
     write_to_file(".text\n\n");
 
     int reg;
-    reg = codegen_traverse_ast(file, node, 0);
+    reg = codegen_traverse_ast(file, mod->ast_root, 0);
+
+    // get the unique key for main function
+    char* main_function_key = symbol_generate_key("main", mod);
 
     // TODO: Clean up
     // ASM
@@ -336,7 +339,7 @@ bool codegen_generate(module *mod, ast_node *node, FILE *file)
 #ifdef TIN_DEBUG_VERBOSE
     write_to_file("\t# Call main function\n");
 #endif
-    write_to_file("\tcall\tmain\n");
+    write_to_file("\tcall\t%s\n", main_function_key);
 
     // Exit cleanly
 #ifdef TIN_DEBUG_VERBOSE
@@ -348,4 +351,10 @@ bool codegen_generate(module *mod, ast_node *node, FILE *file)
     write_to_file("\tecall\n");
 
     codegen_write_postamble(file);
+
+    // cleanup
+    free(main_function_key);
+    free(codegen_alloc_registers()); // if regs are already allocated, free them
+    rodata_free();
+    variable_freeall();
 }

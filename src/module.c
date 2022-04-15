@@ -23,17 +23,21 @@ module* module_new()
     return mod;
 }
 
-void module_free(module* mod)
+void module_free(module* mod, bool keep_symbols)
 {
+    if (mod == 0)
+    {
+        return;
+    }
+
     if (mod->module_store != 0)
     {
-        for (size_t i = 0; i < mod->module_store->capacity; i++)
+        vector* modules_vec = hashtable_to_vector(mod->module_store);
+        for (int i = 0; i < modules_vec->size; i++)
         {
-            if (mod->module_store->keys[i] != 0)
-            {
-                module_free(mod->module_store->items[i]);
-            }
+            module_free(vector_get_item(modules_vec, i), keep_symbols);
         }
+        vector_free(modules_vec);
         hashtable_free(mod->module_store);
     }
     if (mod->dependencies != 0)
@@ -46,7 +50,7 @@ void module_free(module* mod)
     }
 
     free(mod->name);
-    ast_free(mod->ast_root);
+    ast_free(mod->ast_root, keep_symbols);
     free(mod->filename);
     free(mod->src_code);
     free(mod);
@@ -68,18 +72,35 @@ module* module_parse(char* path, module* parent)
     {
         parent_dir = parent->dir;
     }
+    
+    // if the include has no extension, add it back
+    char* ext = strstr(path, ".tin");
+    if (ext != 0 && (path + (int)strlen(path) - ext) == 4)
+    {
+        path = strdup(path);
+    }
+    else
+    {
+        path = path_join(2, path, ".tin");
+    }
 
-    char* relative_path = path_join(2, parent_dir, path); 
-    mod->dir = path_get_directory(relative_path);
+    char* src_path;
+    if (!(src_path = path_locate_file(path, parent_dir)))
+    {
+        printf("error: could not find file %s\n", path);
+
+        free(src_path);
+        free(path);
+        module_free(mod, 0);
+        
+        return false;
+    }
+
+    FILE* src_file = fopen(src_path, "rb");
+
+    mod->dir = path_get_directory(src_path);
     mod->filename = path_get_filename(path);
     mod->name = path_get_filename_wo_ext(path);
-
-    FILE* src_file;
-	if (!(src_file = fopen(relative_path, "rb")))
-	{
-		printf("error: could not find file %s\n", path);
-		return false;
-	}
 
 	module_set_src_file(mod, src_file);
 
@@ -93,20 +114,19 @@ module* module_parse(char* path, module* parent)
 	yylex_destroy(scanner);
 
 	fclose(src_file);
-    free(relative_path);
+    free(src_path);
+    free(path);
 
     if (parser_status != 0)
     {
         printf("error: could not lex and/or parse %s\n", path);
-        module_free(mod);
+        module_free(mod, 0);
 		return 0;
     }
-
-    //return mod;
     
     if (!preprocessor_process(mod))
     {
-        module_free(mod);
+        module_free(mod, 0);
 		return 0;
     }
     
@@ -245,16 +265,16 @@ void module_print_to_file(module* mod, FILE* file)
     {
         fprintf(file, ",\"modules\": [");
 
-        vector* module_vec = hashtable_to_vector(mod->module_store);
-        for (int i = 0; i < module_vec->size; i++)
+        vector* modules_vec = hashtable_to_vector(mod->module_store);
+        for (int i = 0; i < modules_vec->size; i++)
         {
-            module_print_to_file(vector_get_item(module_vec, i), file);
-            if (i < module_vec->size - 1) // don't print a comma after the last item
+            module_print_to_file(vector_get_item(modules_vec, i), file);
+            if (i < modules_vec->size - 1) // don't print a comma after the last item
             {
                 fprintf(file, ",");
             }
         }
-        vector_free(module_vec);
+        vector_free(modules_vec);
 
         fprintf(file, "]");
     }

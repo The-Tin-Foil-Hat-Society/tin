@@ -27,13 +27,16 @@ void preprocess_identifier(preproc_state* state, ast_node* node)
     {
         if (namespace == 0)
         {
-            preproc_error(state, node, "%scould not locate given namespace", "");
+            preproc_error(state, node, "%scould not locate given namespace\n", "");
         }
         else
         {
             table = namespace->ast_root->value.symbol_table;
         }
     }
+
+    char* identifier_name = node->value.string;
+    char* symbol_key = symbol_generate_key(identifier_name, namespace);
 
     if (table == 0)
     {
@@ -49,28 +52,28 @@ void preprocess_identifier(preproc_state* state, ast_node* node)
 
     if (is_function_argument_identifier)
     {
-        table = ast_get_child(node->parent->parent->parent, 2)->value.symbol_table; // scope should always be the 3rd child as per the grammar if there's also a definition list
+        // scope should always be the 3rd child as per the grammar if there's also a definition list
+        table = ast_get_child(node->parent->parent->parent, 2)->value.symbol_table; 
         // for definitions for function args, make sure they're in the function's scope and not outside it
-        sym = hashtable_get_item(table, node->value.string);
+        sym = hashtable_get_item(table, symbol_key);
     }
     else if (namespaced_identifier)
     {
-        sym = hashtable_get_item(table, node->value.string);
+        sym = hashtable_get_item(table, symbol_key);
     }
     else
     {
         // look for the symbol in all scopes above us
-        sym = ast_find_symbol(node, node->value.string);
+        sym = ast_find_symbol(node, symbol_key);
     }
 
     if (sym == 0)
     {
-        sym = symbol_new();
-        sym->name = strdup(node->value.string);
+        sym = symbol_new(identifier_name, namespace);
 
         if (!is_being_assigned_to)
         {
-            preproc_error(state, node, "%s undefined\n", node->value.string);
+            preproc_error(state, node, "%s undefined\n", identifier_name);
             sym->dtype = data_type_new("undefined");
             // still continue to create a symbol so we don't want to propage the error, otherwise we'll get a segfault
         }
@@ -80,13 +83,16 @@ void preprocess_identifier(preproc_state* state, ast_node* node)
             sym->is_initialised = true; // if its a function argument, assume it's already initialized. actually check for that during function calls not in function definitions
         }
         
-        hashtable_set_item(table, node->value.string, sym);
+        hashtable_set_item(table, symbol_key, sym);
     }
     else if (sym != 0 && node->parent->type == AstDefinition)
     {
-        preproc_error(state, node, "%s is already defined\n", node->value.string); 
+        preproc_error(state, node, "%s is already defined\n", identifier_name); 
     }
 
+    free(symbol_key);
+
+    // create new node for the symbol reference
     ast_node* symbol_node = ast_new(AstSymbol);
     symbol_node->value.symbol = sym;
 
@@ -102,5 +108,5 @@ void preprocess_identifier(preproc_state* state, ast_node* node)
 
     // replace the indentifier node with a symbol node
     ast_set_child(node->parent, index_in_parent, symbol_node);
-    ast_free(node);
+    ast_free(node, 0);
 }
