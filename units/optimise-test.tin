@@ -25,11 +25,11 @@ fn i32 main
     input abc;
 
     test = (test + 1) * 2;
-    if (2 < 1)
+    if (test == 1)
     {
         print "nope";
     }
-    else if (2 < (1 - 0))
+    else if (2 > 2)
     {
         input test;
         print "nop2";

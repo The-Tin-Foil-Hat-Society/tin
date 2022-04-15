@@ -1,35 +1,135 @@
 #include "optimisation.h"
 #include <math.h>
 
-char* variables[1024];
-int pointer = 0;
-
-hashtable* used_vars;
-
 int comparitive_nodes[15] = {
-    AstAdd,
-    AstAnd,
-    AstDiv,
-    AstEqual,
-    AstGreaterThan,
-    AstGreaterThanOrEqual,
-    AstLessThan,
-    AstLessThanOrEqual,
-    AstMod,
-    AstMul,
-    AstNot,
-    AstNotEqual,
-    AstOr,
-    AstPow,
-    AstSub
+    AstAdd, AstAnd, AstDiv, AstEqual, AstGreaterThan,
+    AstGreaterThanOrEqual, AstLessThan,
+    AstLessThanOrEqual, AstMod, AstMul, AstNot,
+    AstNotEqual, AstOr, AstPow, AstSub
 };
 
 int literals[4] = {
-    AstBoolLit,
-    AstIntegerLit,
-    AstStringLit,
-    AstFloatLit
+    AstBoolLit, AstIntegerLit,
+    AstStringLit, AstFloatLit
 };
+
+bool check_children(ast_node* node, int array[], size_t size)
+{
+    for (size_t i = 0; i < size; i++)
+    {
+        if (node->type && node->type == array[i])
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
+void reclass_as_bool(ast_node* node, bool value)
+{
+    ast_node* new_node = ast_new(AstBoolLit);
+    node->type = AstBoolLit;
+    node->value.boolean = value;
+    node->children = new_node->children;
+    ast_get_child(node, 0)->parent = node;
+}
+
+void reclass_as_num(ast_node* node, float result, bool is_integer)
+{
+    ast_node* data_type_node = ast_new(AstDataType);
+    if (is_integer)
+    {
+        int result_int = result;
+        node->type = AstIntegerLit;
+        node->value.integer = result_int;
+        data_type_node->value.dtype = data_type_new(
+            result_int < 0 ? "i64" : "u64");
+    }
+    else
+    {
+        node->type = AstFloatLit;
+        node->value.floating = result;
+        data_type_node->value.dtype = data_type_new("f64");
+    }
+
+    data_type_node->value.dtype->pointer_level = 0;
+    ast_delete_children(node);
+    ast_add_child(node, data_type_node);
+}
+
+void reclass_node(ast_node* node, ast_node* node1, ast_node* node2)
+{
+    float value1 = (node1->type == AstIntegerLit ?
+        node1->value.integer : node1->value.floating);
+    float value2 = (node2->type == AstIntegerLit ?
+        node2->value.integer : node2->value.floating);
+
+    switch (node->type)
+    {
+        case AstAdd:
+            return reclass_as_num(node, value1 + value2,
+                node1->type == AstIntegerLit && node2->type == AstIntegerLit);
+        
+        case AstSub:
+            return reclass_as_num(node, value1 + value2,
+                node1->type == AstIntegerLit && node2->type == AstIntegerLit);
+        
+        case AstMul:
+            return reclass_as_num(node, value1 * value2,
+                node1->type == AstIntegerLit && node2->type == AstIntegerLit);
+        
+        case AstDiv:
+            return reclass_as_num(node, value1 / value2,
+                node1->type == AstIntegerLit && node2->type == AstIntegerLit);
+        
+        case AstMod:
+            return reclass_as_num(node, node1->value.integer % node2->value.integer, true);
+        
+        case AstPow:
+            return reclass_as_num(node, pow(value1, value2),
+                node1->type == AstIntegerLit && node2->type == AstIntegerLit);
+        
+        case AstEqual:
+            return reclass_as_bool(node, node1->type == AstFloatLit ?
+                (node1->value.floating == node2->value.floating) :
+                (node1->value.integer == node2->value.integer
+                    && node1->value.boolean == node2->value.boolean
+                    && node1->value.string == node2->value.string));
+        
+        case AstNotEqual:
+            return reclass_as_bool(node, node1->type == AstFloatLit ?
+                (node1->value.floating != node2->value.floating) :
+                (node1->value.integer != node2->value.integer
+                    && node1->value.boolean != node2->value.boolean
+                    && node1->value.string != node2->value.string));
+        
+        case AstGreaterThan:
+            return reclass_as_bool(node, (node1->type == AstIntegerLit ?
+                (node1->value.integer > node2->value.integer) :
+                (node1->value.floating > node2->value.floating)));
+        
+        case AstGreaterThanOrEqual:
+            return reclass_as_bool(node, (node1->type == AstIntegerLit ?
+                (node1->value.integer >= node2->value.integer) :
+                (node1->value.floating >= node2->value.floating)));
+        
+        case AstLessThan:
+            return reclass_as_bool(node, (node1->type == AstIntegerLit ?
+                (node1->value.integer < node2->value.integer) :
+                (node1->value.floating < node2->value.floating)));
+        
+        case AstLessThanOrEqual:
+            return reclass_as_bool(node, (node1->type == AstIntegerLit ?
+                (node1->value.integer <= node2->value.integer) :
+                (node1->value.floating <= node2->value.floating)));
+        
+        case AstAnd:
+            return reclass_as_bool(node, node1->value.boolean && node2->value.boolean);
+        
+        case AstOr:
+            return reclass_as_bool(node, node1->value.boolean || node2->value.boolean);
+    }
+}
 
 ast_node* replace_if_statements(ast_node* node, bool determinable)
 {
@@ -76,56 +176,6 @@ ast_node* replace_if_statements(ast_node* node, bool determinable)
     return node;
 }
 
-ast_node* remove_variables(ast_node* node)
-{
-    for (size_t i = 0; i < node->children->size; i++)
-    {
-        ast_node* child = ast_get_child(node, i);
-        ast_node* symbol = NULL;
-
-        if (child->type == AstAssignment)
-        {
-            symbol = ast_get_child(child, 0);
-        }
-        else if (child->type == AstDefinition)
-        {
-            symbol = ast_get_child(child, 1);
-        }
-
-        if (symbol) {
-            char* name = symbol->value.symbol->name;
-            void* item = hashtable_get_item(used_vars, name);
-        }
-
-        remove_variables(ast_get_child(node, i));
-    }
-}
-
-bool check_children(ast_node* node, int array[], size_t size)
-{
-    for (size_t i = 0; i < size; i++)
-    {
-        if (node->type && node->type == array[i])
-        {
-            return true;
-        }
-    }
-    return false;
-}
-
-bool compare_value(ast_node* node1, ast_node* node2)
-{
-    data_type* left_dtype = ast_find_data_type(node1);
-    data_type* right_dtype = ast_find_data_type(node2);
-
-    return (node1->value.integer == node2->value.integer
-        && node1->value.boolean == node2->value.boolean
-        && node1->value.string == node2->value.string);
-
-    return false;
-}
-
-
 ast_node* evaluate_expression(ast_node* node, bool determinable)
 {
     size_t size = node->children->size;
@@ -153,11 +203,7 @@ ast_node* evaluate_expression(ast_node* node, bool determinable)
                 return node;
             }
 
-            ast_node* new_node = ast_new(AstBoolLit);
-            node->type = AstBoolLit;
-            node->value.boolean = !child->value.boolean;
-            node->children = new_node->children;
-            ast_get_child(node, 0)->parent = node;
+            reclass_as_bool(node, !child->value.boolean);
         }
     }
 
@@ -166,327 +212,35 @@ ast_node* evaluate_expression(ast_node* node, bool determinable)
         ast_node* node1 = ast_get_child(node, 0);
         ast_node* node2 = ast_get_child(node, 1);
 
-        if (node1->type == AstSymbol)
+        for (int i = 0; i < 2; i++)
         {
-            symbol* symbol1 = node1->value.symbol;
-            if (symbol1 != 0)
+            ast_node* child = ast_get_child(node, i);
+
+            if (child->type == AstSymbol)
             {
-                if (!symbol1->is_literal)
+                symbol* sym = child->value.symbol;
+                if (sym != 0)
                 {
-                    return node;
+                    if (!sym->is_literal)
+                    {
+                        return node;
+                    }
                 }
             }
-        }
-        else if (node1->type == AstFunctionCall)
-        {
-            // replace in future version
-            return node;
-        }
-        
-        if (node2->type == AstSymbol)
-        {
-            symbol* symbol2 = node2->value.symbol;
-            if (symbol2 != 0)
+            else if (child->type == AstFunctionCall)
             {
-                if (!symbol2->is_literal)
-                {
-                    return node;
-                }
-            }
-        }
-        else if (node2->type == AstFunctionCall)
-        {
-            // replace in future version
-            return node;
-        }
-        
-        // if nodes aren't literals, don't continue
-        if (!(check_children(node1, literals, sizeof(literals))
-            && check_children(node2, literals, sizeof(literals))))
-        {
-            return node;
-        }
-
-        if (node->type == AstAdd)
-        {
-            if (node1->type == AstIntegerLit && node2->type == AstIntegerLit)
-            {
-                int result = node1->value.integer + node2->value.integer;
-                ast_node* data_type_node = ast_new(AstDataType);
-                node->type = AstIntegerLit;
-                node->value.integer = result;
-
-                data_type_node->value.dtype = data_type_new(
-                    result < 0 ? "i64" : "u64");
-                data_type_node->value.dtype->pointer_level = 0;
-                ast_delete_children(node);
-                ast_add_child(node, data_type_node);
-            }
-            else
-            {
-                float value1 = (node1->type == AstIntegerLit ?
-                    node1->value.integer : node1->value.floating);
-                float value2 = (node2->type == AstIntegerLit ?
-                    node2->value.integer : node2->value.floating);
-                
-                float result = value1 + value2;
-                ast_node* data_type_node = ast_new(AstDataType);
-                node->type = AstFloatLit;
-                node->value.floating = result;
-
-                data_type_node->value.dtype = data_type_new("f64");
-                data_type_node->value.dtype->pointer_level = 0;
-                ast_delete_children(node);
-                ast_add_child(node, data_type_node);
-            }
-        }
-        else if (node->type == AstSub)
-        {
-            if (node1->type == AstIntegerLit && node2->type == AstIntegerLit)
-            {
-                int result = node1->value.integer - node2->value.integer;
-                ast_node* data_type_node = ast_new(AstDataType);
-                node->type = AstIntegerLit;
-                node->value.integer = result;
-
-                data_type_node->value.dtype = data_type_new(
-                    result < 0 ? "i64" : "u64");
-                data_type_node->value.dtype->pointer_level = 0;
-                ast_delete_children(node);
-                ast_add_child(node, data_type_node);
-            }
-            else
-            {
-                float value1 = (node1->type == AstIntegerLit ?
-                    node1->value.integer : node1->value.floating);
-                float value2 = (node2->type == AstIntegerLit ?
-                    node2->value.integer : node2->value.floating);
-                
-                float result = value1 - value2;
-                ast_node* data_type_node = ast_new(AstDataType);
-                node->type = AstFloatLit;
-                node->value.floating = result;
-
-                data_type_node->value.dtype = data_type_new("f64");
-                data_type_node->value.dtype->pointer_level = 0;
-                ast_delete_children(node);
-                ast_add_child(node, data_type_node);
-            }
-        }
-        else if (node->type == AstMul)
-        {
-            if (node1->type == AstIntegerLit && node2->type == AstIntegerLit)
-            {
-                int result = node1->value.integer * node2->value.integer;
-                ast_node* data_type_node = ast_new(AstDataType);
-                node->type = AstIntegerLit;
-                node->value.integer = result;
-
-                data_type_node->value.dtype = data_type_new(
-                    result < 0 ? "i64" : "u64");
-                data_type_node->value.dtype->pointer_level = 0;
-                ast_delete_children(node);
-                ast_add_child(node, data_type_node);
-            }
-            else
-            {
-                float value1 = (node1->type == AstIntegerLit ?
-                    node1->value.integer : node1->value.floating);
-                float value2 = (node2->type == AstIntegerLit ?
-                    node2->value.integer : node2->value.floating);
-                
-                float result = value1 * value2;
-                ast_node* data_type_node = ast_new(AstDataType);
-                node->type = AstFloatLit;
-                node->value.floating = result;
-
-                data_type_node->value.dtype = data_type_new("f64");
-                data_type_node->value.dtype->pointer_level = 0;
-                ast_delete_children(node);
-                ast_add_child(node, data_type_node);
-            }
-        }
-        else if (node->type == AstDiv)
-        {
-            int value1 = node1->value.integer;
-            int value2 = node2->value.integer;
-            if (node1->type == AstIntegerLit && node2->type == AstIntegerLit && value1 % value2 == 0)
-            {
-                int result = node1->value.integer / node2->value.integer;
-                ast_node* data_type_node = ast_new(AstDataType);
-                node->type = AstIntegerLit;
-                node->value.integer = result;
-
-                data_type_node->value.dtype = data_type_new(
-                    result < 0 ? "i64" : "u64");
-                data_type_node->value.dtype->pointer_level = 0;
-                ast_delete_children(node);
-                ast_add_child(node, data_type_node);
-            }
-            else
-            {
-                float value1 = (node1->type == AstIntegerLit ?
-                    node1->value.integer : node1->value.floating);
-                float value2 = (node2->type == AstIntegerLit ?
-                    node2->value.integer : node2->value.floating);
-                
-                float result = value1 / value2;
-                ast_node* data_type_node = ast_new(AstDataType);
-                node->type = AstFloatLit;
-                node->value.floating = result;
-
-                data_type_node->value.dtype = data_type_new("f64");
-                data_type_node->value.dtype->pointer_level = 0;
-                ast_delete_children(node);
-                ast_add_child(node, data_type_node);
-            }
-        }
-        else if (node->type == AstMod)
-        {
-            if (node1->type == AstIntegerLit && node2->type == AstIntegerLit)
-            {
-                int result = node1->value.integer % node2->value.integer;
-                ast_node* data_type_node = ast_new(AstDataType);
-                node->type = AstIntegerLit;
-                node->value.integer = result;
-
-                data_type_node->value.dtype = data_type_new(
-                    result < 0 ? "i64" : "u64");
-                data_type_node->value.dtype->pointer_level = 0;
-                ast_delete_children(node);
-                ast_add_child(node, data_type_node);
-            }
-        }
-        else if (node->type == AstPow)
-        {
-            if (node1->type == AstIntegerLit && node2->type == AstIntegerLit)
-            {
-                int result = pow(node1->value.integer, node2->value.integer);
-                ast_node* data_type_node = ast_new(AstDataType);
-                node->type = AstIntegerLit;
-                node->value.integer = result;
-
-                data_type_node->value.dtype = data_type_new(
-                    result < 0 ? "i64" : "u64");
-                data_type_node->value.dtype->pointer_level = 0;
-                ast_delete_children(node);
-                ast_add_child(node, data_type_node);
-            }
-            else
-            {
-                float value1 = (node1->type == AstIntegerLit ?
-                    node1->value.integer : node1->value.floating);
-                float value2 = (node2->type == AstIntegerLit ?
-                    node2->value.integer : node2->value.floating);
-                
-                float result = pow(value1, value2);
-                ast_node* data_type_node = ast_new(AstDataType);
-                node->type = AstFloatLit;
-                node->value.floating = result;
-
-                data_type_node->value.dtype = data_type_new("f64");
-                data_type_node->value.dtype->pointer_level = 0;
-                ast_delete_children(node);
-                ast_add_child(node, data_type_node);
-            }
-        }
-        
-        else if (node->type == AstEqual)
-        {
-            ast_node* new_node = ast_new(AstBoolLit);
-            node->type = AstBoolLit;
-            if (node1->type == AstFloatLit)
-            {
-                node->value.boolean = node1->value.floating == node2->value.floating;
-            }
-            else
-            {
-                node->value.boolean = (node1->value.integer == node2->value.integer
-                    && node1->value.boolean == node2->value.boolean
-                    && node1->value.string == node2->value.string);
-            }
-            
-            if (node1->type == AstStringLit) {
-                node->value.boolean = strcmp(node1->value.string, node2->value.string) == 0;
+                // replace in future version
+                return node;
             }
 
-            node->children = new_node->children;
-            ast_get_child(node, 0)->parent = node;
-        }
-        else if (node->type == AstNotEqual)
-        {
-            ast_node* new_node = ast_new(AstBoolLit);
-            node->type = AstBoolLit;
-            if (node1->type == AstFloatLit)
+            // if nodes aren't literals, don't continue
+            if (!check_children(child, literals, sizeof(literals)))
             {
-                node->value.boolean = node1->value.floating != node2->value.floating;
+                return node;
             }
-            else
-            {
-                node->value.boolean = (node1->value.integer != node2->value.integer
-                    && node1->value.boolean != node2->value.boolean
-                    && node1->value.string != node2->value.string);
-            }
-            node->children = new_node->children;
-            ast_get_child(node, 0)->parent = node;
-        }
-        else if (node->type == AstGreaterThan)
-        {
-            ast_node* new_node = ast_new(AstBoolLit);
-            node->type = AstBoolLit;
-            node->value.boolean = (node1->type == AstIntegerLit ?
-                (node1->value.integer > node2->value.integer) :
-                (node1->value.floating > node2->value.floating));
-            node->children = new_node->children;
-            ast_get_child(node, 0)->parent = node;
-        }
-        else if (node->type == AstGreaterThanOrEqual)
-        {
-            ast_node* new_node = ast_new(AstBoolLit);
-            node->type = AstBoolLit;
-            node->value.boolean = (node1->type == AstIntegerLit ?
-                (node1->value.integer >= node2->value.integer) :
-                (node1->value.floating >= node2->value.floating));
-            node->children = new_node->children;
-            ast_get_child(node, 0)->parent = node;
-        }
-        else if (node->type == AstLessThan)
-        {
-            ast_node* new_node = ast_new(AstBoolLit);
-            node->type = AstBoolLit;
-            node->value.boolean = (node1->type == AstIntegerLit ?
-                (node1->value.integer < node2->value.integer) :
-                (node1->value.floating < node2->value.floating));
-            node->children = new_node->children;
-            ast_get_child(node, 0)->parent = node;
-        }
-        else if (node->type == AstLessThanOrEqual)
-        {
-            ast_node* new_node = ast_new(AstBoolLit);
-            node->type = AstBoolLit;
-            node->value.boolean = (node1->type == AstIntegerLit ?
-                (node1->value.integer <= node2->value.integer) :
-                (node1->value.floating <= node2->value.floating));
-            node->children = new_node->children;
-            ast_get_child(node, 0)->parent = node;
         }
 
-        else if (node->type == AstAnd)
-        {
-            ast_node* new_node = ast_new(AstBoolLit);
-            node->type = AstBoolLit;
-            node->value.boolean = node1->value.boolean && node2->value.boolean;
-            node->children = new_node->children;
-            ast_get_child(node, 0)->parent = node;
-        }
-        else if (node->type == AstOr)
-        {
-            ast_node* new_node = ast_new(AstBoolLit);
-            node->type = AstBoolLit;
-            node->value.boolean = node1->value.boolean || node2->value.boolean;
-            node->children = new_node->children;
-            ast_get_child(node, 0)->parent = node;
-        }
+        reclass_node(node, node1, node2);
     }
 
     return node;
@@ -652,7 +406,6 @@ ast_node* find_expressions(ast_node* node, bool determinable)
         || (node->type == AstSymbol && node->value.symbol->is_assigned)
         || node->type == AstNot)
     {
-        
         node = simplify_expression(node, determinable);
     }
     else if (node->type == AstFunctionCall)
@@ -678,7 +431,6 @@ ast_node* find_expressions(ast_node* node, bool determinable)
             }
             else
             {
-                //printf("%d\n", (int)child->type);
                 new_child = find_expressions(child, true);
             }
         }
