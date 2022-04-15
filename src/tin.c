@@ -45,14 +45,11 @@ void arg_version(void)
 #ifdef BUILD_TIME
 	printf("BUILD_TIME: %s\n", BUILD_TIME);
 #endif
-#ifdef BUILD_VERSION
-	printf("VERSION: %s\n", BUILD_VERSION);
-#endif
 #ifdef GIT_VERSION
-	printf("GIT_VERSION: %s\n", GIT_VERSION);
+	printf("VERSION: %s\n", GIT_VERSION);
 #endif
 #ifdef GIT_ORIGIN
-	printf("origin: %s\n", GIT_ORIGIN);
+	printf("ORIGIN: %s\n", GIT_ORIGIN);
 #endif
 }
 

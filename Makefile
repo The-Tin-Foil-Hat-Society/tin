@@ -1,18 +1,14 @@
 #This is the make file for the tin compiler
 
-GIT_VERSION = $(shell git rev-parse --short HEAD)@$(shell git rev-parse --abbrev-ref HEAD)
+GIT_VERSION = $(shell git describe --tags)@$(shell git rev-parse --abbrev-ref HEAD)
 GIT_ORIGIN = $(shell git config --get remote.origin.url)
 BUILD_TIME = $(shell date -u --iso=seconds)
-#Don't forget to update the version when needed
-MAJOR = 0
-MINOR = 1
-BUILD_VERSION := $(MAJOR).$(MINOR)
 
 #File to compile:
 file = examples/for.tin
 # or debug 
 build = release 
-FLAGS = -D TIN_COMPILER -DBUILD="\"$(build)\"" -DBUILD_TIME="\"$(BUILD_TIME)\"" -DBUILD_VERSION="\"$(BUILD_VERSION)\"" -DGIT_VERSION="\"$(GIT_VERSION)\"" -DGIT_ORIGIN="\"$(GIT_ORIGIN)\""
+FLAGS = -D TIN_COMPILER -DBUILD="\"$(build)\"" -DBUILD_TIME="\"$(BUILD_TIME)\"" -DGIT_VERSION="\"$(GIT_VERSION)\"" -DGIT_ORIGIN="\"$(GIT_ORIGIN)\""
 
 ifeq ($(build),debug)
 	CCFLAGS = -g3 -Og
