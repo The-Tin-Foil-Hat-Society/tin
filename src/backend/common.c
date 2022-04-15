@@ -1,4 +1,7 @@
+#pragma GCC diagnostic ignored "-Wunused-parameter"
 #include "backend/common.h"
+
+bool codegen_success;
 
 void _emit_comment(FILE *file, const char *fmt, ...)
 {

@@ -1,0 +1,37 @@
+name: READMEtest
+
+on:
+  push:
+    branches: [ main, actionsTesting ]
+    
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Install Prerequisites
+      run: sudo apt-get install build-essential flex bison binutils-riscv64-linux-gnu qemu qemu-system-misc qemu-user
+
+    - name: Get Tin
+      run: git clone https://github.com/aaf6aa/tin.git
+    
+    - name: Open Tin
+      run: cd tin
+    
+    - name: Set Library PATH
+      run: PATH="$PATH:$(pwd)/std"
+      
+    - name: Make Tin
+      run: make tin
+
+    - name: Build Tin File
+      run: ./build/tin examples/hello_world.tin
+      
+    - name: Execute File
+      run: qemu-riscv64 ./examples/hello_world

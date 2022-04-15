@@ -9,14 +9,16 @@
 
 void preprocess_include(preproc_state* state, ast_node* node)
 {
-    char* name = path_get_filename_wo_ext(node->value.string);
+    char* path = node->value.string;
+
+    char* name = path_get_filename_wo_ext(path);
     module* dependency = module_find_dependency(state->mod, name);
     free(name);
 
     if (dependency == 0)
     {
         // if the dependency doesn't exist in the program, parse it 
-        dependency = module_parse(node->value.string, state->mod);
+        dependency = module_parse(path, state->mod);
         if (dependency == 0)
         {
             preproc_error(state, node, "%scould not parse include\n", "");
@@ -31,4 +33,5 @@ void preprocess_include(preproc_state* state, ast_node* node)
     }
 
     ast_delete_child(node->parent, node);
+    state->index_offset -= 1;
 }

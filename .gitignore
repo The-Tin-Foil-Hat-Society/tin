@@ -31,6 +31,11 @@
 *.out
 *.app
 
+# Ignore files without extensions (executables) in examples and units
+examples/*
+units/*
+!*.*
+!*/
 
 # Build files
 build/

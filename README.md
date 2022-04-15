@@ -123,16 +123,25 @@ Run the following command to fetch all of the required packages in order to buil
 1. Clone the repo
    ```sh
    $ git clone https://github.com/aaf6aa/tin.git
+   $ cd tin
    ```
-2. Make the project 
+2. Add the standard library to PATH
+   ```sh
+   $ PATH="$PATH:$(pwd)/std"
+   ```
+3. Build the project, by default the release version is built
    ```sh
    $ make tin
    ```
-3. Compile your .tin file
+   Build the debug version
+   ```sh
+   $ make tin build=debug
+   ```
+4. Compile your .tin file
    ```sh
    $ ./build/tin file-name.tin
    ```
-4. Run the executable through QEMU
+5. Run the executable through QEMU
    ```sh
    $ qemu-riscv64 ./file-name
    ```
@@ -145,7 +154,9 @@ Run the following command to fetch all of the required packages in order to buil
 <!-- USAGE EXAMPLES -->
 ## Usage
 
-This language is currently for the RISC-V architecture, the usage of the language an be seen in the documentation or the [examples](https://github.com/aaf6aa/tin/tree/main/examples).
+Call `tin -h` for CLI usage.
+
+This language is currently for the RISC-V architecture, the usage of the language an be seen in the documentation or the [working examples](https://github.com/aaf6aa/tin/tree/main/examples).
 
 _For more examples, please refer to the [documentation](https://github.com/aaf6aa/tin/wiki)_.
 
@@ -231,3 +242,5 @@ Project Link: [https://github.com/aaf6aa/tin](https://github.com/aaf6aa/tin)
 [testing-shield]: https://img.shields.io/github/workflow/status/aaf6aa/tin/Testing/main?style=for-the-badge
 [testing-url]: https://github.com/XiiiC/tin/actions/workflows/testing.yml
 [product-screenshot]: images/screenshot.png
+[testing-shield]: https://img.shields.io/github/workflow/status/aaf6aa/tin/READMEtest/main?style=for-the-badge
+[testing-url]: https://github.com/aaf6aa/tin/actions/workflows/READMEtest.yml

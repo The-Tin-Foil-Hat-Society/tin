@@ -27,7 +27,9 @@ static int codegen_generate_if_ast(FILE *file, ast_node *node)
     trace("\t\t* Condition node type: %s", ast_type_names[mid->type]);
 
     if (has_else)
+    {
         trace("\t\t* Else node type: %s", ast_type_names[right->type]);
+    }
 
     false_label = label_add();
     trace("\t\t* False label: %d", false_label);
@@ -140,23 +142,25 @@ int codegen_traverse_ast(FILE *file, ast_node *node, int reg)
     {
         // Symbol is first child
         ast_node *child = vector_get_item(node->children, 0);
-        gen_function(file, reg, child->value.symbol->name);
+        gen_function(file, reg, child->value.symbol->key);
         break;
     }
     case AstFunctionCall:
     {
         // Symbol is first child
         ast_node *child = vector_get_item(node->children, 0);
-        gen_function_call(file, reg, child->value.symbol->name);
+        gen_function_call(file, reg, child->value.symbol->key);
         break;
     }
+    default:
+        break;
     }
 
     // HACK for something I shouldn't really need to do...
     if (node->type == AstAssignment || node->type == AstIf)
     {
         // Reverse order
-        for (int i = node->children->size - 1; i >= 0; i--)
+        for (size_t i = node->children->size - 1; i != UINT64_MAX; i--)
         {
             ast_node *child = vector_get_item(node->children, i);
             regs[i] = codegen_traverse_ast(file, child, reg);
@@ -164,7 +168,7 @@ int codegen_traverse_ast(FILE *file, ast_node *node, int reg)
     }
     else
     {
-        for (int i = 0; i < node->children->size; i++)
+        for (size_t i = 0; i < node->children->size; i++)
         {
             ast_node *child = vector_get_item(node->children, i);
             regs[i] = codegen_traverse_ast(file, child, reg);
@@ -208,7 +212,8 @@ int codegen_traverse_ast(FILE *file, ast_node *node, int reg)
         }
         else
         {
-            compiler_error("TODO: compare and assign bool\n");
+            // previously was a compiler_error, but, with turing_complete.tin for example, it still compiled corrently; i will treat this like a warning for now
+            trace("TODO: compare and assign bool\n"); 
         }
         break;
     }
@@ -256,7 +261,7 @@ int codegen_traverse_ast(FILE *file, ast_node *node, int reg)
     {
         if (node->parent->type == AstAssignment)
         {
-            return gen_store_global(file, reg, node->value.symbol->name, node->value.symbol->dtype->size);
+            return gen_store_global(file, reg, node->value.symbol->key, node->value.symbol->dtype->size);
         }
         else if (node->parent->type == AstFunction)
         {
@@ -276,7 +281,7 @@ int codegen_traverse_ast(FILE *file, ast_node *node, int reg)
         else
         {
             trace("\tLoading (parent type: %s)", ast_type_names[node->parent->type]);
-            return gen_load_global(file, node->value.symbol->name, node->value.symbol->dtype->size);
+            return gen_load_global(file, node->value.symbol->key, node->value.symbol->dtype->size);
         }
     }
     case AstAssignment:
@@ -292,6 +297,7 @@ int codegen_traverse_ast(FILE *file, ast_node *node, int reg)
 
 void codegen_init()
 {
+    codegen_success = true;
     register_freeall();
     variable_init();
     rodata_init();
@@ -311,7 +317,7 @@ void codegen_write_postamble(FILE *file)
     gen_rodata(file);
 }
 
-bool codegen_generate(module *mod, ast_node *node, FILE *file)
+bool codegen_generate(module *mod, FILE *file)
 {
     codegen_init();
     codegen_write_preamble(file);
@@ -319,8 +325,10 @@ bool codegen_generate(module *mod, ast_node *node, FILE *file)
     // Text section
     write_to_file(".text\n\n");
 
-    int reg;
-    reg = codegen_traverse_ast(file, node, 0);
+    int reg = codegen_traverse_ast(file, mod->ast_root, 0);
+
+    // get the unique key for main function
+    char* main_function_key = symbol_generate_key("main", mod);
 
     // TODO: Clean up
     // ASM
@@ -336,7 +344,7 @@ bool codegen_generate(module *mod, ast_node *node, FILE *file)
 #ifdef TIN_DEBUG_VERBOSE
     write_to_file("\t# Call main function\n");
 #endif
-    write_to_file("\tcall\tmain\n");
+    write_to_file("\tcall\t%s\n", main_function_key);
 
     // Exit cleanly
 #ifdef TIN_DEBUG_VERBOSE
@@ -348,4 +356,12 @@ bool codegen_generate(module *mod, ast_node *node, FILE *file)
     write_to_file("\tecall\n");
 
     codegen_write_postamble(file);
+
+    // cleanup
+    free(main_function_key);
+    free(codegen_alloc_registers()); // if regs are already allocated, free them
+    rodata_free();
+    variable_freeall();
+
+    return codegen_success;
 }

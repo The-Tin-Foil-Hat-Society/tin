@@ -1,0 +1,4 @@
+fn void print_str
+{
+    print "hello from include_dep_3!\n";
+}

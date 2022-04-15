@@ -7,9 +7,13 @@
 #include <stdarg.h>
 #include <stdbool.h>
 
+// there's probably a better way to do this
+extern bool codegen_success;
+
 void _emit_comment(FILE *file, const char *fmt, ...);
 void _emit(FILE *file, const char *comment, const char *opcode, const char *operand, ...);
 
+#pragma GCC diagnostic ignored "-Wmultistatement-macros"
 #ifdef TIN_DEBUG_VERBOSE
 #define trace(...)       \
     printf(__VA_ARGS__); \
@@ -29,4 +33,5 @@ void _emit(FILE *file, const char *comment, const char *opcode, const char *oper
     fprintf(file, __VA_ARGS__)
 
 #define compiler_error(...) \
+    codegen_success = false; \
     fprintf(stderr, "Error: " __VA_ARGS__);

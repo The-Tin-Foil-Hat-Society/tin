@@ -21,6 +21,11 @@ data_type* data_type_new(char* name)
 
 void data_type_free(data_type* dtype)
 {
+    if (dtype == 0)
+    {
+        return;
+    }
+
     free(dtype->name);
     free(dtype);
 }
@@ -61,6 +66,7 @@ size_t get_size(data_type* dtype)
     {
         return 8;
     }
+    return 0;
 }
 
 bool is_bool(data_type* dtype)
@@ -141,19 +147,19 @@ bool is_valid_int(data_type* dtype, int64_t value)
     {
         return false;
     }
-    else if (strcmp(dtype->name, "u64") == 0 && ( (uint64_t)value < 0 || (uint64_t)value > UINT64_MAX))
+    else if (strcmp(dtype->name, "u64") == 0 && *(uint64_t*)&value > UINT64_MAX)
     {
         return false;
     }
-    else if (strcmp(dtype->name, "u32") == 0 && ( (uint64_t)value < 0 || (uint64_t)value > UINT32_MAX))
+    else if (strcmp(dtype->name, "u32") == 0 && *(uint64_t*)&value > UINT32_MAX)
     {
         return false;
     }
-    else if (strcmp(dtype->name, "u16") == 0 && ( (uint64_t)value < 0 || (uint64_t)value > UINT16_MAX))
+    else if (strcmp(dtype->name, "u16") == 0 && *(uint64_t*)&value > UINT16_MAX)
     {
         return false;
     }
-    else if (strcmp(dtype->name, "u8") == 0 && ( (uint64_t)value < 0 || (uint64_t)value > UINT8_MAX))
+    else if (strcmp(dtype->name, "u8") == 0 && *(uint64_t*)&value > UINT8_MAX)
     {
         return false;
     }

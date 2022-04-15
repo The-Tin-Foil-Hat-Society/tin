@@ -1,6 +1,0 @@
-include "include_test_folder/include_test_example_2.tin"
-
-fn void test
-{
-    include_test_example_2::test_str = "Hello world!";
-}

@@ -73,7 +73,7 @@ enum ast_node_type
 };
 
 // for printing purposes
-static char ast_type_names[53][32] = { "AstRoot","AstIdentifier","AstBoolLit","AstFloatLit","AstIntegerLit","AstStringLit","AstOffset","AstReference","AstDereference","AstAdd","AstAlloc","AstAnd","AstArgumentList","AstAsm","AstAssignment","AstBitwiseAnd","AstBitwiseOr","AstBitwiseXor","AstBlock","AstBreak","AstContinue","AstDataType","AstDefinition","AstDefinitionList","AstDiv","AstEqual","AstFor","AstFree","AstFunction","AstFunctionCall","AstGoto","AstGreaterThan","AstGreaterThanOrEqual","AstIf","AstInclude","AstInput","AstLessThan","AstLessThanOrEqual","AstMod","AstMul","AstNamespace","AstNot","AstNotEqual","AstOr","AstPow","AstPrint","AstReturn","AstScope","AstShiftLeft","AstShiftRight","AstSub","AstSymbol","AstWhile" };
+extern char ast_type_names[53][32];
 
 typedef struct ast_node ast_node;
 struct ast_node
@@ -98,7 +98,7 @@ struct ast_node
 };
 
 ast_node *ast_new(enum ast_node_type type);
-void ast_free(ast_node *node);
+void ast_free(ast_node* node, bool keep_symbols);
 ast_node *ast_copy(ast_node *node);
 
 void ast_resize(ast_node* node);
@@ -113,7 +113,7 @@ ast_node *ast_get_current_function(ast_node *node);
 hashtable *ast_get_closest_symtable(ast_node *node);
 // searched for the closest data type in the children and their children (used for expressions)
 data_type *ast_find_data_type(ast_node *node);
-symbol *ast_find_symbol(ast_node *node, char *name);
+symbol *ast_find_symbol(ast_node *node, char *symbol_key);
 
 char *ast_find_closest_src_line(ast_node *node);
 

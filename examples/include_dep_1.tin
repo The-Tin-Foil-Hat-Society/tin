@@ -1,0 +1,6 @@
+include "include_folder/include_dep_2.tin"
+
+fn void print_str
+{
+    print "hello from include_dep_1!\n";
+}

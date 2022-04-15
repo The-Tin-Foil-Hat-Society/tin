@@ -13,7 +13,7 @@ void preprocess_func(preproc_state* state, ast_node* node)
     if (strcmp(sym->dtype->name, "void") != 0 || sym->dtype->pointer_level > 0)
     {
         bool has_return = false;
-        for (int i = 0; i < scope_node->children->size; i++)
+        for (size_t i = 0; i < scope_node->children->size; i++)
         {
             if (ast_get_child(scope_node, i)->type == AstReturn)
             {

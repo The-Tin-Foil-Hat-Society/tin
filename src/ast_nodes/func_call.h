@@ -18,7 +18,7 @@ void preprocess_func_call(preproc_state* state, ast_node* node)
         preproc_error(state, node, "%s takes %ld arguments\n", sym->name, arg_def_list_node->children->size);
     }
 
-    for (int i = 0; i < min(arg_def_list_node->children->size, arg_list_node->children->size); i++) // min to prevent accessing non existent nodes
+    for (size_t i = 0; i < min(arg_def_list_node->children->size, arg_list_node->children->size); i++) // min to prevent accessing non existent nodes
     {
         symbol* arg_def = ast_get_child(arg_def_list_node, i)->value.symbol;
         data_type* arg_dtype = ast_find_data_type(ast_get_child(arg_list_node, i));
