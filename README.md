@@ -129,9 +129,13 @@ Run the following command to fetch all of the required packages in order to buil
    ```sh
    $ PATH="$PATH:$(pwd)/std"
    ```
-3. Make the project 
+3. Build the project, by default the release version is built
    ```sh
    $ make tin
+   ```
+   Build the debug version
+   ```sh
+   $ make tin build=debug
    ```
 4. Compile your .tin file
    ```sh
@@ -150,7 +154,9 @@ Run the following command to fetch all of the required packages in order to buil
 <!-- USAGE EXAMPLES -->
 ## Usage
 
-This language is currently for the RISC-V architecture, the usage of the language an be seen in the documentation or the [examples](https://github.com/aaf6aa/tin/tree/main/examples).
+Call `tin -h` for CLI usage.
+
+This language is currently for the RISC-V architecture, the usage of the language an be seen in the documentation or the [working examples](https://github.com/aaf6aa/tin/tree/main/examples).
 
 _For more examples, please refer to the [documentation](https://github.com/aaf6aa/tin/wiki)_.
 

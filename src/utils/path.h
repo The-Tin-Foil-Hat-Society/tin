@@ -26,4 +26,5 @@ char* path_get_filename(char* path);
 // gets the filename without the extension from the path
 char* path_get_filename_wo_ext(char* path);
 // finds the given relative path in either the working directory or PATH (standard library files), parent_dir can be 0
+// doubles as an existence check
 char* path_locate_file(char* path, char* parent_dir);

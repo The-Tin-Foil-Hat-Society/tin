@@ -1,5 +1,6 @@
 #pragma once
 
+#include "_globals.h"
 #include "ast.h"
 #include "module.h"
 #include <stdbool.h>
@@ -18,19 +19,18 @@ void preproc_state_free(preproc_state* state);
 bool preprocessor_process(module* mod);
 
 #define preproc_error( state, node, fmt, ... ) \
-    printf("%s: %s\n", state->mod->name, ast_find_closest_src_line(node)); \
-    printf("preprocessor error: "); \
-    printf(fmt, ##__VA_ARGS__ ); \
+    fprintf(stderr, "%s: %s\n", state->mod->name, ast_find_closest_src_line(node)); \
+    fprintf(stderr, "preprocessor error: "); \
+    fprintf(stderr, fmt, ##__VA_ARGS__ ); \
     state->error_counter += 1
 
-#ifdef TIN_DEBUG_VERBOSE
-    #define preproc_verb( state, node, fmt, ... ) \
+#define preproc_verb( state, node, fmt, ... ) \
+    if (tin_verbose) \
+    { \
         printf("%s: %s\n", state->mod->name, ast_find_closest_src_line(node)); \
         printf("preprocessor verb: "); \
-        printf(fmt, ##__VA_ARGS__ )
-#else
-    #define preproc_verb( state, node, fmt, ... )
-#endif
+        printf(fmt, ##__VA_ARGS__ ); \
+    }
 
 #define preproc_warn( state, node, fmt, ... ) \
     printf("%s: %s\n", state->mod->name, ast_find_closest_src_line(node)); \

@@ -1,16 +1,29 @@
 #This is the make file for the tin compiler
 
+GIT_VERSION = $(shell git describe --tags)@$(shell git rev-parse --abbrev-ref HEAD)
+GIT_ORIGIN = $(shell git config --get remote.origin.url)
+BUILD_TIME = $(shell date -u --iso=seconds)
+
 #File to compile:
 file = examples/for.tin
-flags = -D TIN_COMPILER -D TIN_DEBUG_VERBOSE
+# or debug 
+build = release 
+FLAGS = -D TIN_COMPILER -DBUILD="\"$(build)\"" -DBUILD_TIME="\"$(BUILD_TIME)\"" -DGIT_VERSION="\"$(GIT_VERSION)\"" -DGIT_ORIGIN="\"$(GIT_ORIGIN)\""
 
-preproc: flags = -D TIN_DEBUG_VERBOSE
+ifeq ($(build),debug)
+	CCFLAGS = -g3 -Og
+	FLAGS += -D TIN_DEBUG_VERBOSE 
+else
+	CCFLAGS = -g0 -O3 -s	
+endif
 
-sources = src/*.c src/backend/*.c src/utils/*.c
-sources_generated =generated/lex.yy.c generated/parser.tab.c
+preproc: FLAGS += -D TIN_INTERPRETER
+
+SOURCES = src/*.c src/backend/*.c src/utils/*.c
+SOURCES_GENERATED = generated/lex.yy.c generated/parser.tab.c
 
 tin: dir parser.o lex.o
-	@ gcc $(flags) -Isrc -Igenerated -Werror -fsanitize=address -g -O0 $(sources) $(sources_generated) -o build/tin -lm
+	@gcc $(FLAGS) -Isrc -Igenerated -Werror $(CCFLAGS) $(SOURCES) $(SOURCES_GENERATED) -o build/tin -lm
 
 debug_assembly:
 	@riscv64-linux-gnu-as ./examples/itoa.s -o ./examples/itoa.o
@@ -24,7 +37,7 @@ preproc: tin
 run: tin
 	@./build/tin $(file)
 	@echo "\nRunning result file"
-	@qemu-riscv64 $(basename $(file)).out
+	@qemu-riscv64 $(basename $(file))
 
 #Generates directories to store generated files and build
 dir:
@@ -42,11 +55,18 @@ lex.o: src/tin.l
 #Removes all generated and built files including generated direcories
 clean:
 	-@rm -f generated/* build/*
-	@rmdir generated build
+	-@rm -rf generated build
 	-@rm -f examples/*.s
 	-@rm -f examples/*.o
 	-@rm -f examples/*.out
 	-@rm -f examples/*.mod.json
+	-@rm -f units/*.s
+	-@rm -f units/*.o
+	-@rm -f units/*.out
+	-@rm -f units/*.mod.json
+#Delete files without extensions
+	-@find units/ -not -iname "*.*" -type f -exec rm '{}' \;
+	-@find examples/ -not -iname "*.*" -type f -exec rm '{}' \; 
 
 memcheck: tin
 	@valgrind ./build/tin $(file)

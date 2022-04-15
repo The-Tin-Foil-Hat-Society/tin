@@ -9,7 +9,7 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/build/tin.exe",
-            "args": ["units/optimise-test.tin"],
+            "args": ["examples/include.tin"],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],

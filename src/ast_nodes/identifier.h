@@ -19,7 +19,15 @@ void preprocess_identifier(preproc_state* state, ast_node* node)
             continue;
         }
 
-        namespace = module_get_dependency(namespace, namespace_node->value.string);
+        module* found_namespace = module_get_dependency(namespace, namespace_node->value.string);
+        if (found_namespace != 0)
+        {
+            namespace = found_namespace;
+        }
+        else
+        {
+            break;
+        }
     }
 
     hashtable* table = 0;

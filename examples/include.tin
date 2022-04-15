@@ -1,0 +1,14 @@
+include "include_dep_1.tin"
+include "include_folder/include_dep_3.tin"
+include "std_example"
+
+fn i32 main
+{
+    include_dep_1::print_str();
+    include_dep_1::include_dep_2::print_str();
+    include_dep_3::print_str();
+
+    std_example::print_str();
+
+    return 0;
+}

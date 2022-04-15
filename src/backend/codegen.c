@@ -292,6 +292,7 @@ int codegen_traverse_ast(FILE *file, ast_node *node, int reg)
 
 void codegen_init()
 {
+    codegen_success = true;
     register_freeall();
     variable_init();
     rodata_init();
@@ -357,4 +358,6 @@ bool codegen_generate(module *mod, FILE *file)
     free(codegen_alloc_registers()); // if regs are already allocated, free them
     rodata_free();
     variable_freeall();
+
+    return codegen_success;
 }

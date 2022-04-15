@@ -34,4 +34,4 @@ jobs:
       run: ./build/tin examples/hello_world.tin
       
     - name: Execute File
-      run: qemu-riscv64 ./examples/hello_world.out
+      run: qemu-riscv64 ./examples/hello_world
