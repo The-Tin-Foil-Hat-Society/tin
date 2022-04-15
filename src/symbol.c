@@ -14,6 +14,8 @@ symbol* symbol_new(char* name, void* mod_ptr)
     sym->is_initialised = false;
     sym->is_function = false;
     sym->function_node = 0;
+
+    return sym;
 }
 
 void symbol_free(symbol* sym)
