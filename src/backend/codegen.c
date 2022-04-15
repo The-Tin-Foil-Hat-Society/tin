@@ -212,7 +212,8 @@ int codegen_traverse_ast(FILE *file, ast_node *node, int reg)
         }
         else
         {
-            compiler_error("TODO: compare and assign bool\n");
+            // previously was a compiler_error, but, with turing_complete.tin for example, it still compiled corrently; i will treat this like a warning for now
+            trace("TODO: compare and assign bool\n"); 
         }
         break;
     }
