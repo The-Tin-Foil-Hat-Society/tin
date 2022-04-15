@@ -16,6 +16,7 @@ void yyerror (yyscan_t* locp, module* mod, const char* msg);
 
 %code requires
 {
+#pragma GCC diagnostic ignored "-Wunused-function"
 #include "module.h"
 #include "ast.h"
 }
@@ -79,7 +80,7 @@ simple_identifier
     ;
 
 identifier
-    : simple_identifier { $$ == $1; }
+    : simple_identifier { $$ = $1; }
     | MUL identifier { $$ = $2; ast_add_child($$, ast_new(AstReference)); }
     | REF identifier { $$ = $2; ast_add_child($$, ast_new(AstDereference)); }
     ;

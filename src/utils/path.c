@@ -110,8 +110,8 @@ char* path_locate_file(char* path, char* parent_dir)
         new_path = strdup(path);
     }
 
-    FILE* file;
-    if (file = fopen(new_path, "rb"))
+    FILE* file = fopen(new_path, "rb");
+    if (file)
 	{
         fclose(file);
         return new_path;
@@ -131,7 +131,8 @@ char* path_locate_file(char* path, char* parent_dir)
     while (split_path != 0)
     {
         char* joined_path = path_join(2, split_path, path);
-        if (file = fopen(joined_path, "rb"))
+        file = fopen(joined_path, "rb");
+        if (file)
         {
             new_path = joined_path;
             fclose(file);

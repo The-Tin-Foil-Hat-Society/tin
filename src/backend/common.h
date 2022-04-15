@@ -13,6 +13,7 @@ extern bool codegen_success;
 void _emit_comment(FILE *file, const char *fmt, ...);
 void _emit(FILE *file, const char *comment, const char *opcode, const char *operand, ...);
 
+#pragma GCC diagnostic ignored "-Wmultistatement-macros"
 #ifdef TIN_DEBUG_VERBOSE
 #define trace(...)       \
     printf(__VA_ARGS__); \

@@ -73,7 +73,7 @@ enum ast_node_type
 };
 
 // for printing purposes
-static char ast_type_names[53][32] = { "AstRoot","AstIdentifier","AstBoolLit","AstFloatLit","AstIntegerLit","AstStringLit","AstOffset","AstReference","AstDereference","AstAdd","AstAlloc","AstAnd","AstArgumentList","AstAsm","AstAssignment","AstBitwiseAnd","AstBitwiseOr","AstBitwiseXor","AstBlock","AstBreak","AstContinue","AstDataType","AstDefinition","AstDefinitionList","AstDiv","AstEqual","AstFor","AstFree","AstFunction","AstFunctionCall","AstGoto","AstGreaterThan","AstGreaterThanOrEqual","AstIf","AstInclude","AstInput","AstLessThan","AstLessThanOrEqual","AstMod","AstMul","AstNamespace","AstNot","AstNotEqual","AstOr","AstPow","AstPrint","AstReturn","AstScope","AstShiftLeft","AstShiftRight","AstSub","AstSymbol","AstWhile" };
+extern char ast_type_names[53][32];
 
 typedef struct ast_node ast_node;
 struct ast_node

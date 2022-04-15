@@ -81,7 +81,7 @@ void vector_insert_item(vector* vec, size_t index, void* item)
         return;
     }
 
-    for (int i = vec->size; i > index; i--)
+    for (size_t i = vec->size; i > index; i--)
     {
         vec->items[i] = vec->items[i - 1];
     }
@@ -100,7 +100,7 @@ void* vector_get_item(vector* vec, size_t index)
 }
 size_t vector_get_item_index(vector* vec, void* item)
 {
-    size_t item_i = -1;
+    size_t item_i = (size_t)-1;
 
     for (size_t i = 0; i < vec->size; i++)
     {
@@ -117,7 +117,7 @@ void vector_delete_item_at(vector* vec, size_t index)
 {
     vec->size -= 1;
 
-    for (int i = index; i < vec->size; i++)
+    for (size_t i = index; i < vec->size; i++)
     {
         vec->items[i] = vec->items[i+1];
     }
@@ -127,7 +127,7 @@ void vector_delete_item(vector* vec, void* item)
 {
     size_t item_i = vector_get_item_index(vec, item);
 
-    if (item_i != -1)
+    if (item_i != (size_t)-1)
     {
         vector_delete_item_at(vec, item_i);
     }
@@ -145,4 +145,5 @@ void* vector_pop(vector* vec)
 
     void* item = vec->items[vec->size - 1];
     vector_delete_item_at(vec, vec->size - 1);
+    return item;
 }

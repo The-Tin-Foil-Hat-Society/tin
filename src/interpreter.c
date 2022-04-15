@@ -1,5 +1,6 @@
 #include "interpreter.h"
 
+/*
 bool interpret(module* mod, ast_node* node, vector* stack)
 {
     
@@ -14,21 +15,32 @@ bool interpret_function(module* mod, ast_node* node, vector* stack)
     ast_node* scope = ast_get_child(node, node->children->size - 1); // should always be the last child 
     return interpret(mod, node, stack);
 }
+*/
 
 // interprets the code outside of functions, i.e. global declarations
 // returns false if an error occurred
 bool interpret_program(module* mod, ast_node* node, vector* stack)
 {
-    if (node = 0)
+    if (mod == 0)
+    {
+        return 0;
+    }
+
+    if (node == 0)
     {
         node = mod->ast_root;
     }
 
-    if (stack = 0)
+    if (stack == 0)
     {
         stack = vector_new();
     }
 
+    vector_free(stack);
+
+    return 0;
+
+    /*
     for (size_t i = 0; i < node->children->size; i++)
     {
         if (!interpret_program(mod, node, stack))
@@ -47,4 +59,5 @@ bool interpret_program(module* mod, ast_node* node, vector* stack)
     }
 
     return interpret(mod, node, stack);
+    */
 }

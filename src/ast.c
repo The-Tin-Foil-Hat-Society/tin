@@ -2,6 +2,8 @@
 
 #include <stdio.h>
 
+char ast_type_names[53][32] = { "AstRoot","AstIdentifier","AstBoolLit","AstFloatLit","AstIntegerLit","AstStringLit","AstOffset","AstReference","AstDereference","AstAdd","AstAlloc","AstAnd","AstArgumentList","AstAsm","AstAssignment","AstBitwiseAnd","AstBitwiseOr","AstBitwiseXor","AstBlock","AstBreak","AstContinue","AstDataType","AstDefinition","AstDefinitionList","AstDiv","AstEqual","AstFor","AstFree","AstFunction","AstFunctionCall","AstGoto","AstGreaterThan","AstGreaterThanOrEqual","AstIf","AstInclude","AstInput","AstLessThan","AstLessThanOrEqual","AstMod","AstMul","AstNamespace","AstNot","AstNotEqual","AstOr","AstPow","AstPrint","AstReturn","AstScope","AstShiftLeft","AstShiftRight","AstSub","AstSymbol","AstWhile" };
+
 bool has_dtype(enum ast_node_type type)
 {
     return type == AstDataType || type == AstAdd || type == AstDiv || type == AstMod || type == AstMul || type == AstPow || type == AstSub || type == AstBitwiseAnd || type == AstBitwiseOr || type == AstBitwiseXor || type == AstShiftLeft || type == AstShiftRight || type == AstGreaterThan || type == AstGreaterThanOrEqual  || type == AstLessThan || type == AstLessThanOrEqual  || type == AstEqual || type == AstNotEqual || type == AstAnd || type == AstNot || type == AstOr;
@@ -210,7 +212,7 @@ data_type* ast_find_data_type(ast_node* node)
         return node->value.symbol->dtype;
     }
 
-    for (int i = 0; i < node->children->size; i++)
+    for (size_t i = 0; i < node->children->size; i++)
     {
         data_type* found_dtype = ast_find_data_type(ast_get_child(node, i));
         if (found_dtype != 0)

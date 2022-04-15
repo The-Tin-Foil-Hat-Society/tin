@@ -105,7 +105,7 @@ void preprocess_identifier(preproc_state* state, ast_node* node)
     symbol_node->value.symbol = sym;
 
     // copy children to the new symbol
-    for (int i = 0; i < node->children->size; i++)
+    for (size_t i = 0; i < node->children->size; i++)
     {
         ast_node* child = ast_get_child(node, i);
         if (child->type != AstNamespace) // don't copy namespace nodes though

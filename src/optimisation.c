@@ -72,7 +72,7 @@ ast_node* find_conditions(ast_node* node)
     return NULL;
 }
 
-void optimize(module* mod, ast_node* node)
+void optimize(module* mod)
 {
-    find_conditions(node);
+    find_conditions(mod->ast_root);
 }
