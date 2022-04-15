@@ -1,4 +1,4 @@
-name: Makefile CI
+name: READMEtest
 
 on:
   push:
@@ -31,7 +31,7 @@ jobs:
       run: make tin
       
     - name: Build Tin File
-      run: ./build/tin file-name.tin
+      run: ./build/tin examples/hello_world.tin
       
     - name: Execute File
-      run: qemu-riscv64 ./file-name
+      run: qemu-riscv64 ./examples/hello_world.tin
