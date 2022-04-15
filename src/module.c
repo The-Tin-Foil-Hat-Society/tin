@@ -93,7 +93,7 @@ module* module_parse(char* path, module* parent)
         free(path);
         module_free(mod, 0);
         
-        return false;
+        return 0;
     }
 
     FILE* src_file = fopen(src_path, "rb");

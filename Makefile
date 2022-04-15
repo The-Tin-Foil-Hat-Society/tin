@@ -7,10 +7,10 @@ flags = -D TIN_COMPILER -D TIN_DEBUG_VERBOSE
 preproc: flags = -D TIN_DEBUG_VERBOSE
 
 sources = src/*.c src/backend/*.c src/utils/*.c
-sources_generated =generated/lex.yy.c generated/parser.tab.c
+sources_generated = generated/lex.yy.c generated/parser.tab.c
 
 tin: dir parser.o lex.o
-	@ gcc $(flags) -Isrc -Igenerated -Werror -fsanitize=address -g -O0 $(sources) $(sources_generated) -o build/tin -lm
+	@ gcc $(flags) -Isrc -Igenerated -Werror -g -O0 $(sources) $(sources_generated) -o build/tin -lm
 
 debug_assembly:
 	@riscv64-linux-gnu-as ./examples/itoa.s -o ./examples/itoa.o
@@ -42,11 +42,15 @@ lex.o: src/tin.l
 #Removes all generated and built files including generated direcories
 clean:
 	-@rm -f generated/* build/*
-	@rmdir generated build
+	-@rm -rf generated build
 	-@rm -f examples/*.s
 	-@rm -f examples/*.o
 	-@rm -f examples/*.out
 	-@rm -f examples/*.mod.json
+	-@rm -f units/*.s
+	-@rm -f units/*.o
+	-@rm -f units/*.out
+	-@rm -f units/*.mod.json
 
 memcheck: tin
 	@valgrind ./build/tin $(file)
