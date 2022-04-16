@@ -1,5 +1,14 @@
 #pragma once
 
+#pragma GCC diagnostic ignored "-Wunused-parameter"
+#pragma GCC diagnostic ignored "-Wuninitialized"
+#pragma GCC diagnostic ignored "-Warray-bounds"
+#pragma GCC diagnostic ignored "-Wreturn-type"
+#pragma GCC diagnostic ignored "-Wsign-compare"
+#pragma GCC diagnostic ignored "-Wunused-variable"
+#pragma GCC diagnostic ignored "-Wswitch"
+#pragma GCC diagnostic ignored "-Wpedantic"
+
 #include "ast.h"
 #include "module.h"
 #include <math.h>

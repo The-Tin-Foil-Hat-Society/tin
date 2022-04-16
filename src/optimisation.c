@@ -31,6 +31,7 @@ void reclass_as_bool(ast_node* node, bool value)
     node->value.boolean = value;
     node->children = new_node->children;
     ast_get_child(node, 0)->parent = node;
+    ast_free(new_node, false);
 }
 
 void reclass_as_num(ast_node* node, float result, bool is_integer)
@@ -278,6 +279,7 @@ ast_node* simplify_expression(ast_node* node, bool determinable)
                     variable->value.integer < 0 ? "i64" : "u64");
                 data_type_node->value.dtype->pointer_level = 0;
                 ast_add_child(node, data_type_node);
+                ast_free(new_node, false);
             }
             else if (is_float(variable->dtype) && variable->is_literal)
             {
@@ -289,6 +291,7 @@ ast_node* simplify_expression(ast_node* node, bool determinable)
                 data_type_node->value.dtype = data_type_new("f64");
                 data_type_node->value.dtype->pointer_level = 0;
                 ast_add_child(node, data_type_node);
+                ast_free(new_node, false);
             }
             else if (is_bool(variable->dtype) && variable->is_literal)
             {
@@ -297,6 +300,7 @@ ast_node* simplify_expression(ast_node* node, bool determinable)
                 node->value.boolean = variable->value.boolean;
                 node->children = new_node->children;
                 ast_get_child(node, 0)->parent = node;
+                ast_free(new_node, false);
             }
             else if (is_string(variable->dtype) && variable->is_literal)
             {
@@ -305,6 +309,7 @@ ast_node* simplify_expression(ast_node* node, bool determinable)
                 node->value.string = variable->value.string;
                 node->children = new_node->children;
                 ast_get_child(node, 0)->parent = node;
+                ast_free(new_node, false);
             }
         }
     }
@@ -514,11 +519,12 @@ void optimize(module* mod, ast_node* node)
     with literal values, if that's possible with the given source code
     */
     int count = 0;
-    vector* children;
+    vector* children = vector_new();
 
     while (children != node->children && count < 10)
     {
         count++;
+        vector_free(children);
         children = vector_copy(node->children);
         
         for (size_t i = 0; i < node->children->size; i++)
@@ -544,4 +550,6 @@ void optimize(module* mod, ast_node* node)
             }
         }
     }
+
+    vector_free(children);
 }

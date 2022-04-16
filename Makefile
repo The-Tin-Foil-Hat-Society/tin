@@ -5,7 +5,7 @@ GIT_ORIGIN = $(shell git config --get remote.origin.url)
 BUILD_TIME = $(shell date -u --iso=seconds)
 
 #File to compile:
-file = examples/for.tin
+file = examples/if.tin
 # or debug 
 build = release 
 FLAGS = -D TIN_COMPILER -DBUILD="\"$(build)\"" -DBUILD_TIME="\"$(BUILD_TIME)\"" -DGIT_VERSION="\"$(GIT_VERSION)\"" -DGIT_ORIGIN="\"$(GIT_ORIGIN)\""
@@ -72,4 +72,4 @@ memcheck: tin
 	@valgrind ./build/tin $(file)
 
 memcheck_full: tin
-	@valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes ./build/tin $(file)
+	@valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes -s ./build/tin $(file)
