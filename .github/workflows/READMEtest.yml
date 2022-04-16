@@ -31,7 +31,7 @@ jobs:
       run: make tin
 
     - name: Build Tin File
-      run: ./build/tin examples/hello_world.tin
+      run: ./build/tin examples/include.tin
       
     - name: Execute File
-      run: qemu-riscv64 ./examples/hello_world
+      run: qemu-riscv64 ./examples/include
