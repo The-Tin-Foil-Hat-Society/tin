@@ -1,43 +1,5 @@
-include "optimise_test_folder/opt_module_1.tin"
-i32 test = 0;
-
-fn i32 x
-{
-    test = 4;
-    return test;
-}
-
-fn void t
-{
-    
-    t();
-    x();
-}
-
-fn i32 func
-{
-    return 23;
-}
-
-fn i32 main
-{
-    i32 abc;
-    input abc;
-
-    test = (test + 1) * 2;
-    if (test == 1)
-    {
-        print "nope";
-    }
-    else if (2 > 2)
-    {
-        input test;
-        print "nop2";
-    }
-    else
-    {
-        print test;
-    }
-
+fn i32 main {
+    i32 val = 0;
+    print val;
     return 0;
 }

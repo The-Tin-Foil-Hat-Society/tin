@@ -5,7 +5,7 @@ GIT_ORIGIN = $(shell git config --get remote.origin.url)
 BUILD_TIME = $(shell date -u --iso=seconds)
 
 #File to compile:
-file = examples/if.tin
+file = units/optimise-test.tin
 # or debug 
 build = release 
 FLAGS = -D TIN_COMPILER -DBUILD="\"$(build)\"" -DBUILD_TIME="\"$(BUILD_TIME)\"" -DGIT_VERSION="\"$(GIT_VERSION)\"" -DGIT_ORIGIN="\"$(GIT_ORIGIN)\""
@@ -23,7 +23,7 @@ SOURCES = src/*.c src/backend/*.c src/utils/*.c
 SOURCES_GENERATED = generated/lex.yy.c generated/parser.tab.c
 
 tin: dir parser.o lex.o
-	@gcc $(FLAGS) -Isrc -Igenerated -Wall -Wextra -pedantic -Werror $(CCFLAGS) $(SOURCES) $(SOURCES_GENERATED) -o build/tin -lm
+	@gcc $(FLAGS) -g3 -Isrc -Igenerated -Wall -Wextra -pedantic -Werror $(CCFLAGS) $(SOURCES) $(SOURCES_GENERATED) -o build/tin -lm
 
 debug_assembly:
 	@riscv64-linux-gnu-as ./examples/itoa.s -o ./examples/itoa.o
@@ -72,4 +72,4 @@ memcheck: tin
 	@valgrind ./build/tin $(file)
 
 memcheck_full: tin
-	@valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes -s ./build/tin $(file)
+	@valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes ./build/tin $(file)

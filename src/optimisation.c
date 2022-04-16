@@ -151,6 +151,7 @@ ast_node* replace_if_statements(ast_node* node, bool determinable)
                 if (condition->value.boolean)
                 {
                     scope->parent = child->parent;
+                    ast_free(child, true);
                     ast_set_child(node, i, scope);
                     child = ast_get_child(node, i);
                 }
@@ -160,6 +161,7 @@ ast_node* replace_if_statements(ast_node* node, bool determinable)
                     {
                         ast_node* else_scope = ast_get_child(child, 2);
                         else_scope->parent = child->parent;
+                        ast_free(child, true);
                         ast_set_child(node, i, else_scope);
                         child = ast_get_child(node, i);
                     }
@@ -540,10 +542,10 @@ void optimize(module* mod, ast_node* node)
 
                 if (strcmp(declaration->value.symbol->name, "main") == 0)
                 {
-                    reset_variables(node);
+                    //reset_variables(node);
                     find_expressions(child, true);
-                    replace_if_statements(child, true);
-                    remove_assignments(node);
+                    //replace_if_statements(child, true);
+                    //remove_assignments(node);
                     
                     break;
                 }
