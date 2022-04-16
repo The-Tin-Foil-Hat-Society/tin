@@ -25,7 +25,7 @@ jobs:
       run: cd tin
     
     - name: Set Library PATH
-      run: PATH="$PATH:$(pwd)/std"
+      run: echo "${GITHUB_WORKSPACE}/std" >> $GITHUB_PATH
       
     - name: Make Tin
       run: make tin
