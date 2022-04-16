@@ -1,5 +1,5 @@
-/* if you're using vscode and a yacc syntax highlighter, ignore the "Semantic value used inside actions but has not declared the type" error, it's a bug in the extension,
-   in general ignore vscode error highlighting, rely on gcc output for warnings and errors */
+/* to disable the "Semantic value used inside actions but has not declared the type" error
+   with the YASH syntax highlighter, set the YYTYPE in YASH settings to `ast_node*` */
 
 %{
 #include <string.h>
