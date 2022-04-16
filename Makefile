@@ -10,8 +10,15 @@ file = examples/for.tin
 # or debug 
 build = release 
 FLAGS = -D TIN_COMPILER -DTIN_COPYRIGHT="$(TIN_COPYRIGHT)" -DBUILD_TIME="\"$(BUILD_TIME)\"" -DGIT_VERSION="\"$(GIT_VERSION)\"" -DGIT_ORIGIN="\"$(GIT_ORIGIN)\""
+BUILD_PATH = build/tin
+INCLUDES = -Isrc -Igenerated
 
 CC = gcc
+ifeq ($(CC),afl-gcc-fast)
+	FLAGS += -D TIN_FUZZ
+	BUILD_PATH = fuzzing/tin
+	INCLUDES += -Ifuzzing
+endif
 ifeq ($(build),debug)
 	CCFLAGS = -g3 -Og 
 	FLAGS += -D TIN_DEBUG -D TIN_DEBUG_VERBOSE
@@ -26,7 +33,7 @@ SOURCES = src/*.c src/backend/*.c src/utils/*.c
 SOURCES_GENERATED = generated/lex.yy.c generated/parser.tab.c
 
 tin: dir parser.o lex.o
-	@$(CC) $(FLAGS) -Isrc -Igenerated -Wall -Wextra -pedantic -Werror $(CCFLAGS) $(SOURCES) $(SOURCES_GENERATED) -o build/tin -lm
+	@$(CC) $(FLAGS) $(INCLUDES) -Wall -Wextra -pedantic -Werror $(CCFLAGS) $(SOURCES) $(SOURCES_GENERATED) -o $(BUILD_PATH) -lm
 
 debug_assembly:
 	@riscv64-linux-gnu-as ./examples/itoa.s -o ./examples/itoa.o

@@ -21,7 +21,7 @@ void free_register(int reg);
 //
 // Variables
 //
-hashtable *variables;
+static hashtable *variables;
 
 void variable_init();
 void variable_freeall();

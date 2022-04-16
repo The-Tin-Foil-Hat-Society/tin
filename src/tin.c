@@ -15,6 +15,9 @@ bool tin_verbose;
 #define LD_PATH "/usr/bin/riscv64-linux-gnu-ld"
 #include "backend/codegen.h"
 #endif // TIN_COMPILER
+#ifdef TIN_FUZZ
+#include "argv-fuzz-inl.h"
+#endif
 
 #define print_step(...)     \
 	if (tin_verbose) \
@@ -68,6 +71,10 @@ void arg_version(void)
 
 int main(int argc, char **argv)
 {	
+#ifdef TIN_FUZZ
+	AFL_INIT_ARGV();
+#endif
+
 	tin_verbose = false;
 	int code = 0;
 

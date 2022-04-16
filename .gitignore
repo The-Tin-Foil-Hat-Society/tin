@@ -33,9 +33,13 @@
 
 # Ignore files without extensions (executables) in examples and units
 examples/*
+fuzzing/*
 units/*
 !*.*
 !*/
+
+# Fuzzing files
+fuzzing/out/*
 
 # Build files
 build/

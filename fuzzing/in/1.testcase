@@ -1,0 +1,1 @@
+-c -o test_output examples/hello_world.tin
