@@ -29,6 +29,10 @@ void arg_help(void)
 	printf(" -h/--help\t\tDisplay this message.\n");
 	printf(" -o/--output <file>\tOutput to <file>.\n");
 	printf(" -v/--version\t\tDisplays compiler version info.\n");
+	printf(" --verbose\t\tDisplays verbose output.\n");
+	printf(" -O<level>\t\tSet optimisation level between 0-1.\n");
+	printf(" -c\t\t\tCompile without linking.\n");
+	printf(" -s\t\t\tCompile without assembling.\n");
 #ifdef GIT_ORIGIN
 	printf("\norigin: %s\n", GIT_ORIGIN);
 #endif
@@ -45,17 +49,14 @@ void arg_version(void)
 #ifdef TIN_DEBUG_VERBOSE
 	printf("-D TIN_DEBUG_VERBOSE\n");
 #endif
-#ifdef BUILD
-	printf("BUILD: %s\n", BUILD);
-#endif
 #ifdef BUILD_TIME
-	printf("BUILD_TIME: %s\n", BUILD_TIME);
+	printf("BUILD_TIME:\t%s\n", BUILD_TIME);
 #endif
 #ifdef GIT_VERSION
-	printf("VERSION: %s\n", GIT_VERSION);
+	printf("VERSION:\t%s\n", GIT_VERSION);
 #endif
 #ifdef GIT_ORIGIN
-	printf("ORIGIN: %s\n", GIT_ORIGIN);
+	printf("ORIGIN:\t\t%s\n", GIT_ORIGIN);
 #endif
 }
 
@@ -73,6 +74,9 @@ int main(int argc, char **argv)
 	char* input_file = 0;
 	char* output_file = 0;
 
+	bool arg_c = false;
+	bool arg_s = false;
+	int arg_O = 0;
 	// parse arguments
 	for (int i = 1; i < argc; i++)
 	{
@@ -89,6 +93,7 @@ int main(int argc, char **argv)
 		else if ((strcmp(argv[i], "-o") == 0 || strcmp(argv[i], "--output") == 0) && i < argc - 1 && argv[i + 1][0] != '-') // check that the next arg isn't an opt
 		{
 			output_file = argv[i + 1];
+			i += 1; // skip the next arg since its our file
 		}
 		else if (strcmp(argv[i], "-v") == 0 || strcmp(argv[i], "--version") == 0)
 		{
@@ -99,6 +104,34 @@ int main(int argc, char **argv)
 		{
 			tin_verbose = true;
 		}
+		// optimizer option
+		else if (strlen(argv[i]) == 3 && argv[i][0] == '-' && argv[i][1] == 'O')
+		{
+			arg_O = atoi(argv[i + 2]); // should only have a numeral after -O
+			if (arg_O > 1)
+			{
+				printf("-O option must be either 0 and 1\n");
+			}
+		}
+		else if (strcmp(argv[i], "-c") == 0)
+		{
+			arg_c = true;
+		}
+		else if (strcmp(argv[i], "-s") == 0)
+		{
+			arg_s = true;
+		}
+		else
+		{
+			printf("invalid argument: %s\n", argv[i]);
+			return 1;
+		}
+	}
+
+	if (arg_s && arg_c)
+	{
+		printf("can only supply one of -c or -s arguments but not both\n");
+		return 1;
 	}
 
 	if (input_file == 0)
@@ -109,6 +142,13 @@ int main(int argc, char **argv)
 
 	print_step("Parsing %s\n", input_file);
 	module *mod = module_parse(input_file, 0);
+
+	/*
+	if (arg_O > 0)
+	{
+		optimize(mod, mod->ast_root);
+	}
+	*/
 
 	if (mod == 0) // parsing failed
 	{
@@ -155,6 +195,11 @@ int main(int argc, char **argv)
 		}
 	}
 
+	if (arg_s)
+	{
+		goto compiler_end;
+	}
+
 	// Run cross-assembler
 	{
 		print_step("Running assembler\n");
@@ -165,6 +210,11 @@ int main(int argc, char **argv)
 		sprintf(asm_args_str, "%s %s -o %s", ASM_PATH, asm_filename, obj_filename);
 		exec(asm_args_str);
 		free(asm_args_str);
+	}
+
+	if (arg_c)
+	{
+		goto compiler_end;
 	}
 
 	// Run linker
@@ -185,8 +235,14 @@ compiler_end:
 
 #ifdef TIN_RELEASE
 // delete intermediate files
-	remove(asm_filename);
-	remove(obj_filename);
+	if (!arg_s)
+	{
+		remove(asm_filename);
+	}
+	if (!arg_c)
+	{
+		remove(obj_filename);
+	}
 #endif
 
 	free(filename);
