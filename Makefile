@@ -1,5 +1,6 @@
 #This is the make file for the tin compiler
 
+TIN_COPYRIGHT = \"Copyright (c) 2022 Kallum Doughty, Alexander J Guthrie, Andrejs Krauze, Joshua S Lotriet, Hardijs Raubiskis\"
 GIT_VERSION = $(shell git describe --tags)@$(shell git rev-parse --abbrev-ref HEAD)
 GIT_ORIGIN = $(shell git config --get remote.origin.url)
 BUILD_TIME = $(shell date -u --iso=seconds)
@@ -8,7 +9,7 @@ BUILD_TIME = $(shell date -u --iso=seconds)
 file = examples/for.tin
 # or debug 
 build = release 
-FLAGS = -D TIN_COMPILER -DBUILD_TIME="\"$(BUILD_TIME)\"" -DGIT_VERSION="\"$(GIT_VERSION)\"" -DGIT_ORIGIN="\"$(GIT_ORIGIN)\""
+FLAGS = -D TIN_COMPILER -DTIN_COPYRIGHT="$(TIN_COPYRIGHT)" -DBUILD_TIME="\"$(BUILD_TIME)\"" -DGIT_VERSION="\"$(GIT_VERSION)\"" -DGIT_ORIGIN="\"$(GIT_ORIGIN)\""
 
 CC = gcc
 ifeq ($(build),debug)

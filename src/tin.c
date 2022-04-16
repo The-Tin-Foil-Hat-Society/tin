@@ -25,6 +25,12 @@ bool tin_verbose;
 
 void arg_help(void)
 {
+#ifdef TIN_COPYRIGHT
+	printf("%s\n", TIN_COPYRIGHT);
+#endif
+#ifdef GIT_ORIGIN
+	printf("origin: %s\n\n", GIT_ORIGIN);
+#endif
 	printf("Usage: tin [options] <file>\nOptions:\n");
 	printf(" -h/--help\t\tDisplay this message.\n");
 	printf(" -o/--output <file>\tOutput to <file>.\n");
@@ -33,13 +39,13 @@ void arg_help(void)
 	printf(" -O<level>\t\tSet optimisation level between 0-1.\n");
 	printf(" -c\t\t\tCompile without linking.\n");
 	printf(" -s\t\t\tCompile without assembling.\n");
-#ifdef GIT_ORIGIN
-	printf("\norigin: %s\n", GIT_ORIGIN);
-#endif
 }
 
 void arg_version(void)
 {
+#ifdef TIN_COPYRIGHT
+	printf("%s\n", TIN_COPYRIGHT);
+#endif
 #ifdef TIN_RELEASE
 	printf("-D TIN_RELEASE\n");
 #endif
