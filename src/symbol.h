@@ -20,10 +20,9 @@ typedef struct
     bool is_function;
     bool is_literal; // for the optimiser to determine if values are determinable literals
     bool is_assigned; // for the optimiser to check if value has been assigned yet
+    bool is_called; // for the optimiser to check if function has been called yet
 
     int variable_uses; // for the optimiser to determine amount of times a variable has been used
-
-    bool is_called; // for the optimiser to check if function has been called yet
     void* function_node;  // for the interpreter to follow function symbols
     //void* value; // for the optimiser to simplify expressions
     union 

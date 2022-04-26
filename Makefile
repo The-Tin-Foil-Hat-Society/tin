@@ -6,9 +6,9 @@ GIT_ORIGIN = $(shell git config --get remote.origin.url)
 BUILD_TIME = $(shell date -u --iso=seconds)
 
 #File to compile:
-file = examples/for.tin
+file = examples/include.tin
 # or debug 
-build = release 
+build = debug#release 
 FLAGS = -D TIN_COMPILER -DTIN_COPYRIGHT="$(TIN_COPYRIGHT)" -DBUILD_TIME="\"$(BUILD_TIME)\"" -DGIT_VERSION="\"$(GIT_VERSION)\"" -DGIT_ORIGIN="\"$(GIT_ORIGIN)\""
 
 CC = gcc

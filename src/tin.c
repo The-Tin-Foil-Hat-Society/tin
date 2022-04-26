@@ -150,9 +150,11 @@ int main(int argc, char **argv)
 	print_step("Parsing %s\n", input_file);
 	module *mod = module_parse(input_file, 0);
 
+	arg_O = 1; ///////// remove
+
 	if (arg_O > 0)
 	{
-		optimize(mod, mod->ast_root);
+		optimise(mod, mod->ast_root);
 	}
 
 	if (mod == 0) // parsing failed

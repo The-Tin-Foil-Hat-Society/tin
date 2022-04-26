@@ -31,7 +31,6 @@ void reclass_as_bool(ast_node* node, bool value)
     node->value.boolean = value;
     node->children = new_node->children;
     ast_get_child(node, 0)->parent = node;
-    ast_free(new_node, false);
 }
 
 void reclass_as_num(ast_node* node, float result, bool is_integer)
@@ -151,7 +150,6 @@ ast_node* replace_if_statements(ast_node* node, bool determinable)
                 if (condition->value.boolean)
                 {
                     scope->parent = child->parent;
-                    ast_free(child, true);
                     ast_set_child(node, i, scope);
                     child = ast_get_child(node, i);
                 }
@@ -161,7 +159,6 @@ ast_node* replace_if_statements(ast_node* node, bool determinable)
                     {
                         ast_node* else_scope = ast_get_child(child, 2);
                         else_scope->parent = child->parent;
-                        ast_free(child, true);
                         ast_set_child(node, i, else_scope);
                         child = ast_get_child(node, i);
                     }
@@ -331,7 +328,9 @@ ast_node* simplify_expression(ast_node* node, bool determinable)
         if (!func_call->is_called)
         {
             func_call->is_called = true;
-            find_expressions(func_call->function_node, false);
+            ast_node* fn = func_call->function_node;
+            printf("%li yep;", fn->children->size);
+            //find_expressions(func_call->function_node, false);
         }
     }
 
@@ -414,9 +413,11 @@ ast_node* find_expressions(ast_node* node, bool determinable)
     {
         node = simplify_expression(node, determinable);
     }
-    else if (node->type == AstFunctionCall)
+    
+    if (node->type == AstFunctionCall)
     {
         symbol* func_call = ast_get_child(node, 0)->value.symbol;
+
         if (!func_call->is_called)
         {
             func_call->is_called = true;
@@ -511,7 +512,7 @@ void remove_assignments(ast_node* node)
     }
 }
 
-void optimize(module* mod, ast_node* node)
+void optimise(module* mod, ast_node* node)
 {
     /*
     TODO: handle function optimisation better
@@ -528,6 +529,7 @@ void optimize(module* mod, ast_node* node)
         count++;
         vector_free(children);
         children = vector_copy(node->children);
+        reset_variables(node);
         
         for (size_t i = 0; i < node->children->size; i++)
         {
@@ -539,13 +541,13 @@ void optimize(module* mod, ast_node* node)
             else if (child->type == AstFunction)
             {
                 ast_node* declaration = ast_get_child(child, 0);
+                declaration->value.symbol->function_node = declaration;
 
                 if (strcmp(declaration->value.symbol->name, "main") == 0)
                 {
-                    //reset_variables(node);
                     find_expressions(child, true);
-                    //replace_if_statements(child, true);
-                    //remove_assignments(node);
+                    replace_if_statements(child, true);
+                    remove_assignments(node);
                     
                     break;
                 }

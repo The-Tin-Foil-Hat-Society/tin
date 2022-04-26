@@ -8,6 +8,8 @@
 #pragma GCC diagnostic ignored "-Wunused-variable"
 #pragma GCC diagnostic ignored "-Wswitch"
 #pragma GCC diagnostic ignored "-Wpedantic"
+#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
+#pragma GCC diagnostic ignored "-Wformat-security"
 
 #include "ast.h"
 #include "module.h"
@@ -28,4 +30,4 @@ ast_node* remove_variables(ast_node* node);
 ast_node* find_expressions(ast_node* node, bool determinable);
 void reset_variables(ast_node* node);
 
-void optimize(module* mod, ast_node* node);
+void optimise(module* mod, ast_node* node);

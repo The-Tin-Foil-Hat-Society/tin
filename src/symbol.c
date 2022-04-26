@@ -15,6 +15,7 @@ symbol* symbol_new(char* name, void* mod_ptr)
     sym->is_function = false;
     sym->is_literal = true;
     sym->is_assigned = false;
+    sym->is_called = false;
     sym->function_node = 0;
     sym->variable_uses = 0;
 

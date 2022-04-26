@@ -1,5 +1,27 @@
-fn i32 main {
-    i32 val = 0;
-    print val;
+i32 test = 5;
+test = test + 1; //6
+
+fn void unused_func
+{
+    test = 73;
+    test = test - 1;
+}
+
+fn i32 main
+{
+    test = test + 1; //7
+
+    if (true == true)
+    {
+        if (test < 1) //false
+        {
+            print "wrong";
+        }
+        else if ((test + 1) / 2 == 4) //true
+        {
+            print test; //7
+        }
+    }
+
     return 0;
 }
