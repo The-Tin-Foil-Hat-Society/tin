@@ -31,6 +31,7 @@ void symbol_free(symbol* sym)
 
     free(sym->name);
     free(sym->key);
+    
     data_type_free(sym->dtype);
     free(sym);
 }
