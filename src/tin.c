@@ -152,7 +152,7 @@ int main(int argc, char **argv)
 
 	if (arg_O > 0)
 	{
-		optimise(mod, mod->ast_root);
+		optimise(mod->ast_root);
 	}
 
 	if (mod == 0) // parsing failed
