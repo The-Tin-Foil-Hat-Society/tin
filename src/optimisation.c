@@ -216,14 +216,14 @@ void evaluate_expression(ast_node* parent, int child_index, bool determinable)
                 {
                     if (!sym->is_literal)
                     {
-                        return 0;//node;
+                        return 0;
                     }
                 }
             }
             else if (child->type == AstFunctionCall)
             {
                 // replace in future version
-                return 0;//node;
+                return 0;
             }
 
             reclass_as_bool(parent, child_index, !child->value.boolean);
@@ -243,27 +243,27 @@ void evaluate_expression(ast_node* parent, int child_index, bool determinable)
                 {
                     if (!sym->is_literal)
                     {
-                        return 0;//node;
+                        return 0;
                     }
                 }
             }
             else if (child->type == AstFunctionCall)
             {
                 // replace in future version
-                return 0;//node;
+                return 0;
             }
 
             // if nodes aren't literals, don't continue
             if (!check_children(child, literals, sizeof(literals)))
             {
-                return 0;//node;
+                return 0;
             }
         }
 
         reclass_node(parent, child_index);
     }
 
-    return 0;//node;
+    return 0;
 }
 
 void simplify_expression(ast_node* parent, int child_index, bool determinable)
