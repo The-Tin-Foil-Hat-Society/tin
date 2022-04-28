@@ -111,7 +111,7 @@ int main(int argc, char **argv)
 		{
 			tin_verbose = true;
 		}
-		// optimizer option
+		// optimiser option
 		else if (strlen(argv[i]) == 3 && argv[i][0] == '-' && argv[i][1] == 'O')
 		{
 			arg_O = atoi(argv[i + 2]); // should only have a numeral after -O
@@ -149,8 +149,6 @@ int main(int argc, char **argv)
 
 	print_step("Parsing %s\n", input_file);
 	module *mod = module_parse(input_file, 0);
-
-	arg_O = 1; ///////// remove
 
 	if (arg_O > 0)
 	{

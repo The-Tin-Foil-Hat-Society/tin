@@ -19,7 +19,7 @@ fn i32 main
         }
         else if ((test + 1) / 2 == 4) //true
         {
-            print test; //7
+            print "test"; //7
         }
     }
 
