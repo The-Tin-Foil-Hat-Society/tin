@@ -13,6 +13,7 @@ void preprocess_definition(preproc_state* state, ast_node* node)
 
     if (node->parent->type == AstFunction)
     {
+        sym->is_called = false;
         sym->is_function = true;
         sym->is_initialised = true;
         sym->function_node = node->parent;

@@ -170,6 +170,15 @@ void ast_delete_child(ast_node* node, ast_node* child)
     ast_free(child, 0);
 }
 
+void ast_delete_children(ast_node* node)
+{
+    while(node->children->size > 0)
+    {
+        ast_node* child = ast_get_child(node, 0);
+        ast_delete_child(node, child);
+    }
+}
+
 ast_node* ast_get_current_function(ast_node* node)
 {
     while (node != 0)
@@ -291,6 +300,10 @@ void ast_print_to_file(ast_node* node, FILE* file)
         {
             fprintf(file, ",\"int_value\": %lu", *(uint64_t*)&node->value.integer);
         }
+    }
+    else if (node->type == AstBoolLit)
+    {
+        fprintf(file, ",\"bool_value\": %i", (int)(node->value.boolean));
     }
     else if (node->type == AstSymbol)
     {

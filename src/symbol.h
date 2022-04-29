@@ -18,8 +18,20 @@ typedef struct
 
     bool is_initialised;
     bool is_function;
+    bool is_literal; // for the optimiser to determine if values are determinable literals
+    bool is_assigned; // for the optimiser to check if value has been assigned yet
+    bool is_called; // for the optimiser to check if function has been called yet
 
-    void *function_node; // for the interperter to follow function symbols
+    int variable_uses; // for the optimiser to determine amount of times a variable has been used
+    void* function_node;  // for the interpreter to follow function symbols
+    //void* value; // for the optimiser to simplify expressions
+    union 
+    {
+        bool boolean;            // AstBoolLit
+        int64_t integer;         // AstIntegerLit
+        char* string;            // AstAsm, AstIdentifier, AstInclude, AstNamespace, AstStringLit
+        double floating;         // AstFloatLit
+    } value;  // for the optimiser to simplify expressions
 } symbol;
 
 symbol *symbol_new(char* name, void* mod_ptr);

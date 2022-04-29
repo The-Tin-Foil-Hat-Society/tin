@@ -1,5 +1,6 @@
 #include "interpreter.h"
 #include "module.h"
+#include "optimisation.h"
 
 #include "parser.tab.h"
 #include "lex.yy.h"
@@ -155,12 +156,10 @@ int main(int argc, char **argv)
 		return 1; // no need to cleanup here
 	}
 
-	/*
 	if (arg_O > 0)
 	{
-		optimize(mod, mod->ast_root);
+		optimise(mod->ast_root);
 	}
-	*/
 
 #ifndef TIN_RELEASE
 	module_print_to_file(mod, 0);
