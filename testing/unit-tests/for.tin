@@ -1,6 +1,6 @@
 fn i32 main
 {
-    for ( i32 i = 0; i < 11; i = i + 1 )
+    for ( i32 i = 0; i < 10; i = i + 1 )
     {
         /*
          * This isn't great but the stuff we need for a "real" itoa

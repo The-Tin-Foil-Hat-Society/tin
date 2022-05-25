@@ -1,14 +1,24 @@
 # Imports
 import subprocess
 import os
+import argparse
 from os import listdir
 from os.path import isfile, join
+from genericpath import exists
+
+parser = argparse.ArgumentParser()
+parser.add_argument('-e','--expected', action='store_true', help='Run the test with expected output')
+parser.add_argument('-v','--verbose', action='store_true', help='Run the test with verbose output will automatically run with expected output')
+
+args = parser.parse_args()
 
 tests_path = "./unit-tests/"
 expecteds_path = "./expected-outputs/"
 
 test_list = [f for f in listdir(tests_path) if isfile(join(tests_path, f))]
+test_list.sort()
 expected_list = [f for f in listdir(expecteds_path) if isfile(join(expecteds_path, f))]
+expected_list.sort()
 
 tests_passed = 0
 test_amount = len(test_list)
@@ -16,6 +26,17 @@ test_amount = len(test_list)
 failed_test_list = []
 failed_test_outputs = []
 failed_test_expected_outputs = []
+
+if len(test_list) != len(expected_list):
+    print("Test amount mismatch")
+    exit(1)
+
+if args.verbose:
+    print("Test lists:")
+    print(test_list)
+    print("Expected list:")
+    print(expected_list)
+
 
 for x in range(test_amount):
     # Set current test
@@ -32,7 +53,8 @@ for x in range(test_amount):
     expected_open = open(expecteds_path + expected_list[x], "r") # Open the expected output file
     expected_output = expected_open.read().encode("ascii") # Store the expected output
     
-    os.remove(test_name) # Cleanup the compiled file
+    if exists(test_name): # If the test file exists
+        os.remove(test_name) # Cleanup the compiled file
 
     # Check if the test passed
     if test_output == expected_output:
@@ -48,5 +70,7 @@ if tests_passed != test_amount:
     print("Failed tests:")
     for x in range(len(failed_test_list)):
         print("\t" + failed_test_list[x])
-        print("\t\t" + "Expected: " + str(failed_test_expected_outputs[x].decode("ascii")))
-        print("\t\t" + "Got: " + str(failed_test_outputs[x].decode("ascii")))
+        if args.expected or args.verbose:
+            print("Expected:\n" + str(failed_test_expected_outputs[x].decode("ascii")))
+            print("Got:\n" + str(failed_test_outputs[x].decode("ascii")))
+
