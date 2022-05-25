@@ -2,7 +2,18 @@
 
 #include "ast.h"
 #include "module.h"
+#include <math.h>
 
-int eval_condition(ast_node* condition, ast_node* node1, ast_node* node2);
-ast_node* find_conditions(ast_node* node);
-void optimize(module* mod);
+void reclass_as_bool(ast_node* parent, int child_index, bool value);
+void reclass_as_num(ast_node* parent, int child_index, float result, bool is_integer);
+void reclass_node(ast_node* parent, int child_index);
+
+void evaluate_expression(ast_node* parent, int child_index, bool determinable);
+void assign_variable(ast_node* node, bool determinable);
+void simplify_expression(ast_node* parent, int child_index, bool determinable);
+
+void replace_if_statements(ast_node* node);
+void find_expressions(ast_node* parent, int child_index, bool determinable);
+void reset_variables(ast_node* node);
+
+void optimise(ast_node* node);

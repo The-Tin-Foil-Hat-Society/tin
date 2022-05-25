@@ -1,5 +1,6 @@
 #include "interpreter.h"
 #include "module.h"
+#include "optimisation.h"
 
 #include "parser.tab.h"
 #include "lex.yy.h"
@@ -110,10 +111,10 @@ int main(int argc, char **argv)
 		{
 			tin_verbose = true;
 		}
-		// optimizer option
+		// optimiser option
 		else if (strlen(argv[i]) == 3 && argv[i][0] == '-' && argv[i][1] == 'O')
 		{
-			arg_O = atoi(argv[i + 2]); // should only have a numeral after -O
+			arg_O = argv[i][2]  - '0'; // should only have a numeral after -O
 			if (arg_O > 1)
 			{
 				printf("-O option must be either 0 and 1\n");
@@ -149,17 +150,15 @@ int main(int argc, char **argv)
 	print_step("Parsing %s\n", input_file);
 	module *mod = module_parse(input_file, 0);
 
-	/*
-	if (arg_O > 0)
-	{
-		optimize(mod, mod->ast_root);
-	}
-	*/
-
 	if (mod == 0) // parsing failed
 	{
 		print_step("Parsing and preprocessing failed\n");
 		return 1; // no need to cleanup here
+	}
+
+	if (arg_O > 0)
+	{
+		optimise(mod->ast_root);
 	}
 
 #ifndef TIN_RELEASE
@@ -176,15 +175,20 @@ int main(int argc, char **argv)
 #elif TIN_COMPILER
 	print_step("Running in compiler mode\n");
 
-	// Get the module's path without the extension
-	char* filename = path_join(2, mod->dir, mod->name);
-	char* asm_filename = path_join(2, filename, ".s");
-	char* obj_filename = path_join(2, filename, ".o");
-
-	if (output_file == 0)
+	char* filename;
+	if (output_file != 0)
 	{
+		filename = strdup(output_file);
+	}
+	else
+	{
+		// Get the module's path without the extension
+		filename = path_join(2, mod->dir, mod->name);
 		output_file = filename;
 	}
+
+	char* asm_filename = path_join(2, filename, ".s");
+	char* obj_filename = path_join(2, filename, ".o");
 
 	// call the code generator
 	{
@@ -196,6 +200,9 @@ int main(int argc, char **argv)
 
 		if (codegen_res == false)
 		{
+			// delete the .s file if we've failed
+			remove(asm_filename);
+
 			code = 1;
 			goto compiler_end;
 		}

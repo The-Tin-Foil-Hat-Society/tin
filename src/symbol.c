@@ -13,7 +13,11 @@ symbol* symbol_new(char* name, void* mod_ptr)
 
     sym->is_initialised = false;
     sym->is_function = false;
+    sym->is_literal = true;
+    sym->is_assigned = false;
+    sym->is_called = false;
     sym->function_node = 0;
+    sym->variable_uses = 0;
 
     return sym;
 }
@@ -27,6 +31,7 @@ void symbol_free(symbol* sym)
 
     free(sym->name);
     free(sym->key);
+    
     data_type_free(sym->dtype);
     free(sym);
 }

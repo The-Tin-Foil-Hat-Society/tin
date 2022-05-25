@@ -4,19 +4,6 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "Build and run",
-            "type": "shell",
-            "command": "make run",
-            "options": {
-                "cwd": "${workspaceFolder}"
-            },
-            "problemMatcher": [],
-            "group": {
-                "kind": "build",
-                "isDefault": true
-            }
-        },
-        {   // needed for debugging on windows
             "label": "build windows",
             "type": "shell",
             "command": "${workspaceFolder}//build.bat",
@@ -24,5 +11,13 @@
                 "cwd": "${workspaceFolder}"
             },
         },
+        {
+            "label": "build linux",
+            "type": "shell",
+            "command": "${workspaceFolder}//build.sh",
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+        }
     ]
 }
