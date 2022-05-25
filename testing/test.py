@@ -7,7 +7,8 @@ from os.path import isfile, join
 from genericpath import exists
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--expected', type=bool, default=False, help='Run the test with expected output')
+parser.add_argument('-e','--expected', action='store_true', help='Run the test with expected output')
+parser.add_argument('-v','--verbose', action='store_true', help='Run the test with verbose output will automatically run with expected output')
 
 args = parser.parse_args()
 
@@ -30,8 +31,12 @@ if len(test_list) != len(expected_list):
     print("Test amount mismatch")
     exit(1)
 
-print(test_list)
-print(expected_list)
+if args.verbose:
+    print("Test lists:")
+    print(test_list)
+    print("Expected list:")
+    print(expected_list)
+
 
 for x in range(test_amount):
     # Set current test
@@ -65,7 +70,7 @@ if tests_passed != test_amount:
     print("Failed tests:")
     for x in range(len(failed_test_list)):
         print("\t" + failed_test_list[x])
-        if args.expected == True:
+        if args.expected or args.verbose:
             print("Expected:\n" + str(failed_test_expected_outputs[x].decode("ascii")))
             print("Got:\n" + str(failed_test_outputs[x].decode("ascii")))
 
