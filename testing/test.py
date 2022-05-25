@@ -60,5 +60,5 @@ if tests_passed != test_amount:
     for x in range(len(failed_test_list)):
         print("\t" + failed_test_list[x])
         print("\t\t" + "Expected: " + str(failed_test_expected_outputs[x].decode("ascii")))
-        print("\t\t" + "Got: " + str(failed_test_outputs[x].decode("ascii")))
+        print("Got:\n" + str(failed_test_outputs[x].decode("ascii")))
 
