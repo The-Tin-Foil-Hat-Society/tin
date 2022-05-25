@@ -165,9 +165,11 @@ _For more examples, please refer to the [documentation](https://github.com/aaf6a
 <!-- Test suite -->
 ## Adding new tests and using the suit
 
-The following guide assumes you have completed the getting started section of the readme and can build .tin files, an important note is to not use the debug version as the clean-up is not designed to handle all the extra files generated or the verbosity outputted in the console. When writing a new test keep in mind that the output of the executable is tested so wherever possible include prints so that information is logged to the console that the tester can then check the differences between.
+The following guide assumes you have completed [getting_started](#getting started) and can build .tin files, an important note is to not use the debug version as the clean-up is not designed to handle all the extra files generated or the verbosity outputted in the console. When writing a new test keep in mind that the output of the executable is tested so wherever possible include prints so that information is logged to the console that the tester can then check the differences between.
 When running the tester if you want a more verbose output or the expected outputs on failed tests make sure to use the ‘-e’ / ‘--expected’, ‘-v’ / ‘--verbose’ arguments in the command line make note that when using verbose the expected output of failed tests is show also.
-Steps:
+
+## Steps for adding new tests
+
 1.	Create a new .tin file with the code that you wish to test inside of the ./testing/unit-tests directory
 2.	Compile the file;  ./build/tin ./testing/unit-tests/file-name.tin and check output is as expected
 3.	Run the executable through QEMU; qemu-riscv64 ./testing/unit-test/file-name and check output is as expected
