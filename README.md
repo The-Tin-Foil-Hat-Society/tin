@@ -72,6 +72,7 @@
       </ul>
     </li>
     <li><a href="#usage">Usage</a></li>
+    <li><a href="#test-suite">Test Suite</a></li>
     <li><a href="#roadmap">Roadmap</a></li>
     <li><a href="#contributing">Contributing</a></li>
     <li><a href="#license">License</a></li>
@@ -162,13 +163,46 @@ _For more examples, please refer to the [documentation](https://github.com/aaf6a
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
+<!-- Test suite -->
+## Testing suite
 
+The following guide assumes you have completed [getting started](#getting-started) and can build .tin files, an important note is to not use the debug version as the clean-up is not designed to handle all the extra files generated or the verbosity outputted in the console. When writing a new test keep in mind that the output of the executable is tested so wherever possible include prints so that information is logged to the console that the tester can then check the differences between.
+When running the tester if you want a more verbose output or the expected outputs on failed tests make sure to use the ‘-e’ / ‘--expected’, ‘-v’ / ‘--verbose’ arguments in the command line make note that when using verbose the expected output of failed tests is show also.
+
+### Steps for adding new tests
+
+1.	Create a new .tin file with the code that you wish to test
+    ```sh
+    $ cd testing/unit-tests directory
+    ```
+2.	Compile the file and check output is as expected
+    ```sh
+    $ cd ..
+    $ ./build/tin ./testing/unit-tests/file-name.tin
+    ```
+3.	Run the executable through QEMU and check output is as expected
+    ```sh
+    $ qemu-riscv64 ./testing/unit-test/file-name
+    ```
+4.	Store file output
+    ```sh
+    $ qemu-riscv64 ./testing/unit-test/file-name > ./testing/expected-outputs/file-name.txt
+    ```
+5.	Run the automated tester
+    ```sh
+    $ cd testing
+    $ python3 test.py
+    ```
+
+If the tests pass you will be told that everything worked and if there is a failure for a test, then this will be outputted to the console with which test failed and the expected output of the test if using verbose or expected output mode.
+
+<p align="right">(<a href="#top">back to top</a>)</p>
 
 <!-- ROADMAP -->
 ## Roadmap
 
 - [ ] Standard Libraries
-- [ ] Optimisation
+- [x] Optimisation
 - [x] Implementing #include
 - [ ] Memory Tools
 - [ ] Non-RISC-V Interpreter
