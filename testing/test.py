@@ -1,9 +1,15 @@
 # Imports
 import subprocess
 import os
+import argparse
 from os import listdir
 from os.path import isfile, join
 from genericpath import exists
+
+parser = argparse.ArgumentParser()
+parser.add_argument('--expected', type=bool, default=False, help='Run the test with expected output')
+
+args = parser.parse_args()
 
 tests_path = "./unit-tests/"
 expecteds_path = "./expected-outputs/"
@@ -59,6 +65,7 @@ if tests_passed != test_amount:
     print("Failed tests:")
     for x in range(len(failed_test_list)):
         print("\t" + failed_test_list[x])
-        print("\t\t" + "Expected: " + str(failed_test_expected_outputs[x].decode("ascii")))
-        print("Got:\n" + str(failed_test_outputs[x].decode("ascii")))
+        if args.expected == True:
+            print("Expected:\n" + str(failed_test_expected_outputs[x].decode("ascii")))
+            print("Got:\n" + str(failed_test_outputs[x].decode("ascii")))
 
