@@ -163,7 +163,7 @@ _For more examples, please refer to the [documentation](https://github.com/aaf6a
 <p align="right">(<a href="#top">back to top</a>)</p>
 
 <!-- Test suite -->
-## Adding new tests and using the suit
+## Testing suite
 
 The following guide assumes you have completed [getting_started](#getting started) and can build .tin files, an important note is to not use the debug version as the clean-up is not designed to handle all the extra files generated or the verbosity outputted in the console. When writing a new test keep in mind that the output of the executable is tested so wherever possible include prints so that information is logged to the console that the tester can then check the differences between.
 When running the tester if you want a more verbose output or the expected outputs on failed tests make sure to use the ‘-e’ / ‘--expected’, ‘-v’ / ‘--verbose’ arguments in the command line make note that when using verbose the expected output of failed tests is show also.
