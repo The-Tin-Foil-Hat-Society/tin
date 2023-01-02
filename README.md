@@ -244,6 +244,7 @@ Distributed under the MIT License. See `LICENSE.txt` for more information.
 ## Contact
 
 Hardijs Raubiskis - 25113420@students.lincoln.ac.uk
+
 Kallum Doughty - 25084869@students.lincoln.ac.uk
 
 Project Link: [https://github.com/aaf6aa/tin](https://github.com/aaf6aa/tin)
