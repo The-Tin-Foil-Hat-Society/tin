@@ -246,6 +246,8 @@ int gen_mod(FILE *file, int left, int right)
     return left;
 }
 
+hashtable *variables;
+
 void variable_init()
 {
     variables = hashtable_new();

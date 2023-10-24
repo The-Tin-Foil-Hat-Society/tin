@@ -39,7 +39,7 @@ preproc: tin
 
 run: tin
 	@./build/tin $(file)
-	@echo "\nRunning result file"
+	@echo "Running result file"
 	@qemu-riscv64 $(basename $(file))
 
 #Generates directories to store generated files and build
