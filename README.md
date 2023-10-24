@@ -278,5 +278,5 @@ Project Link: [https://github.com/The-Tin-Foil-Hat-Society/tin](https://github.c
 [license-shield]: https://img.shields.io/github/license/The-Tin-Foil-Hat-Society/tin.svg?style=for-the-badge
 [license-url]: https://github.com/The-Tin-Foil-Hat-Society/tin/blob/master/LICENSE.txt
 [product-screenshot]: images/screenshot.png
-[testing-shield]: https://img.shields.io/github/workflow/status/The-Tin-Foil-Hat-Society/tin/READMEtest/main?style=for-the-badge
+[testing-shield]: https://img.shields.io/github/actions/workflow/status/The-Tin-Foil-Hat-Society/tin/READMEtest.yml?branch=main&style=for-the-badge
 [testing-url]: https://github.com/The-Tin-Foil-Hat-Society/tin/actions/workflows/READMEtest.yml
