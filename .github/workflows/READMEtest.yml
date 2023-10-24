@@ -14,6 +14,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
+    - run: sudo apt-get update
     
     - name: Install Prerequisites
       run: sudo apt-get install build-essential flex bison binutils-riscv64-linux-gnu qemu qemu-system-misc qemu-user
