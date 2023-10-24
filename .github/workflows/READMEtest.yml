@@ -32,7 +32,7 @@ jobs:
       run: make tin
 
     - name: Build Tin File
-      run: ./build/tin examples/include.tin
+      run: ./build/tin examples/turing_complete.tin
       
     - name: Execute File
-      run: qemu-riscv64 ./examples/include
+      run: qemu-riscv64 ./examples/turing_complete
